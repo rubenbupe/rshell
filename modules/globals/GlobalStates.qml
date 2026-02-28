@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Quickshell.Hyprland
 import qs.modules.services
 import qs.config
 
@@ -68,7 +67,7 @@ Singleton {
         hyprlandLayout = availableLayouts[nextIndex];
     }
 
-    // Query current layout from Hyprland on startup
+    // Query current layout from AxctlService on startup
     Process {
         id: layoutQueryProcess
         command: ["hyprctl", "getoption", "general:layout", "-j"]
@@ -79,7 +78,7 @@ Singleton {
                     const parsed = JSON.parse(data);
                     if (parsed.str && root.availableLayouts.includes(parsed.str)) {
                         root.hyprlandLayout = parsed.str;
-                        console.log("GlobalStates: Layout inicial desde Hyprland: " + parsed.str);
+                        console.log("GlobalStates: Layout inicial desde AxctlService: " + parsed.str);
                     }
                 } catch (e) {
                     console.warn("GlobalStates: Error parsing layout from hyprctl: " + e);
@@ -457,7 +456,7 @@ Singleton {
     property bool compositorHasChanges: false
     property var compositorSnapshot: null
 
-    // Compositor config properties (Hyprland)
+    // Compositor config properties (AxctlService)
     readonly property var _compositorProps: [
         "layout",
         "syncBorderWidth", "borderSize",
