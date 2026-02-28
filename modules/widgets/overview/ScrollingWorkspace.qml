@@ -1,3 +1,5 @@
+import QtQuick
+import Quickshell.Hyprland
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls

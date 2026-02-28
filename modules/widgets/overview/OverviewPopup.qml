@@ -51,7 +51,7 @@ PanelWindow {
         height: 0
     }
 
-    HyprlandFocusGrab {
+    FocusGrab {
         id: focusGrab
         windows: [overviewPopup]
         active: overviewOpen
