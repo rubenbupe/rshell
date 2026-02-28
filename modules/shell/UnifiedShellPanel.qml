@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import qs.modules.bar
 import qs.modules.bar.workspaces
 import qs.modules.notch
@@ -74,7 +73,7 @@ PanelWindow {
 
     readonly property bool unifiedEffectActive: false // Flag to notify children to disable internal borders
 
-    readonly property var hyprlandMonitor: Hyprland.monitorFor(targetScreen)
+    readonly property var hyprlandMonitor: AxctlService.monitorFor(targetScreen)
     readonly property bool hasFullscreenWindow: {
         if (!hyprlandMonitor)
             return false;
@@ -84,7 +83,7 @@ PanelWindow {
 
         // Check active toplevel first (fast path)
         const toplevel = ToplevelManager.activeToplevel;
-        if (toplevel && toplevel.fullscreen && Hyprland.focusedMonitor.id === monId) {
+        if (toplevel && toplevel.fullscreen && AxctlService.focusedMonitor.id === monId) {
             return true;
         }
 
