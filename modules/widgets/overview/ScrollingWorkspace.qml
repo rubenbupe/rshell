@@ -5,7 +5,6 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import qs.modules.globals
 import qs.modules.theme
 import qs.modules.services
@@ -265,7 +264,7 @@ Item {
             TapHandler {
                 acceptedButtons: Qt.LeftButton
                 onDoubleTapped: {
-                    Hyprland.dispatch(`workspace ${root.workspaceId}`);
+                    AxctlService.dispatch(`workspace ${root.workspaceId}`);
                     Visibilities.setActiveModule("", true);
                 }
             }
@@ -332,7 +331,7 @@ Item {
                     Drag.hotSpot.x: width / 2
                     Drag.hotSpot.y: height / 2
 
-                    // Timer to reset override position after Hyprland update
+                    // Timer to reset override position after AxctlService update
                     Timer {
                         id: resetOverrideTimer
                         interval: 200
@@ -574,14 +573,14 @@ Item {
                                             const percentageY = Math.round((actualY / adjustedMonitorHeight) * 100);
                                             
                                             // Move to workspace and set position
-                                            Hyprland.dispatch(`movetoworkspacesilent ${targetWs}, address:${windowDelegate.windowData?.address}`);
-                                            Hyprland.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowDelegate.windowData?.address}`);
+                                            AxctlService.dispatch(`movetoworkspacesilent ${targetWs}, address:${windowDelegate.windowData?.address}`);
+                                            AxctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowDelegate.windowData?.address}`);
                                             
                                             // Force immediate window data update
                                             HyprlandData.updateWindowList();
                                         } else {
                                             // Just move workspace without repositioning for tiled windows
-                                            Hyprland.dispatch(`movetoworkspacesilent ${targetWs}, address:${windowDelegate.windowData?.address}`);
+                                            AxctlService.dispatch(`movetoworkspacesilent ${targetWs}, address:${windowDelegate.windowData?.address}`);
                                             
                                             // Force immediate window data update
                                             HyprlandData.updateWindowList();
@@ -637,7 +636,7 @@ Item {
                                         const percentageY = Math.round((actualY / adjustedMonitorHeight) * 100);
                                         
                                         // Dispatch movewindowpixel command
-                                        Hyprland.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowDelegate.windowData?.address}`);
+                                        AxctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowDelegate.windowData?.address}`);
                                         
                                         // Force immediate window data update
                                         HyprlandData.updateWindowList();
@@ -682,9 +681,9 @@ Item {
                             if (!windowDelegate.windowData)
                                 return;
                             if (mouse.button === Qt.LeftButton && !windowDelegate.dragging) {
-                                Hyprland.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
+                                AxctlService.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
                             } else if (mouse.button === Qt.MiddleButton) {
-                                Hyprland.dispatch(`closewindow address:${windowDelegate.windowData.address}`);
+                                AxctlService.dispatch(`closewindow address:${windowDelegate.windowData.address}`);
                             }
                         }
 
@@ -694,7 +693,7 @@ Item {
                             if (mouse.button === Qt.LeftButton) {
                                 Visibilities.setActiveModule("", true);
                                 Qt.callLater(() => {
-                                    Hyprland.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
+                                    AxctlService.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
                                 });
                             }
                         }
