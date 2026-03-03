@@ -124,6 +124,9 @@ Item {
                 zone += barSize + barOuterMargin;
                 if (containBar && frameEnabled) zone += actualFrameSize;
             }
+            if (sidebarEnabled && sidebarPosition === "left" && sidebarPinned) {
+                zone += sidebarWidth;
+            }
             if (dockEnabled && dockPosition === "left" && dockPinned) zone += dockHeight;
             return zone;
         }
@@ -155,6 +158,9 @@ Item {
             if (barEnabled && barPosition === "right" && barPinned) {
                 zone += barSize + barOuterMargin;
                 if (containBar && frameEnabled) zone += actualFrameSize;
+            }
+            if (sidebarEnabled && sidebarPosition === "right" && sidebarPinned) {
+                zone += sidebarWidth;
             }
             if (dockEnabled && dockPosition === "right" && dockPinned) zone += dockHeight;
             return zone;

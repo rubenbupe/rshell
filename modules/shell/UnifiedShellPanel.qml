@@ -246,6 +246,25 @@ PanelWindow {
             id: assistantSidebar
             targetScreen: unifiedPanel.targetScreen
             z: 5
+            
+            // Respect top/bottom bar reservations so the sidebar doesn't overlap them
+            anchors.topMargin: {
+                if (unifiedPanel.barEnabled && unifiedPanel.barPosition === "top" && unifiedPanel.barPinned) {
+                    return unifiedPanel.barTargetHeight + unifiedPanel.barOuterMargin + (unifiedPanel.containBar ? Config.bar.frameThickness : 0);
+                }
+                return 0;
+            }
+            
+            anchors.bottomMargin: {
+                if (unifiedPanel.barEnabled && unifiedPanel.barPosition === "bottom" && unifiedPanel.barPinned) {
+                    return unifiedPanel.barTargetHeight + unifiedPanel.barOuterMargin + (unifiedPanel.containBar ? Config.bar.frameThickness : 0);
+                }
+                // Also respect dock if dock is at the bottom
+                if (unifiedPanel.dockEnabled && dockContent.dockPosition === "bottom" && dockContent.pinned) {
+                    return dockContent.dockHeight;
+                }
+                return 0;
+            }
         }
     }
 }
