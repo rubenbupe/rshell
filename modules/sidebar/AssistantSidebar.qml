@@ -92,7 +92,8 @@ Item {
         propagateComposedEvents: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onPressed: mouse => {
-            if (!root.wantsFocus) root.wantsFocus = true;
+            if (!root.wantsFocus)
+                root.wantsFocus = true;
             mouse.accepted = false;
         }
     }
@@ -198,7 +199,11 @@ Item {
                                 variant: parent.hovered ? "focus" : "common"
                                 radius: Styling.radius(4)
                                 opacity: parent.hovered ? 1 : 0
-                                Behavior on opacity { NumberAnimation { duration: Config.animDuration / 4 } }
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Config.animDuration / 4
+                                    }
+                                }
                             }
                             onClicked: root.menuExpanded = !root.menuExpanded
                         }
@@ -220,7 +225,11 @@ Item {
                                 variant: parent.hovered ? "focus" : "common"
                                 radius: Styling.radius(4)
                                 opacity: parent.hovered ? 1 : 0
-                                Behavior on opacity { NumberAnimation { duration: Config.animDuration / 4 } }
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Config.animDuration / 4
+                                    }
+                                }
                             }
                             onClicked: {
                                 Ai.createNewChat();
@@ -313,12 +322,16 @@ Item {
                         id: mainChatArea
                         anchors.fill: parent
 
-
                         property var pendingAttachments: []
 
                         function addAttachment(mimeType, base64Data, fileName) {
                             let list = pendingAttachments.slice();
-                            list.push({ type: "image", mimeType: mimeType, base64: base64Data, name: fileName });
+                            list.push({
+                                type: "image",
+                                mimeType: mimeType,
+                                base64: base64Data,
+                                name: fileName
+                            });
                             pendingAttachments = list;
                         }
 
@@ -331,110 +344,112 @@ Item {
                         function clearAttachments() {
                             pendingAttachments = [];
                         }
-                    StyledRect {
-                        id: historyPage
-                        anchors.fill: parent
-                        variant: "bg"
-                        visible: root.menuExpanded
-                        opacity: root.menuExpanded ? 1 : 0
-                        z: 10
-                        
-                        Behavior on opacity {
-                            NumberAnimation { duration: Config.animDuration }
-                        }
-
-                        ColumnLayout {
+                        StyledRect {
+                            id: historyPage
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 8
+                            variant: "bg"
+                            visible: root.menuExpanded
+                            opacity: root.menuExpanded ? 1 : 0
+                            z: 10
 
-                            Text {
-                                text: "Chat History"
-                                color: Colors.overSurface
-                                font.family: Config.theme.font
-                                font.pixelSize: 18
-                                font.weight: Font.Bold
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: Config.animDuration
+                                }
                             }
 
-                            ListView {
-                                id: historyList
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                clip: true
-                                model: Ai.chatHistory
-                                spacing: 4
+                            ColumnLayout {
+                                anchors.fill: parent
+                                anchors.margins: 16
+                                spacing: 8
 
-                                delegate: Button {
-                                    width: historyList.width
-                                    height: 48
-                                    flat: true
+                                Text {
+                                    text: "Chat History"
+                                    color: Colors.overSurface
+                                    font.family: Config.theme.font
+                                    font.pixelSize: 18
+                                    font.weight: Font.Bold
+                                }
 
-                                    contentItem: RowLayout {
-                                        anchors.fill: parent
-                                        anchors.leftMargin: 12
-                                        anchors.rightMargin: 12
-                                        spacing: 8
+                                ListView {
+                                    id: historyList
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    clip: true
+                                    model: Ai.chatHistory
+                                    spacing: 4
 
-                                        Column {
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignVCenter
+                                    delegate: Button {
+                                        width: historyList.width
+                                        height: 48
+                                        flat: true
 
-                                            Text {
-                                                text: modelData.title || "New Chat"
-                                                color: Ai.currentChatId === modelData.id ? Styling.srItem("primary") : Colors.overSurface
-                                                font.family: Config.theme.font
-                                                font.pixelSize: 14
-                                                font.weight: Font.Medium
-                                                elide: Text.ElideRight
-                                                width: parent.width
-                                            }
+                                        contentItem: RowLayout {
+                                            anchors.fill: parent
+                                            anchors.leftMargin: 12
+                                            anchors.rightMargin: 12
+                                            spacing: 8
 
-                                            Text {
-                                                text: {
-                                                    let date = new Date(parseInt(modelData.id));
-                                                    return date.toLocaleString(Qt.locale(), "MMM dd, hh:mm a");
+                                            Column {
+                                                Layout.fillWidth: true
+                                                Layout.alignment: Qt.AlignVCenter
+
+                                                Text {
+                                                    text: modelData.title || "New Chat"
+                                                    color: Ai.currentChatId === modelData.id ? Styling.srItem("primary") : Colors.overSurface
+                                                    font.family: Config.theme.font
+                                                    font.pixelSize: 14
+                                                    font.weight: Font.Medium
+                                                    elide: Text.ElideRight
+                                                    width: parent.width
                                                 }
-                                                color: Ai.currentChatId === modelData.id ? Styling.srItem("primary") : Colors.outline
-                                                font.family: Config.theme.font
-                                                font.pixelSize: 11
-                                                elide: Text.ElideRight
-                                                width: parent.width
+
+                                                Text {
+                                                    text: {
+                                                        let date = new Date(parseInt(modelData.id));
+                                                        return date.toLocaleString(Qt.locale(), "MMM dd, hh:mm a");
+                                                    }
+                                                    color: Ai.currentChatId === modelData.id ? Styling.srItem("primary") : Colors.outline
+                                                    font.family: Config.theme.font
+                                                    font.pixelSize: 11
+                                                    elide: Text.ElideRight
+                                                    width: parent.width
+                                                }
+                                            }
+
+                                            Button {
+                                                visible: parent.parent.hovered
+                                                flat: true
+                                                Layout.preferredWidth: 28
+                                                Layout.preferredHeight: 28
+
+                                                contentItem: Text {
+                                                    text: Icons.trash
+                                                    font.family: Icons.font
+                                                    color: parent.hovered ? Colors.error : Colors.outline
+                                                    font.pixelSize: 14
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    verticalAlignment: Text.AlignVCenter
+                                                }
+
+                                                background: null
+                                                onClicked: Ai.deleteChat(modelData.id)
                                             }
                                         }
 
-                                        Button {
-                                            visible: parent.parent.hovered
-                                            flat: true
-                                            Layout.preferredWidth: 28
-                                            Layout.preferredHeight: 28
-
-                                            contentItem: Text {
-                                                text: Icons.trash
-                                                font.family: Icons.font
-                                                color: parent.hovered ? Colors.error : Colors.outline
-                                                font.pixelSize: 14
-                                                horizontalAlignment: Text.AlignHCenter
-                                                verticalAlignment: Text.AlignVCenter
-                                            }
-
-                                            background: null
-                                            onClicked: Ai.deleteChat(modelData.id)
+                                        background: StyledRect {
+                                            variant: Ai.currentChatId === modelData.id ? "focus" : (parent.hovered ? "surfaceVariant" : "transparent")
+                                            radius: Styling.radius(6)
                                         }
-                                    }
 
-                                    background: StyledRect {
-                                        variant: Ai.currentChatId === modelData.id ? "focus" : (parent.hovered ? "surfaceVariant" : "transparent")
-                                        radius: Styling.radius(6)
-                                    }
-
-                                    onClicked: {
-                                        Ai.loadChat(modelData.id);
-                                        root.menuExpanded = false;
+                                        onClicked: {
+                                            Ai.loadChat(modelData.id);
+                                            root.menuExpanded = false;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
                         property int retryIndex: -1
                         property string username: ""
 
@@ -451,7 +466,6 @@ Item {
                             }
                         }
 
-
                         Process {
                             id: zenityProcess
                             command: ["zenity", "--file-selection", "--file-filter=Images | *.png *.jpg *.jpeg *.gif *.webp *.bmp", "--file-filter=All files | *"]
@@ -461,7 +475,14 @@ Item {
                                     if (filePath.length > 0) {
                                         zenityReadProcess.filePath = filePath;
                                         let ext = filePath.split(".").pop().toLowerCase();
-                                        let mimeMap = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", webp: "image/webp", bmp: "image/bmp" };
+                                        let mimeMap = {
+                                            png: "image/png",
+                                            jpg: "image/jpeg",
+                                            jpeg: "image/jpeg",
+                                            gif: "image/gif",
+                                            webp: "image/webp",
+                                            bmp: "image/bmp"
+                                        };
                                         zenityReadProcess.mimeType = mimeMap[ext] || "application/octet-stream";
                                         zenityReadProcess.fileName = filePath.split("/").pop();
                                         zenityReadProcess.running = true;
@@ -1312,14 +1333,13 @@ Item {
                                         }
                                     }
 
-
                                     Button {
                                         Layout.preferredWidth: 32
                                         Layout.preferredHeight: 32
                                         flat: true
 
                                         contentItem: Text {
-                                            text: Icons.clip
+                                            text: Icons.plus
                                             font.family: Icons.font
                                             font.pixelSize: 20
                                             color: Colors.outline
