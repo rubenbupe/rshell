@@ -524,8 +524,9 @@ Item {
                         property bool isWelcome: Ai.currentChat.length === 0
 
                         ColumnLayout {
-                            anchors.centerIn: parent
-                            anchors.verticalCenterOffset: -50
+                            anchors.bottom: inputContainer.top
+                            anchors.bottomMargin: 24
+                            anchors.horizontalCenter: parent.horizontalCenter
                             visible: mainChatArea.isWelcome
                             spacing: 8
 
@@ -1073,7 +1074,7 @@ Item {
 
                         Item {
                             id: inputContainer
-                            height: (attachmentPreview.visible ? attachmentPreview.height + 4 : 0) + Math.min(150, Math.max(48, inputField.contentHeight + 24))
+                            height: (attachmentPreview.visible ? attachmentPreview.height + 14 : 0) + Math.min(150, Math.max(48, inputField.contentHeight + 24))
 
                             anchors.bottom: parent.bottom
                             property real centerMargin: (parent.height / 2) - (height / 2)
@@ -1089,79 +1090,79 @@ Item {
                                 }
                             }
 
-                            Flow {
-                                id: attachmentPreview
-                                anchors.bottom: inputStyledRect.top
-                                anchors.bottomMargin: 4
-                                anchors.left: parent.left
-                                anchors.leftMargin: 12
-                                anchors.right: parent.right
-                                anchors.rightMargin: 12
-                                spacing: 6
-                                visible: mainChatArea.pendingAttachments.length > 0
-                                height: visible ? 56 : 0
-
-                                Repeater {
-                                    model: mainChatArea.pendingAttachments
-
-                                    Item {
-                                        width: 48
-                                        height: 48
-
-                                        StyledRect {
-                                            anchors.fill: parent
-                                            variant: "surface"
-                                            radius: Styling.radius(6)
-
-                                            Image {
-                                                anchors.fill: parent
-                                                anchors.margins: 2
-                                                source: "data:" + modelData.mimeType + ";base64," + modelData.base64
-                                                fillMode: Image.PreserveAspectCrop
-                                                sourceSize.width: 48
-                                                sourceSize.height: 48
-                                            }
-                                        }
-
-                                        Button {
-                                            anchors.right: parent.right
-                                            anchors.top: parent.top
-                                            anchors.rightMargin: -4
-                                            anchors.topMargin: -4
-                                            width: 16
-                                            height: 16
-                                            flat: true
-                                            z: 1
-
-                                            contentItem: Text {
-                                                text: Icons.cancel
-                                                font.family: Icons.font
-                                                font.pixelSize: 10
-                                                color: Colors.overSurface
-                                                horizontalAlignment: Text.AlignHCenter
-                                                verticalAlignment: Text.AlignVCenter
-                                            }
-
-                                            background: Rectangle {
-                                                color: Colors.surfaceBright
-                                                radius: 8
-                                            }
-
-                                            onClicked: mainChatArea.removeAttachment(index)
-                                        }
-                                    }
-                                }
-                            }
-
                             StyledRect {
                                 id: inputStyledRect
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.bottom: parent.bottom
-                                height: Math.min(150, Math.max(48, inputField.contentHeight + 24))
+                                anchors.fill: parent
                                 variant: "pane"
                                 radius: Styling.radius(4)
                                 enableShadow: true
+
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    spacing: 6
+
+                                    Flow {
+                                        id: attachmentPreview
+                                        height: visible ? 56 : 0
+                                        Layout.fillWidth: true
+                                        Layout.leftMargin: 12
+                                        Layout.rightMargin: 12
+                                        Layout.topMargin: 8
+                                        Layout.preferredHeight: visible ? 56 : 0
+                                        spacing: 6
+                                        visible: mainChatArea.pendingAttachments.length > 0
+
+                                        Repeater {
+                                            model: mainChatArea.pendingAttachments
+
+                                            Item {
+                                                width: 48
+                                                height: 48
+
+                                                StyledRect {
+                                                    anchors.fill: parent
+                                                    variant: "surface"
+                                                    radius: Styling.radius(6)
+
+                                                    Image {
+                                                        anchors.fill: parent
+                                                        anchors.margins: 2
+                                                        source: "data:" + modelData.mimeType + ";base64," + modelData.base64
+                                                        fillMode: Image.PreserveAspectCrop
+                                                        sourceSize.width: 48
+                                                        sourceSize.height: 48
+                                                    }
+                                                }
+
+                                                Button {
+                                                    anchors.right: parent.right
+                                                    anchors.top: parent.top
+                                                    anchors.rightMargin: -4
+                                                    anchors.topMargin: -4
+                                                    width: 16
+                                                    height: 16
+                                                    flat: true
+                                                    z: 1
+
+                                                    contentItem: Text {
+                                                        text: Icons.cancel
+                                                        font.family: Icons.font
+                                                        font.pixelSize: 10
+                                                        color: Colors.overSurface
+                                                        horizontalAlignment: Text.AlignHCenter
+                                                        verticalAlignment: Text.AlignVCenter
+                                                    }
+
+                                                    background: Rectangle {
+                                                        color: Colors.surfaceBright
+                                                        radius: 8
+                                                    }
+
+                                                    onClicked: mainChatArea.removeAttachment(index)
+                                                }
+                                            }
+                                        }
+                                    }
 
                                 Popup {
                                     id: suggestionsPopup
@@ -1253,10 +1254,12 @@ Item {
                                 }
 
                                 RowLayout {
-                                    anchors.fill: parent
-                                    anchors.margins: 8
-                                    anchors.leftMargin: 16
-                                    anchors.rightMargin: 16
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    Layout.leftMargin: 16
+                                    Layout.rightMargin: 16
+                                    Layout.topMargin: attachmentPreview.visible ? 0 : 8
+                                    Layout.bottomMargin: 8
 
                                     ScrollView {
                                         Layout.fillWidth: true
@@ -1385,8 +1388,9 @@ Item {
                                 }
                             }
                         }
+                    }
 
-                        Text {
+                    Text {
                             anchors.top: inputContainer.bottom
                             anchors.topMargin: 8
                             anchors.horizontalCenter: inputContainer.horizontalCenter

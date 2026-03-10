@@ -380,9 +380,9 @@ Item {
 
             // Welcome Screen
             ColumnLayout {
-                anchors.centerIn: parent
-                // Offset slightly up to make room for centered input
-                anchors.verticalCenterOffset: -50
+                anchors.bottom: inputContainer.top
+                anchors.bottomMargin: 24
+                anchors.horizontalCenter: parent.horizontalCenter
                 visible: mainChatArea.isWelcome
                 spacing: 8
 
