@@ -20,6 +20,23 @@ if [ -n "${QML2_IMPORT_PATH:-}" ] && [ -z "${QML_IMPORT_PATH:-}" ]; then
 	export QML_IMPORT_PATH="$QML2_IMPORT_PATH"
 fi
 
+# Ensure config files exist - copy from preset if missing
+ensure_config_files() {
+	local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/ambxst/config"
+	local preset_dir="${SCRIPT_DIR}/assets/presets/Ambxst Default"
+
+	# Create config directory if it doesn't exist
+	mkdir -p "$config_dir"
+
+	# Copy preset files if they don't exist (cp -n = no-clobber)
+	for file in theme bar workspaces overview notch compositor performance desktop lockscreen dock ai; do
+		cp -n "${preset_dir}/${file}.json" "${config_dir}/${file}.json" 2>/dev/null || true
+	done
+}
+
+# Call it before launching
+ensure_config_files
+
 show_help() {
 	cat <<EOF
 Ambxst CLI - Desktop Environment Control
