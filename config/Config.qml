@@ -1230,7 +1230,7 @@ Singleton {
 
             if (needsUpdate) {
                 console.log("Auto-repairing binds.json: adding missing binds");
-                keybindsLoader.setText(JSON.stringify(current, null, 4));
+                keybindsLoader.setText(JSON.stringify(current, null, 2));
             }
         } catch (e) {
             console.warn("Failed to repair binds.json:", e);
@@ -2884,7 +2884,7 @@ Singleton {
         if (!raw || raw.trim().length === 0) {
             // File is missing or empty — create with defaults
             console.log(name + ".json missing or empty, creating default...");
-            loader.setText(JSON.stringify(defaults, null, 4));
+            loader.setText(JSON.stringify(defaults, null, 2));
             onComplete();
             return;
         }
@@ -2895,13 +2895,13 @@ Singleton {
 
             if (JSON.stringify(current) !== JSON.stringify(validated)) {
                 console.log("Merging and updating " + name + ".json...");
-                loader.setText(JSON.stringify(validated, null, 4));
+                loader.setText(JSON.stringify(validated, null, 2));
             }
             onComplete();
         } catch (e) {
             console.log("Error validating " + name + " config (invalid JSON?): " + e);
             console.log("Overwriting with defaults due to error.");
-            loader.setText(JSON.stringify(defaults, null, 4));
+            loader.setText(JSON.stringify(defaults, null, 2));
             onComplete();
         }
     }
