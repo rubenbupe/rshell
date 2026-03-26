@@ -736,30 +736,12 @@ for f in files:
             fetchProcessOpenAI.running = true;
         }
 
-        // Anthropic — no models listing API, add known models
+        // Anthropic
         let anthropicKey = KeyStore.getKey("anthropic");
         if (anthropicKey) {
-            let anthropicModels = [
-                { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4" },
-                { id: "claude-3-5-haiku-20241022", name: "Claude 3.5 Haiku" },
-                { id: "claude-3-5-sonnet-20241022", name: "Claude 3.5 Sonnet" }
-            ];
-            let newModels = [];
-            for (let i = 0; i < anthropicModels.length; i++) {
-                let item = anthropicModels[i];
-                let m = aiModelFactory.createObject(root, {
-                    name: item.name,
-                    icon: Qt.resolvedUrl("../../../assets/aiproviders/anthropic.svg"),
-                    description: "Anthropic Model",
-                    endpoint: "https://api.anthropic.com/v1/messages",
-                    model: item.id,
-                    provider: "anthropic",
-                    requires_key: true,
-                    key_id: "ANTHROPIC_API_KEY"
-                });
-                if (m) newModels.push(m);
-            }
-            mergeModels(newModels);
+            pendingFetches++;
+            fetchProcessAnthropic.command = ["bash", "-c", "curl -s https://api.anthropic.com/v1/models -H 'x-api-key: " + anthropicKey + "' -H 'anthropic-version: 2023-06-01'"];
+            fetchProcessAnthropic.running = true;
         }
 
         // Mistral
@@ -941,6 +923,42 @@ for f in files:
                     }
                 } catch (e) {
                     console.log("Groq fetch error: " + e);
+                }
+            }
+            checkFetchCompletion();
+        }
+    }
+
+    Process {
+        id: fetchProcessAnthropic
+        stdout: StdioCollector {
+            id: fetchAnthropicOut
+        }
+        onExited: exitCode => {
+            if (exitCode === 0) {
+                try {
+                    let data = JSON.parse(fetchAnthropicOut.text);
+                    if (data.data) {
+                        let newModels = [];
+                        for (let i = 0; i < data.data.length; i++) {
+                            let item = data.data[i];
+                            let id = item.id;
+                            let m = aiModelFactory.createObject(root, {
+                                name: item.display_name || id,
+                                icon: Qt.resolvedUrl("../../../assets/aiproviders/anthropic.svg"),
+                                description: item.description || "Anthropic Model",
+                                endpoint: "https://api.anthropic.com/v1/messages",
+                                model: id,
+                                provider: "anthropic",
+                                requires_key: true,
+                                key_id: "ANTHROPIC_API_KEY"
+                            });
+                            if (m) newModels.push(m);
+                        }
+                        mergeModels(newModels);
+                    }
+                } catch (e) {
+                    console.log("Anthropic fetch error: " + e);
                 }
             }
             checkFetchCompletion();
