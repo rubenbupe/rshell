@@ -101,6 +101,7 @@ Singleton {
     property MistralApiStrategy mistralStrategy: MistralApiStrategy {}
     property GroqApiStrategy groqStrategy: GroqApiStrategy {}
     property OllamaApiStrategy ollamaStrategy: OllamaApiStrategy {}
+    property MiniMaxApiStrategy minimaxStrategy: MiniMaxApiStrategy {}
 
     property ApiStrategy currentStrategy: openaiStrategy
 
@@ -112,6 +113,7 @@ Singleton {
         case "mistral": return mistralStrategy;
         case "groq": return groqStrategy;
         case "ollama": return ollamaStrategy;
+        case "minimax": return minimaxStrategy;
         case "custom": return openaiStrategy; // custom endpoints use OpenAI-compatible format by default
         default: return openaiStrategy;
         }
@@ -768,6 +770,14 @@ for f in files:
             fetchProcessOllama.running = true;
         }
 
+        // MiniMax
+        let minimaxKey = KeyStore.getKey("minimax");
+        if (minimaxKey) {
+            pendingFetches++;
+            fetchProcessMiniMax.command = ["bash", "-c", "echo 'done'"];
+            fetchProcessMiniMax.running = true;
+        }
+
         if (pendingFetches === 0) {
             fetchingModels = false;
         }
@@ -998,6 +1008,45 @@ for f in files:
             checkFetchCompletion();
         }
     }
+
+    Process {
+        id: fetchProcessMiniMax
+        onExited: exitCode => {
+            if (exitCode === 0) {
+                let newModels = [];
+                
+                let models = [
+                    { name: "MiniMax-M2.7", model: "MiniMax-M2.7", description: "Latest model with recursive self-improvement, SOTA coding capabilities", endpoint: "https://api.minimax.io" },
+                    { name: "MiniMax-M2.7-highspeed", model: "MiniMax-M2.7-highspeed", description: "Same performance as M2.7, faster inference (~100 tps)", endpoint: "https://api.minimax.io" },
+                    { name: "MiniMax-M2.5", model: "MiniMax-M2.5", description: "Peak performance, ultimate value, master the complex", endpoint: "https://api.minimax.io" },
+                    { name: "MiniMax-M2.5-highspeed", model: "MiniMax-M2.5-highspeed", description: "Same performance as M2.5, faster inference (~100 tps)", endpoint: "https://api.minimax.io" },
+                    { name: "MiniMax-M2.1", model: "MiniMax-M2.1", description: "Powerful multi-language programming, enhanced reasoning", endpoint: "https://api.minimax.io" },
+                    { name: "MiniMax-M2.1-highspeed", model: "MiniMax-M2.1-highspeed", description: "Same performance as M2.1, faster inference (~100 tps)", endpoint: "https://api.minimax.io" },
+                    { name: "MiniMax-M2", model: "MiniMax-M2", description: "Agentic capabilities, advanced reasoning, 200k context", endpoint: "https://api.minimax.io" },
+                    { name: "M2-her", model: "M2-her", description: "Role-playing, multi-turn conversations, emotional expression", endpoint: "https://api.minimax.io" }
+                ];
+                
+                for (let i = 0; i < models.length; i++) {
+                    let item = models[i];
+                    let m = aiModelFactory.createObject(root, {
+                        name: item.name,
+                        icon: Qt.resolvedUrl("../../../assets/aiproviders/minimax.svg"),
+                        description: item.description,
+                        endpoint: item.endpoint,
+                        model: item.model,
+                        provider: "minimax",
+                        requires_key: true,
+                        key_id: "MINIMAX_API_KEY"
+                    });
+                    if (m) newModels.push(m);
+                }
+                
+                mergeModels(newModels);
+            }
+            checkFetchCompletion();
+        }
+    }
+
 
     function checkFetchCompletion() {
         pendingFetches--;
