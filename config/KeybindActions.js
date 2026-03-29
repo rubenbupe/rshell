@@ -73,8 +73,12 @@ var ACTION_CATALOG = [
     { id: "workspace.move-window", label: "Move Window to Workspace", category: "Workspace", dispatcher: "movetoworkspace", args: [{ key: "index", label: "Workspace", placeholder: "1", defaultValue: "1" }], argumentBuilder: function (args) {
         return String(args.index || "").trim();
     } },
+    { id: "workspace.move-window-silent", label: "Move Window to Workspace (Silent)", category: "Workspace", dispatcher: "movetoworkspacesilent", args: [{ key: "index", label: "Workspace", placeholder: "1", defaultValue: "1" }], argumentBuilder: function (args) {
+        return String(args.index || "").trim();
+    } },
     { id: "workspace.toggle-special", label: "Toggle Special Workspace", category: "Workspace", dispatcher: "togglespecialworkspace", argument: "" },
     { id: "workspace.move-window-special", label: "Move Window to Special Workspace", category: "Workspace", dispatcher: "movetoworkspace", argument: "special" },
+    { id: "workspace.move-window-special-silent", label: "Move Window to Special Workspace (Silent)", category: "Workspace", dispatcher: "movetoworkspacesilent", argument: "special" },
 
     { id: "scrolling.focus", label: "Focus (Scrolling)", category: "Scrolling Layout", dispatcher: "layoutmsg", args: [{ key: "direction", label: "Direction", placeholder: "up/down/left/right", defaultValue: "up" }], argumentBuilder: function (args) {
         return "focus " + directionToLetter(args.direction);
@@ -241,6 +245,10 @@ function actionFromLegacy(dispatcher, argument, flags) {
     if (dispatcher === "movetoworkspace") {
         if (arg === "special") return { id: "workspace.move-window-special", args: {} };
         return { id: "workspace.move-window", args: { index: arg } };
+    }
+    if (dispatcher === "movetoworkspacesilent") {
+        if (arg === "special") return { id: "workspace.move-window-special-silent", args: {} };
+        return { id: "workspace.move-window-silent", args: { index: arg } };
     }
     if (dispatcher === "togglespecialworkspace") return { id: "workspace.toggle-special", args: {} };
     if (dispatcher === "movewindow" && flags === "m") return { id: "window.drag", args: {} };

@@ -1920,6 +1920,186 @@ Singleton {
                     ],
                     "enabled": true
                 },
+                {
+                    "name": "Move to Workspace 1 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "1"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "1",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 2 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "2"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "2",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 3 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "3"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "3",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 4 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "4"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "4",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 5 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "5"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "5",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 6 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "6"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "6",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 7 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "7"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "7",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 8 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "8"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "8",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 9 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "9"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "9",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
+                {
+                    "name": "Move to Workspace 10 (Silent)",
+                    "keys": [
+                        {
+                            "modifiers": ["SUPER", "ALT"],
+                            "key": "0"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "dispatcher": "movetoworkspacesilent",
+                            "argument": "10",
+                            "flags": "",
+                            "layouts": []
+                        }
+                    ],
+                    "enabled": true
+                },
 
                 // Workspace scroll/keys
                 {
