@@ -167,7 +167,7 @@ Item {
             Connections {
                 target: brightnessSlider
                 function onIconHovered(hovered) {
-                // No hacer nada aquí, el HoverHandler principal maneja todo
+                    // No hacer nada aquí, el HoverHandler principal maneja todo
                 }
             }
         }

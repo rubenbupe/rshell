@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Io
 import qs.modules.globals
 import qs.modules.services
 import qs.config
@@ -9,15 +10,16 @@ ToggleButton {
     iconTint: Config.bar.launcherIconTint
     iconFullTint: Config.bar.launcherIconFullTint
     iconSize: Config.bar.launcherIconSize
-    tooltipText: "Open Launcher"
+    tooltipText: "Open Vicinae"
+
+    Process {
+        id: launchVicinaeProcess
+        command: ["bash", "-c", "if command -v vicinae >/dev/null; then vicinae toggle; else notify-send 'Vicinae no encontrado' 'Instala Vicinae o ajusta LauncherButton.qml'; fi"]
+    }
 
     onToggle: function () {
-        if (GlobalStates.launcherOpen) {
-            GlobalStates.clearLauncherState();
-            Visibilities.setActiveModule("");
-        } else {
-            GlobalStates.clearLauncherState();
-            Visibilities.setActiveModule("launcher");
-        }
+        GlobalStates.clearLauncherState();
+        Visibilities.setActiveModule("");
+        launchVicinaeProcess.running = true;
     }
 }

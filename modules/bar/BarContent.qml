@@ -385,12 +385,20 @@ Item {
                             endRadius: root.innerRadius
                         }
 
-                        LayoutSelectorButton {
-                            id: layoutSelectorButton
-                            bar: root
-                            layerEnabled: root.shadowsEnabled
-                            startRadius: root.innerRadius
-                            endRadius: (root.pinButtonVisible) ? root.innerRadius : (root.dockAtStart ? root.innerRadius : root.outerRadius)
+                        Loader {
+                            active: (Config.bar && Config.bar.showLayoutButton !== undefined ? Config.bar.showLayoutButton : true)
+                            visible: active
+                            Layout.alignment: Qt.AlignVCenter
+
+                            sourceComponent: LayoutSelectorButton {
+                                id: layoutSelectorButton
+                                implicitWidth: 36
+                                implicitHeight: 36
+                                bar: root
+                                layerEnabled: root.shadowsEnabled
+                                startRadius: root.innerRadius
+                                endRadius: (root.pinButtonVisible) ? root.innerRadius : (root.dockAtStart ? root.innerRadius : root.outerRadius)
+                            }
                         }
 
                         // Pin button (horizontal)
@@ -626,14 +634,22 @@ Item {
                                 width: parent.width
                                 spacing: 4
 
-                                LayoutSelectorButton {
-                                    id: layoutSelectorButtonVert
-                                    bar: root
-                                    layerEnabled: root.shadowsEnabled
+                                Loader {
+                                    active: (Config.bar && Config.bar.showLayoutButton !== undefined ? Config.bar.showLayoutButton : true)
+                                    visible: active
                                     Layout.alignment: Qt.AlignHCenter
-                                    startRadius: root.outerRadius
-                                    endRadius: root.innerRadius
-                                    vertical: true
+
+                                    sourceComponent: LayoutSelectorButton {
+                                        id: layoutSelectorButtonVert
+                                        bar: root
+                                        implicitWidth: 36
+                                        implicitHeight: 36
+                                        layerEnabled: root.shadowsEnabled
+                                        Layout.alignment: Qt.AlignHCenter
+                                        startRadius: root.outerRadius
+                                        endRadius: root.innerRadius
+                                        vertical: true
+                                    }
                                 }
 
                                 Workspaces {

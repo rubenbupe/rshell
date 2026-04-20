@@ -230,7 +230,7 @@ Singleton {
         // We need a delay for DDC monitors because they can be quite slow and might act weird with rapid changes
         property var setTimer: Timer {
             id: setTimer
-            interval: monitor.isDdc ? 300 : 0
+            interval: monitor.isDdc ? 100 : 0
             onTriggered: {
                 syncBrightness();
             }

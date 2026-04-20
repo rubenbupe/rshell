@@ -30,7 +30,7 @@ Item {
 
     StyledToolTip {
         show: root.isHovered && !root.popupOpen
-        tooltipText: "Audio & Brightness Controls"
+        tooltipText: "Audio Controls"
     }
 
     HoverHandler {
@@ -65,7 +65,18 @@ Item {
 
         Text {
             anchors.centerIn: parent
-            text: Icons.faders
+            text: {
+                if (Audio.sink?.audio?.muted)
+                    return Icons.speakerSlash;
+                const vol = Audio.sink?.audio?.volume ?? 0;
+                if (vol < 0.01)
+                    return Icons.speakerX;
+                if (vol < 0.19)
+                    return Icons.speakerNone;
+                if (vol < 0.49)
+                    return Icons.speakerLow;
+                return Icons.speakerHigh;
+            }
             font.family: Icons.font
             font.pixelSize: 18
             color: root.popupOpen ? buttonBg.item : Styling.srItem("overprimary")
@@ -97,7 +108,8 @@ Item {
         contentWidth: 220
         // Fixed height calculation to prevent expansion animation on first open
         // 3 rows * 36px + 2 gaps * 12px = 132px
-        contentHeight: 132 + popupPadding * 2
+        // 3 rows * 36px + 2 gaps * 12px = 132px
+        contentHeight: 96 + popupPadding * 2
 
         ColumnLayout {
             id: slidersColumn
@@ -188,55 +200,6 @@ Item {
                     }
                 }
             }
-
-            // Brightness Slider
-            ControlSliderRow {
-                id: brightnessRow
-                Layout.fillWidth: true
-                Layout.preferredHeight: 36
-                Layout.rightMargin: 8
-
-                property var currentMonitor: Brightness.getMonitorForScreen(root.bar.screen)
-
-                icon: Icons.sun
-                sliderValue: currentMonitor?.brightness ?? 0.5
-                progressColor: Styling.srItem("overprimary")
-                wavy: true
-                wavyAmplitude: 1.5 * sliderValue
-                wavyFrequency: 8.0 * sliderValue
-                iconRotation: (sliderValue / 1.0) * 180
-                iconScale: 0.8 + (sliderValue / 1.0) * 0.2
-
-                onValueChanged: newValue => {
-                    if (Brightness.syncBrightness) {
-                        for (let i = 0; i < Brightness.monitors.length; i++) {
-                            let mon = Brightness.monitors[i];
-                            if (mon && mon.ready) {
-                                mon.setBrightness(newValue);
-                            }
-                        }
-                    } else if (currentMonitor && currentMonitor.ready) {
-                        currentMonitor.setBrightness(newValue);
-                    }
-                }
-
-                onIconClicked: {}
-
-                Connections {
-                    target: brightnessRow.currentMonitor ?? null
-                    ignoreUnknownSignals: true
-                    function onBrightnessChanged() {
-                        if (brightnessRow.currentMonitor) {
-                            brightnessRow.sliderValue = brightnessRow.currentMonitor.brightness;
-                        }
-                    }
-                    function onReadyChanged() {
-                        if (brightnessRow.currentMonitor?.ready) {
-                            brightnessRow.sliderValue = brightnessRow.currentMonitor.brightness;
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -246,7 +209,5 @@ Item {
             volumeRow.sliderValue = Audio.sink.audio.volume;
         if (Audio.source?.audio)
             micRow.sliderValue = Audio.source.audio.volume;
-        if (brightnessRow.currentMonitor?.ready)
-            brightnessRow.sliderValue = brightnessRow.currentMonitor.brightness;
     }
 }

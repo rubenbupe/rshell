@@ -542,6 +542,7 @@ Singleton {
             property bool hoverToReveal: true
             property int hoverRegionHeight: 8
             property bool showPinButton: true
+            property bool showLayoutButton: true
             property bool availableOnFullscreen: false
             property bool use12hFormat: false
             property bool containBar: false
@@ -1098,6 +1099,7 @@ Singleton {
             property bool availableOnFullscreen: false
             property bool showRunningIndicators: true
             property bool showPinButton: true
+            property bool showLayoutButton: true
             property bool showOverviewButton: true
             property list<string> ignoredAppRegexes: ["quickshell.*", "xdg-desktop-portal.*"]
             property list<string> screenList: []

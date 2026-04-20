@@ -222,7 +222,6 @@ PanelWindow {
 
     function openMenu(handle) {
         console.log("Opening context menu");
-        Visibilities.notifyOpen(contextWindow);
         menuHandle = handle;
         customItems = [];
         menuType = "";
@@ -233,7 +232,6 @@ PanelWindow {
 
     function openCustomMenu(items, width, height, type) {
         console.log("Opening custom context menu with", items.length, "items");
-        Visibilities.notifyOpen(contextWindow);
         menuHandle = null;
         customItems = items;
         menuType = type || "";
@@ -286,7 +284,4 @@ PanelWindow {
             contextWindow.close();
         }
     }
-
-    Component.onCompleted: Visibilities.registerOpenable(contextWindow)
-    Component.onDestruction: Visibilities.unregisterOpenable(contextWindow)
 }

@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -75,6 +76,11 @@ MouseArea {
 
                     delegate: ColumnLayout {
                         required property var modelData
+                        required property int index
+                        property bool isSeparatorEntry: modelData ? (modelData.isSeparator || false) : false
+                        property bool prevIsSeparator: (index > 0 && menuOpener.children && menuOpener.children.values && menuOpener.children.values[index - 1]) ? (menuOpener.children.values[index - 1].isSeparator || false) : false
+                        property bool shouldHideSeparator: isSeparatorEntry && (index === 0 || prevIsSeparator || index === (menuOpener.children && menuOpener.children.values ? menuOpener.children.values.length - 1 : -1))
+                        visible: !shouldHideSeparator
 
                         Layout.fillWidth: true
                         spacing: 2
@@ -123,6 +129,11 @@ MouseArea {
 
                                 delegate: SystrayMenuItem {
                                     required property var modelData
+                                    required property int index
+                                    property bool isSeparatorEntry: modelData ? (modelData.isSeparator || false) : false
+                                    property bool prevIsSeparator: (index > 0 && subMenuOpener.children && subMenuOpener.children.values && subMenuOpener.children.values[index - 1]) ? (subMenuOpener.children.values[index - 1].isSeparator || false) : false
+                                    property bool shouldHideSeparator: isSeparatorEntry && (index === 0 || prevIsSeparator || index === (subMenuOpener.children && subMenuOpener.children.values ? subMenuOpener.children.values.length - 1 : -1))
+                                    visible: !shouldHideSeparator
 
                                     Layout.fillWidth: true
                                     depth: 1
@@ -167,8 +178,12 @@ MouseArea {
     }
 
     Tinted {
+        property var iconPath: root.item.icon.toString()
+        property var isSpotify: iconPath.includes("spotify")
         sourceItem: trayIcon
         anchors.fill: trayIcon
+        fullTint: !isSpotify
+        active: !isSpotify || active
     }
 
     StyledToolTip {
