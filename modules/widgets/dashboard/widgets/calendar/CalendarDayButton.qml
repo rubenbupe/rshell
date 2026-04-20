@@ -18,14 +18,15 @@ Rectangle {
     Layout.preferredHeight: 28
 
     color: "transparent"
-    radius: Styling.radius(-2)
+    radius: Styling.radius(-4)
 
     StyledRect {
         anchors.centerIn: parent
-        width: Math.min(parent.width, parent.height)
-        height: width
+        width: Math.min(parent.width) - 8
+        height: Math.min(parent.height) - 8
         variant: (isToday === 1) ? "primary" : "transparent"
-        radius: parent.radius
+        Layout.margins: 8
+        radius: parent.radius - 3
 
         Text {
             anchors.fill: parent

@@ -8,6 +8,12 @@ import "layout.js" as CalendarLayout
 Item {
     id: root
 
+    readonly property int dayCellSize: 28
+    readonly property int weekRows: 6
+
+    implicitWidth: 300
+    implicitHeight: (8 * 2) + 32 + 4 + (8 * 2) + dayCellSize + 2 + (weekRows * dayCellSize)
+
     property int monthShift: 0
     property var viewingDate: CalendarLayout.getDateInXMonthsTime(monthShift)
     property var calendarLayoutData: CalendarLayout.getCalendarLayout(viewingDate, monthShift === 0)
@@ -35,15 +41,14 @@ Item {
 
         StyledRect {
             id: calendarPane
-            variant: "pane"
+            variant: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: Styling.radius(4)
             clip: true
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 4
+                anchors.margins: 8
                 spacing: 4
 
                 RowLayout {
@@ -53,10 +58,10 @@ Item {
 
                     StyledRect {
                         id: titleRect
-                        variant: "internalbg"
+                        variant: "pane"
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        radius: Styling.radius(0)
+                        radius: Styling.radius(-4)
 
                         Text {
                             anchors.centerIn: parent
@@ -74,7 +79,7 @@ Item {
                         variant: leftMouseArea.pressed ? "primary" : (leftMouseArea.containsMouse ? "focus" : "internalbg")
                         Layout.preferredWidth: 32
                         Layout.fillHeight: true
-                        radius: Styling.radius(0)
+                        radius: Styling.radius(-4)
 
                         readonly property color buttonItem: leftMouseArea.pressed ? itemColor : Styling.srItem("overprimary")
 
@@ -100,7 +105,7 @@ Item {
                         variant: rightMouseArea.pressed ? "primary" : (rightMouseArea.containsMouse ? "focus" : "internalbg")
                         Layout.preferredWidth: 32
                         Layout.fillHeight: true
-                        radius: Styling.radius(0)
+                        radius: Styling.radius(-4)
 
                         readonly property color buttonItem: rightMouseArea.pressed ? itemColor : Styling.srItem("overprimary")
 
@@ -123,14 +128,13 @@ Item {
                 }
 
                 StyledRect {
-                    variant: "internalbg"
+                    variant: "transparent"
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     radius: Styling.radius(0)
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: 8
                         spacing: 0
 
                         RowLayout {
@@ -162,7 +166,7 @@ Item {
                             delegate: StyledRect {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignHCenter
-                                Layout.preferredHeight: 28
+                                Layout.preferredHeight: root.dayCellSize
                                 variant: (rowIndex === root.currentWeekRow) ? "pane" : "transparent"
                                 radius: Styling.radius(-4)
 
