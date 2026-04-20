@@ -34,6 +34,8 @@ Item {
     property real workspaceIconSizeShrinked: Math.round(workspaceButtonWidth * 0.5)
     property real workspaceIconOpacityShrinked: 1
     property real workspaceIconMarginShrinked: -4
+    property real wheelDeltaAccumulator: 0
+    property int wheelStepThreshold: 240
     property int workspaceIndexInGroup: Config.workspaces.dynamic ? dynamicWorkspaceIds.indexOf((monitor && monitor.activeWorkspace ? monitor.activeWorkspace.id : undefined) || 1) : ((monitor && monitor.activeWorkspace ? monitor.activeWorkspace.id : undefined) - 1 || 0) % Config.workspaces.shown
     property var occupiedRanges: []
 
@@ -166,10 +168,24 @@ Item {
 
     WheelHandler {
         onWheel: event => {
-            if (event.angleDelta.y < 0)
-                AxctlService.dispatch(`workspace r+1`);
-            else if (event.angleDelta.y > 0)
-                AxctlService.dispatch(`workspace r-1`);
+            // Accumulate wheel deltas so small touchpad steps do not switch workspaces instantly.
+            const delta = event.angleDelta.y;
+            if (delta === 0)
+                return;
+
+            workspacesWidget.wheelDeltaAccumulator += delta;
+
+            while (Math.abs(workspacesWidget.wheelDeltaAccumulator) >= workspacesWidget.wheelStepThreshold) {
+                if (workspacesWidget.wheelDeltaAccumulator < 0) {
+                    AxctlService.dispatch(`workspace r+1`);
+                    workspacesWidget.wheelDeltaAccumulator += workspacesWidget.wheelStepThreshold;
+                } else {
+                    AxctlService.dispatch(`workspace r-1`);
+                    workspacesWidget.wheelDeltaAccumulator -= workspacesWidget.wheelStepThreshold;
+                }
+            }
+
+            event.accepted = true;
         }
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
     }
