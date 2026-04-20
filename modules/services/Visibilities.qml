@@ -18,8 +18,53 @@ Singleton {
     property string currentActiveModule: ""
     property string lastFocusedScreen: ""
     property var contextMenu: null
+    property var openables: []
     property bool playerMenuOpen: false
     readonly property var moduleNames: ["launcher", "dashboard", "overview", "powermenu", "tools", "presets"]
+
+    function registerOpenable(openable) {
+        if (!openable)
+            return;
+        if (openables.indexOf(openable) !== -1)
+            return;
+        openables = openables.concat([openable]);
+    }
+
+    function unregisterOpenable(openable) {
+        if (!openable)
+            return;
+
+        var next = [];
+        for (let i = 0; i < openables.length; i++) {
+            if (openables[i] !== openable)
+                next.push(openables[i]);
+        }
+        openables = next;
+    }
+
+    function closeAllOpenables(exceptOpenable) {
+        for (let i = 0; i < openables.length; i++) {
+            const openable = openables[i];
+            if (!openable || openable === exceptOpenable)
+                continue;
+
+            if (typeof openable.isOpen !== "undefined" && !openable.isOpen)
+                continue;
+            if (typeof openable.visible !== "undefined" && !openable.visible && typeof openable.isOpen === "undefined")
+                continue;
+
+            if (typeof openable.close === "function") {
+                openable.close();
+            }
+        }
+    }
+
+    function notifyOpen(openable) {
+        // Opening a popup/menu should collapse notch modules first.
+        clearAll();
+        currentActiveModule = "";
+        closeAllOpenables(openable);
+    }
 
     function setContextMenu(menu) {
         contextMenu = menu;
@@ -145,6 +190,7 @@ Singleton {
         clearAll();
 
         if (moduleName) {
+            closeAllOpenables(null);
             currentActiveModule = moduleName;
             applyActiveModuleToScreen(focusedScreenName);
         } else {

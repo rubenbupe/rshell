@@ -169,6 +169,8 @@ PopupWindow {
         if (visible)
             return;
 
+        Visibilities.notifyOpen(root);
+
         // Debug positioning
         console.log("BarPopup OPEN - position:", barPosition, "anchorItem:", anchorItem.width, "x", anchorItem.height, "rect.x:", anchor.rect.x, "rect.y:", anchor.rect.y);
 
@@ -221,4 +223,7 @@ PopupWindow {
             root.visible = false;
         }
     }
+
+    Component.onCompleted: Visibilities.registerOpenable(root)
+    Component.onDestruction: Visibilities.unregisterOpenable(root)
 }

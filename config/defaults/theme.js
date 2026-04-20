@@ -10,7 +10,7 @@ var data = {
     "monoFontSize": 14,
     "tintIcons": false,
     "enableCorners": true,
-    "animDuration": 300,
+    "animDuration": 150,
     "shadowOpacity": 0.5,
     "shadowColor": "shadow",
     "shadowXOffset": 0,
@@ -31,7 +31,7 @@ var data = {
         "halftoneBackgroundColor": "background",
         "border": ["surfaceBright", 0],
         "itemColor": "overBackground",
-        "opacity": 1.0
+        "opacity": 0.5
     },
     "srPopup": {
         "label": "Popup",

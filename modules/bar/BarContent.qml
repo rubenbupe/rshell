@@ -25,6 +25,13 @@ Item {
 
     required property ShellScreen screen
 
+    function dismissOpenUi() {
+        // Close notch modules for all screens without depending on focusedMonitor.
+        Visibilities.clearAll();
+        Visibilities.currentActiveModule = "";
+        Visibilities.closeAllOpenables(null);
+    }
+
     property string barPosition: (Config.bar && Config.bar.position !== undefined && ["top", "bottom", "left", "right"].includes(Config.bar.position) ? Config.bar.position : "top")
     property string orientation: barPosition === "left" || barPosition === "right" ? "vertical" : "horizontal"
 
@@ -49,7 +56,6 @@ Item {
         return toplevel.fullscreen === true;
     }
 
-
     // Whether auto-hide should be active (not pinned, or fullscreen forces it)
     readonly property bool shouldAutoHide: !pinned || activeWindowFullscreen
 
@@ -73,7 +79,7 @@ Item {
     readonly property bool notchHoverActive: {
         if (barPosition !== notchPosition)
             return false;
-        
+
         if (notchPanelRef) {
             // UnifiedShellPanel exposes 'notchHoverActive' property alias pointing to notchContent.hoverActive
             // We need to check if that property exists on the panel object
@@ -154,7 +160,7 @@ Item {
                 return "end";
             return "center";
         }
-        
+
         // Vertical always falls back to center logic inside the column but we treat it as appended to group
         return "center";
     }
@@ -174,18 +180,14 @@ Item {
 
     readonly property int contentImplicitWidth: orientation === "horizontal" ? (horizontalLoader.item && horizontalLoader.item.implicitWidth !== undefined ? horizontalLoader.item.implicitWidth : 0) : (verticalLoader.item && verticalLoader.item.implicitWidth !== undefined ? verticalLoader.item.implicitWidth : 0)
     readonly property int contentImplicitHeight: orientation === "horizontal" ? (horizontalLoader.item && horizontalLoader.item.implicitHeight !== undefined ? horizontalLoader.item.implicitHeight : 0) : (verticalLoader.item && verticalLoader.item.implicitHeight !== undefined ? verticalLoader.item.implicitHeight : 0)
-    
+
     readonly property int barTargetWidth: orientation === "vertical" ? (contentImplicitWidth + 2 * barPadding) : 0
     readonly property int barTargetHeight: orientation === "horizontal" ? (contentImplicitHeight + 2 * barPadding) : 0
 
     readonly property bool actualContainBar: (Config.bar && Config.bar.containBar !== undefined ? Config.bar.containBar : false) && (Config.bar && Config.bar.frameEnabled !== undefined ? Config.bar.frameEnabled : false)
-    readonly property int totalBarWidth: barTargetWidth + 
-        ((root.barPosition === "left" || root.orientation === "horizontal") ? (root.frameOffset + root.leftOuterMargin) : 0) +
-        ((root.barPosition === "right" || root.orientation === "horizontal") ? (root.frameOffset + root.rightOuterMargin) : 0)
+    readonly property int totalBarWidth: barTargetWidth + ((root.barPosition === "left" || root.orientation === "horizontal") ? (root.frameOffset + root.leftOuterMargin) : 0) + ((root.barPosition === "right" || root.orientation === "horizontal") ? (root.frameOffset + root.rightOuterMargin) : 0)
 
-    readonly property int totalBarHeight: barTargetHeight + 
-        ((root.barPosition === "top" || root.orientation === "vertical") ? (root.frameOffset + root.topOuterMargin) : 0) +
-        ((root.barPosition === "bottom" || root.orientation === "vertical") ? (root.frameOffset + root.bottomOuterMargin) : 0)
+    readonly property int totalBarHeight: barTargetHeight + ((root.barPosition === "top" || root.orientation === "vertical") ? (root.frameOffset + root.topOuterMargin) : 0) + ((root.barPosition === "bottom" || root.orientation === "vertical") ? (root.frameOffset + root.bottomOuterMargin) : 0)
 
     // Base outer margin for reservation logic (4px + border when !containBar)
     readonly property int baseOuterMargin: barBg.outerMargin
@@ -201,18 +203,24 @@ Item {
         id: barMouseArea
         hoverEnabled: true
 
+        TapHandler {
+            acceptedButtons: Qt.AllButtons
+            onTapped: root.dismissOpenUi()
+        }
+
         // Size includes margins
         width: root.orientation === "horizontal" ? root.width : (root.reveal ? root.totalBarWidth : Math.max((Config.bar && Config.bar.hoverRegionHeight !== undefined ? Config.bar.hoverRegionHeight : 8), 4) + root.frameOffset)
         height: root.orientation === "vertical" ? root.height : (root.reveal ? root.totalBarHeight : Math.max((Config.bar && Config.bar.hoverRegionHeight !== undefined ? Config.bar.hoverRegionHeight : 8), 4) + root.frameOffset)
 
-
         // Position using x/y
         x: {
-            if (root.barPosition === "right") return parent.width - width;
+            if (root.barPosition === "right")
+                return parent.width - width;
             return 0;
         }
         y: {
-            if (root.barPosition === "bottom") return parent.height - height;
+            if (root.barPosition === "bottom")
+                return parent.height - height;
             return 0;
         }
 
@@ -261,7 +269,6 @@ Item {
                 leftMargin: (root.barPosition === "left" || root.orientation === "horizontal") ? (root.frameOffset + root.leftOuterMargin) : 0
                 rightMargin: (root.barPosition === "right" || root.orientation === "horizontal") ? (root.frameOffset + root.rightOuterMargin) : 0
             }
-
 
             // layer.enabled: true
             // layer.effect: Shadow {}
@@ -401,11 +408,11 @@ Item {
                                     id: pinButtonBg
                                     variant: root.pinned ? "primary" : "bg"
                                     enableShadow: root.shadowsEnabled
-                                    
+
                                     // PinButton is typically last in group 1 (unless IntegratedDock follows at start)
                                     property real startRadius: root.innerRadius
                                     property real endRadius: root.dockAtStart ? root.innerRadius : root.outerRadius
-                                    
+
                                     topLeftRadius: startRadius
                                     bottomLeftRadius: startRadius
                                     topRightRadius: endRadius
@@ -645,21 +652,21 @@ Item {
                                     active: (Config.bar && Config.bar.showPinButton !== undefined ? Config.bar.showPinButton : true)
                                     visible: active
                                     Layout.alignment: Qt.AlignHCenter
-                            
+
                                     sourceComponent: Button {
                                         id: pinButtonV
                                         implicitWidth: 36
                                         implicitHeight: 36
-                            
+
                                         background: StyledRect {
                                             id: pinButtonVBg
                                             variant: root.pinned ? "primary" : "bg"
                                             enableShadow: root.shadowsEnabled
-                                        
+
                                             property real startRadius: root.innerRadius
                                             // In vertical, dock is always appended to this group if enabled
                                             property real endRadius: root.integratedDockEnabled ? root.innerRadius : root.outerRadius
-                                        
+
                                             topLeftRadius: startRadius
                                             topRightRadius: startRadius
                                             bottomLeftRadius: endRadius
@@ -721,7 +728,7 @@ Item {
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
                                 enableShadow: root.shadowsEnabled
-                                
+
                                 startRadius: root.innerRadius
                                 endRadius: root.outerRadius
                             }
