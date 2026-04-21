@@ -579,6 +579,7 @@ goodbye)
 	rm -rf "$HOME/.local/src/rshell"
 	rm -rf "$HOME/.local/share/rshell"
 	rm -rf "$HOME/.local/state/rshell"
+	rm -rf "$HOME/.cache/rshell"
 
 	if [ "$REMOVE_CONFIG" = true ]; then
 		rm -rf "$HOME/.config/rshell"
