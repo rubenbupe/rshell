@@ -2,8 +2,8 @@
 set -e
 
 # === Configuration ===
-REPO_URL="https://github.com/Axenide/Ambxst.git"
-INSTALL_PATH="$HOME/.local/src/ambxst"
+REPO_URL="https://github.com/rubenbupe/rshell.git"
+INSTALL_PATH="$HOME/.local/src/rshell"
 BIN_DIR="/usr/local/bin"
 QUICKSHELL_REPO="https://git.outfoxxed.me/outfoxxed/quickshell"
 
@@ -40,7 +40,7 @@ log_info "Detected: $DISTRO"
 declare -A BINARY_CHECK=(
   ["matugen"]="matugen"
   ["quickshell"]="qs"
-  ["kitty"]="kitty"
+  ["ghostty"]="ghostty"
   ["tmux"]="tmux"
   ["fuzzel"]="fuzzel"
   ["brightnessctl"]="brightnessctl"
@@ -95,14 +95,14 @@ filter_packages() {
 install_dependencies() {
   case "$DISTRO" in
   nixos)
-    local FLAKE_URI="${1:-github:Axenide/Ambxst}"
+    local FLAKE_URI="${1:-github:rubenbupe/rshell}"
     nix profile list | grep -q "ddcutil" && nix profile remove ddcutil 2>/dev/null || true
 
-    if nix profile list | grep -q "Ambxst"; then
-      log_info "Updating Ambxst..."
-      nix profile upgrade Ambxst --refresh --impure
+    if nix profile list | grep -q "rshell"; then
+      log_info "Updating rshell..."
+      nix profile upgrade rshell --refresh --impure
     else
-      log_info "Installing Ambxst..."
+      log_info "Installing rshell..."
       nix profile add "$FLAKE_URI" --impure
     fi
     ;;
@@ -116,7 +116,7 @@ install_dependencies() {
     yes | sudo dnf copr enable iucar/cran
 
     local PKGS=(
-      kitty tmux fuzzel network-manager-applet blueman
+      ghostty tmux fuzzel network-manager-applet blueman
       pipewire wireplumber easyeffects playerctl
       qt6-qtbase qt6-qtdeclarative qt6-qtwayland qt6-qtsvg qt6-qttools
       qt6-qtimageformats qt6-qtmultimedia qt6-qtshadertools
@@ -164,7 +164,7 @@ install_dependencies() {
     fi
 
     local PKGS=(
-      kitty tmux fuzzel network-manager-applet blueman
+      ghostty tmux fuzzel network-manager-applet blueman
       pipewire wireplumber pavucontrol easyeffects ffmpeg x264 playerctl
       qt6-base qt6-declarative qt6-wayland qt6-svg qt6-tools qt6-imageformats qt6-multimedia qt6-shadertools
       libwebp libavif syntax-highlighting breeze-icons hicolor-icon-theme
@@ -218,10 +218,10 @@ install_phosphor_fonts() {
 
 # === Migration ===
 migrate_old_paths() {
-  log_info "Checking for old Ambxst paths..."
+  log_info "Checking for old rshell paths..."
 
   # Source migration (PascalCase -> lowercase)
-  local OLD_SRC="$HOME/Ambxst"
+  local OLD_SRC="$HOME/Rshell"
   if [[ -d "$OLD_SRC" && ! -d "$INSTALL_PATH" ]]; then
     log_info "Migrating source: $OLD_SRC -> $INSTALL_PATH"
     mkdir -p "$(dirname "$INSTALL_PATH")"
@@ -229,39 +229,39 @@ migrate_old_paths() {
   fi
 
   # Config migration
-  local OLD_CONFIG="$HOME/.config/Ambxst"
-  local NEW_CONFIG="$HOME/.config/ambxst"
+  local OLD_CONFIG="$HOME/.config/Rshell"
+  local NEW_CONFIG="$HOME/.config/rshell"
   if [[ -d "$OLD_CONFIG" && ! -d "$NEW_CONFIG" ]]; then
     log_info "Migrating config: $OLD_CONFIG -> $NEW_CONFIG"
     mv "$OLD_CONFIG" "$NEW_CONFIG"
   fi
 
   # Share migration
-  local OLD_SHARE="$HOME/.local/share/Ambxst"
-  local NEW_SHARE="$HOME/.local/share/ambxst"
+  local OLD_SHARE="$HOME/.local/share/Rshell"
+  local NEW_SHARE="$HOME/.local/share/rshell"
   if [[ -d "$OLD_SHARE" && ! -d "$NEW_SHARE" ]]; then
     log_info "Migrating share: $OLD_SHARE -> $NEW_SHARE"
     mv "$OLD_SHARE" "$NEW_SHARE"
   fi
 
   # State migration
-  local OLD_STATE="$HOME/.local/state/Ambxst"
-  local NEW_STATE="$HOME/.local/state/ambxst"
+  local OLD_STATE="$HOME/.local/state/Rshell"
+  local NEW_STATE="$HOME/.local/state/rshell"
   if [[ -d "$OLD_STATE" && ! -d "$NEW_STATE" ]]; then
     log_info "Migrating state: $OLD_STATE -> $NEW_STATE"
     mv "$OLD_STATE" "$NEW_STATE"
   fi
 
   # Cache migration
-  local OLD_CACHE_DIR="$HOME/.cache/Ambxst"
-  local NEW_CACHE_DIR="$HOME/.cache/ambxst"
+  local OLD_CACHE_DIR="$HOME/.cache/Rshell"
+  local NEW_CACHE_DIR="$HOME/.cache/rshell"
   if [[ -d "$OLD_CACHE_DIR" && ! -d "$NEW_CACHE_DIR" ]]; then
     log_info "Migrating cache: $OLD_CACHE_DIR -> $NEW_CACHE_DIR"
     mv "$OLD_CACHE_DIR" "$NEW_CACHE_DIR"
   fi
 
   # Legacy share -> cache migration (Wallpapers & Thumbnails)
-  local NEW_CACHE="$HOME/.cache/ambxst"
+  local NEW_CACHE="$HOME/.cache/rshell"
   if [[ -d "$NEW_SHARE" ]]; then
     mkdir -p "$NEW_CACHE"
 
@@ -279,7 +279,7 @@ migrate_old_paths() {
   # Config structure warning
   if [[ -f "$NEW_CONFIG/config.json" && ! -d "$NEW_CONFIG/config" ]]; then
     log_warn "Old single-file config detected."
-    log_info "Ambxst now uses a multi-file configuration in $NEW_CONFIG/config/"
+    log_info "rshell now uses a multi-file configuration in $NEW_CONFIG/config/"
     log_info "Your old config.json remains at $NEW_CONFIG/config.json for reference."
   fi
 }
@@ -289,7 +289,7 @@ setup_repo() {
   [[ "$DISTRO" == "nixos" ]] && return
 
   if [[ ! -d "$INSTALL_PATH" ]]; then
-    log_info "Cloning Ambxst to $INSTALL_PATH..."
+    log_info "Cloning rshell to $INSTALL_PATH..."
     mkdir -p "$(dirname "$INSTALL_PATH")"
     git clone "$REPO_URL" "$INSTALL_PATH"
     return
@@ -361,15 +361,15 @@ install_quickshell() {
   log_success "Quickshell installed to ~/.local/bin/qs"
 }
 
-install_axctl() {
+install_rctl() {
   if [[ "$DISTRO" == "nixos" ]]; then
-    log_info "Skipping axctl install on NixOS (managed by flake)"
+    log_info "Skipping rctl install on NixOS (managed by flake)"
     return
   fi
 
-  log_info "Installing axctl..."
-  curl -L get.axeni.de/axctl | sh
-  log_success "axctl installed"
+  log_info "Installing rctl..."
+  curl -L https://raw.githubusercontent.com/rubenbupe/rctl/refs/heads/main/install.sh | sh
+  log_success "rctl installed"
 }
 
 # === Python Tools ===
@@ -435,10 +435,10 @@ configure_services() {
 setup_launcher() {
   [[ "$DISTRO" == "nixos" ]] && return
 
-  [[ -f "$HOME/.local/bin/ambxst" ]] && rm -f "$HOME/.local/bin/ambxst"
+  [[ -f "$HOME/.local/bin/rshell" ]] && rm -f "$HOME/.local/bin/rshell"
 
   sudo mkdir -p "$BIN_DIR"
-  local LAUNCHER="$BIN_DIR/ambxst"
+  local LAUNCHER="$BIN_DIR/rshell"
 
   log_info "Creating launcher at $LAUNCHER..."
   sudo tee "$LAUNCHER" >/dev/null <<-EOF
@@ -455,7 +455,7 @@ setup_launcher() {
 # === Main ===
 migrate_old_paths
 install_dependencies "$1"
-install_axctl
+install_rctl
 setup_repo
 install_quickshell
 install_python_tools
@@ -464,4 +464,4 @@ setup_launcher
 
 echo ""
 log_success "Installation complete!"
-[[ "$DISTRO" != "nixos" ]] && echo -e "Run ${GREEN}ambxst${NC} to start."
+[[ "$DISTRO" != "nixos" ]] && echo -e "Run ${GREEN}rshell${NC} to start."

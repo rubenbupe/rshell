@@ -1,19 +1,19 @@
 # THEME KNOWLEDGE BASE
 
 ## OVERVIEW
-Dynamic theming layer providing colors, icons, and style utilities as singletons. Also generates config files for external apps (Kitty, GTK, Discord, etc.) from the active color palette.
+Dynamic theming layer providing colors, icons, and style utilities as singletons. Also generates config files for external apps (Ghostty, GTK, Discord, etc.) from the active color palette.
 
 ## STRUCTURE
 | File | Type | Role |
 |------|------|------|
-| `Colors.qml` | Singleton | Watches `~/.cache/ambxst/colors.json`. Provides reactive palette (`primary`, `secondary`, `surface`, `onSurface`, etc.) |
+| `Colors.qml` | Singleton | Watches `~/.cache/rshell/colors.json`. Provides reactive palette (`primary`, `secondary`, `surface`, `onSurface`, etc.) |
 | `Styling.qml` | Singleton | `radius(offset)`, `fontSize(offset)`, `getStyledRectConfig(variant)`. Animation durations, spacing constants |
 | `Icons.qml` | Singleton | Character map for Phosphor-Bold icon font (`lock`, `power`, `layout`, etc.) |
 | `*Generator.qml` | Components | Translate `Colors` palette into config files for other apps |
 
 ### Generators
 - `GtkGenerator.qml` — GTK3/4 CSS theme
-- `KittyGenerator.qml` — Kitty terminal colors
+- `GhosttyGenerator.qml` — Ghostty terminal colors
 - `DiscordGenerator.qml` — Discord CSS injection
 - `NvChadGenerator.qml` — NvChad/Neovim theme
 - `PywalGenerator.qml` — Pywal color export
@@ -22,7 +22,7 @@ Dynamic theming layer providing colors, icons, and style utilities as singletons
 ## WHERE TO LOOK
 | Task | Location | Notes |
 |------|----------|-------|
-| **Change colors** | `Colors.qml` | Modify `~/.cache/ambxst/colors.json` or change color preset |
+| **Change colors** | `Colors.qml` | Modify `~/.cache/rshell/colors.json` or change color preset |
 | **Add StyledRect variant** | `Styling.qml` → `getStyledRectConfig()` | Returns gradient, border, opacity config per variant |
 | **Adjust radius/font** | `Styling.qml` | `radius(offset)` and `fontSize(offset)` apply global scaling |
 | **Add icon** | `Icons.qml` | Add Phosphor-Bold unicode mapping |

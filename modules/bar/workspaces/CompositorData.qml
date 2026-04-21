@@ -17,50 +17,50 @@ Singleton {
     property var workspaceWindowsMap: ({})
 
     function updateWindowList() {
-        // No-op: state is now pushed inline via axctl subscribe events
+        // No-op: state is now pushed inline via rctl subscribe events
     }
 
     function updateMaps() {
-        let occupationMap = {}
-        let windowsMap = {}
+        let occupationMap = {};
+        let windowsMap = {};
         for (var i = 0; i < root.windowList.length; ++i) {
-            var win = root.windowList[i]
-            let wsId = win.workspace.id
-            occupationMap[wsId] = true
+            var win = root.windowList[i];
+            let wsId = win.workspace.id;
+            occupationMap[wsId] = true;
             if (!windowsMap[wsId]) {
-                windowsMap[wsId] = []
+                windowsMap[wsId] = [];
             }
-            windowsMap[wsId].push(win)
+            windowsMap[wsId].push(win);
         }
-        root.workspaceOccupationMap = occupationMap
-        root.workspaceWindowsMap = windowsMap
+        root.workspaceOccupationMap = occupationMap;
+        root.workspaceWindowsMap = windowsMap;
     }
 
     Component.onCompleted: {
-        updateWindowList()
+        updateWindowList();
     }
 
     Connections {
-        target: AxctlService.clients
+        target: RctlService.clients
 
         function onValuesChanged() {
-            root.windowList = AxctlService.clients.values
-            let tempWinByAddress = {}
+            root.windowList = RctlService.clients.values;
+            let tempWinByAddress = {};
             for (var i = 0; i < root.windowList.length; ++i) {
-                var win = root.windowList[i]
-                tempWinByAddress[win.address] = win
+                var win = root.windowList[i];
+                tempWinByAddress[win.address] = win;
             }
-            root.windowByAddress = tempWinByAddress
-            root.addresses = root.windowList.map((win) => win.address)
-            updateMaps()
+            root.windowByAddress = tempWinByAddress;
+            root.addresses = root.windowList.map(win => win.address);
+            updateMaps();
         }
     }
 
     Connections {
-        target: AxctlService.monitors
+        target: RctlService.monitors
 
         function onValuesChanged() {
-            root.monitors = AxctlService.monitors.values
+            root.monitors = RctlService.monitors.values;
         }
     }
 }

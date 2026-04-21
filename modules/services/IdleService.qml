@@ -10,9 +10,9 @@ Singleton {
     id: root
 
     // General Idle Settings
-    property string lockCmd: Config.system.idle.general.lock_cmd ?? "ambxst lock"
+    property string lockCmd: Config.system.idle.general.lock_cmd ?? "rshell lock"
     property string beforeSleepCmd: Config.system.idle.general.before_sleep_cmd ?? "loginctl lock-session"
-    property string afterSleepCmd: Config.system.idle.general.after_sleep_cmd ?? "ambxst screen on"
+    property string afterSleepCmd: Config.system.idle.general.after_sleep_cmd ?? "rshell screen on"
 
     // Login Lock Daemon
     // Helper script that listens to Lock signal and executes lockCmd from config
@@ -41,7 +41,7 @@ Singleton {
         id: sleepMonitorProc
         running: true
         command: ["bash", Qt.resolvedUrl("../../scripts/sleep_monitor.sh").toString().replace("file://", "")]
-        
+
         stdout: SplitParser {
             onRead: data => {
                 const signal = data.trim();
@@ -99,11 +99,12 @@ Singleton {
     }
 
     function executeCommand(cmd) {
-        if (!cmd) return;
-        
+        if (!cmd)
+            return;
+
         // Escape backslashes and quotes for the QML string
         let escapedCmd = cmd.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-        
+
         try {
             let proc = Qt.createQmlObject(`
                 import Quickshell.Io

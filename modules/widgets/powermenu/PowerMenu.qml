@@ -41,8 +41,8 @@ ActionGrid {
         },
         {
             icon: Icons.logout,
-            tooltip: "Exit AxctlService",
-            command: "axctl system exit"
+            tooltip: "Exit RctlService",
+            command: "rctl system exit"
         },
         {
             icon: Icons.reboot,

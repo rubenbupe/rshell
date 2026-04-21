@@ -48,8 +48,8 @@ PanelWindow {
     Process {
         id: cursorPos
         running: false
-        command: ["axctl", "system", "get-cursor-position"]
-        
+        command: ["rctl", "system", "get-cursor-position"]
+
         stdout: StdioCollector {
             onStreamFinished: {
                 let coords = text.trim().split(",");
@@ -78,33 +78,41 @@ PanelWindow {
             itemHeight: contextWindow.itemHeight
 
             function cleanMenuText(text) {
-                if (!text || text === "") return "";
-                
+                if (!text || text === "")
+                    return "";
+
                 text = String(text);
-                
+
                 if (text.startsWith(":/// ")) {
                     text = text.substring(5);
                 }
-                
+
                 return text.trim();
             }
 
             function isValidIcon(icon) {
-                if (!icon || icon === "") return false;
-                
-                if (icon.length > 4) return false;
-                if (icon.includes("/") || icon.includes(".") || icon.includes(":")) return false;
-                
+                if (!icon || icon === "")
+                    return false;
+
+                if (icon.length > 4)
+                    return false;
+                if (icon.includes("/") || icon.includes(".") || icon.includes(":"))
+                    return false;
+
                 return true;
             }
 
             function isImageIcon(icon) {
-                if (!icon || icon === "") return false;
-                
-                if (icon.includes("/") || icon.includes(".")) return true;
-                if (icon.startsWith("file://") || icon.startsWith("http")) return true;
-                if (icon.length > 10) return true;
-                
+                if (!icon || icon === "")
+                    return false;
+
+                if (icon.includes("/") || icon.includes("."))
+                    return true;
+                if (icon.startsWith("file://") || icon.startsWith("http"))
+                    return true;
+                if (icon.length > 10)
+                    return true;
+
                 return false;
             }
 
@@ -121,21 +129,21 @@ PanelWindow {
                 if (contextWindow.customItems && contextWindow.customItems.length > 0) {
                     console.log("Using custom items:", contextWindow.customItems.length);
                     return contextWindow.customItems.map(item => ({
-                        text: item.text || "",
-                        icon: item.icon || "",
-                        isImageIcon: item.isImageIcon || false,
-                        enabled: item.enabled !== false,
-                        isSeparator: item.isSeparator || false,
-                        highlightColor: item.highlightColor,
-                        textColor: item.textColor,
-                        onTriggered: function() {
-                            let callback = item.onTriggered;
-                            contextWindow.close();
-                            if (callback) {
-                                Qt.callLater(callback);
-                            }
-                        }
-                    }));
+                                text: item.text || "",
+                                icon: item.icon || "",
+                                isImageIcon: item.isImageIcon || false,
+                                enabled: item.enabled !== false,
+                                isSeparator: item.isSeparator || false,
+                                highlightColor: item.highlightColor,
+                                textColor: item.textColor,
+                                onTriggered: function () {
+                                    let callback = item.onTriggered;
+                                    contextWindow.close();
+                                    if (callback) {
+                                        Qt.callLater(callback);
+                                    }
+                                }
+                            }));
                 }
 
                 if (!contextWindow.menuHandle) {
@@ -170,10 +178,10 @@ PanelWindow {
                         } else {
                             let originalText = entry.text;
                             let cleanText = menu.cleanMenuText(originalText);
-                            
+
                             let iconToUse = "";
                             let useImageIcon = false;
-                            
+
                             if (entry.icon) {
                                 if (menu.isValidIcon(entry.icon)) {
                                     iconToUse = entry.icon;
@@ -235,8 +243,10 @@ PanelWindow {
         menuHandle = null;
         customItems = items;
         menuType = type || "";
-        if (width !== undefined) menuWidth = width;
-        if (height !== undefined) itemHeight = height;
+        if (width !== undefined)
+            menuWidth = width;
+        if (height !== undefined)
+            itemHeight = height;
         visible = true;
         WlrLayershell.keyboardFocus = WlrKeyboardFocus.Exclusive;
         if (menuType === "player") {

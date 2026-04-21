@@ -18,7 +18,7 @@ Item {
 
     required property ShellScreen screen
     property bool unifiedEffectActive: false
-    
+
     // Pass pinned state from parent or config
     readonly property bool keepHidden: Config.dock?.keepHidden ?? false
     property bool pinned: Config.dock?.pinnedOnStartup ?? false
@@ -44,7 +44,7 @@ Item {
         switch (userPosition) {
         case "bottom":
             if (notchPosition === "bottom" || barPosition === "bottom") {
-                 return (barPosition === "left") ? "right" : "left";
+                return (barPosition === "left") ? "right" : "left";
             }
             return "left";
         case "left":
@@ -80,20 +80,21 @@ Item {
     }
 
     // Monitor reference and refrence to toplevels on monitor
-    readonly property var compositorMonitor: AxctlService.monitorFor(screen)
-    readonly property var toplevels: (!compositorMonitor || !compositorMonitor.activeWorkspace || !AxctlService.clients.values) ? [] : AxctlService.clients.values.filter(c => c.workspace.id === compositorMonitor.activeWorkspace.id)
+    readonly property var compositorMonitor: RctlService.monitorFor(screen)
+    readonly property var toplevels: (!compositorMonitor || !compositorMonitor.activeWorkspace || !RctlService.clients.values) ? [] : RctlService.clients.values.filter(c => c.workspace.id === compositorMonitor.activeWorkspace.id)
 
     // Check if there are any windows on the current monitor and workspace
     readonly property bool hasWindows: toplevels.length > 0
 
     // Fullscreen detection
     readonly property bool activeWindowFullscreen: {
-        if (!compositorMonitor || !toplevels) return false;
+        if (!compositorMonitor || !toplevels)
+            return false;
 
         // Check all toplevels on active workspace
         for (var i = 0; i < toplevels.length; i++) {
             if (toplevels[i].fullscreen == true) {
-               return true;
+                return true;
             }
         }
         return false;
@@ -112,7 +113,7 @@ Item {
             return (Config.dock?.hoverToReveal && dockMouseArea.containsMouse);
         }
 
-        return root.pinned || (Config.dock?.hoverToReveal && dockMouseArea.containsMouse) || !hasWindows
+        return root.pinned || (Config.dock?.hoverToReveal && dockMouseArea.containsMouse) || !hasWindows;
     }
 
     readonly property int totalMargin: root.windowSideMargin + root.edgeSideMargin
@@ -146,14 +147,17 @@ Item {
         x: {
             const base = root.isBottom ? (parent.width - width) / 2 : (root.isLeft ? 0 : parent.width - width);
             // If left, keep at 0 to cover the frame area. If right, keep at right edge.
-            if (root.isLeft) return 0;
-            if (root.isRight) return parent.width - width;
+            if (root.isLeft)
+                return 0;
+            if (root.isRight)
+                return parent.width - width;
             return base;
         }
         y: {
             const base = root.isVertical ? (parent.height - height) / 2 : parent.height - height;
             // If bottom, keep at bottom edge to cover the frame area.
-            if (root.isBottom) return parent.height - height;
+            if (root.isBottom)
+                return parent.height - height;
             return base;
         }
 
@@ -214,13 +218,16 @@ Item {
             // Position using x/y
             x: {
                 const base = root.isBottom ? (parent.width - width) / 2 : (root.isLeft ? root.edgeSideMargin : parent.width - width - root.edgeSideMargin);
-                if (root.isLeft) return base + root.frameOffset;
-                if (root.isRight) return base - root.frameOffset;
+                if (root.isLeft)
+                    return base + root.frameOffset;
+                if (root.isRight)
+                    return base - root.frameOffset;
                 return base;
             }
             y: {
                 const base = root.isVertical ? (parent.height - height) / 2 : parent.height - height - root.edgeSideMargin;
-                if (root.isBottom) return base - root.frameOffset;
+                if (root.isBottom)
+                    return base - root.frameOffset;
                 return base;
             }
 
@@ -287,27 +294,39 @@ Item {
                     readonly property int fullRadius: Styling.radius(4)
 
                     topLeftRadius: {
-                        if (root.isBottom) return fullRadius;
-                        if (root.isLeft) return 0;
-                        if (root.isRight) return fullRadius;
+                        if (root.isBottom)
+                            return fullRadius;
+                        if (root.isLeft)
+                            return 0;
+                        if (root.isRight)
+                            return fullRadius;
                         return fullRadius;
                     }
                     topRightRadius: {
-                        if (root.isBottom) return fullRadius;
-                        if (root.isLeft) return fullRadius;
-                        if (root.isRight) return 0;
+                        if (root.isBottom)
+                            return fullRadius;
+                        if (root.isLeft)
+                            return fullRadius;
+                        if (root.isRight)
+                            return 0;
                         return fullRadius;
                     }
                     bottomLeftRadius: {
-                        if (root.isBottom) return 0;
-                        if (root.isLeft) return 0;
-                        if (root.isRight) return fullRadius;
+                        if (root.isBottom)
+                            return 0;
+                        if (root.isLeft)
+                            return 0;
+                        if (root.isRight)
+                            return fullRadius;
                         return fullRadius;
                     }
                     bottomRightRadius: {
-                        if (root.isBottom) return 0;
-                        if (root.isLeft) return fullRadius;
-                        if (root.isRight) return 0;
+                        if (root.isBottom)
+                            return 0;
+                        if (root.isLeft)
+                            return fullRadius;
+                        if (root.isRight)
+                            return 0;
                         return fullRadius;
                     }
                 }
@@ -333,20 +352,27 @@ Item {
                 RoundCorner {
                     id: corner1
                     x: {
-                        if (root.isBottom) return 0;
-                        if (root.isLeft) return 0;
-                        if (root.isRight) return parent.width - dockContainer.cornerSize;
+                        if (root.isBottom)
+                            return 0;
+                        if (root.isLeft)
+                            return 0;
+                        if (root.isRight)
+                            return parent.width - dockContainer.cornerSize;
                         return 0;
                     }
                     y: {
-                        if (root.isBottom) return parent.height - dockContainer.cornerSize;
+                        if (root.isBottom)
+                            return parent.height - dockContainer.cornerSize;
                         return 0;
                     }
                     size: Math.max(dockContainer.cornerSize, 1)
                     corner: {
-                        if (root.isBottom) return RoundCorner.CornerEnum.BottomRight;
-                        if (root.isLeft) return RoundCorner.CornerEnum.BottomLeft;
-                        if (root.isRight) return RoundCorner.CornerEnum.BottomRight;
+                        if (root.isBottom)
+                            return RoundCorner.CornerEnum.BottomRight;
+                        if (root.isLeft)
+                            return RoundCorner.CornerEnum.BottomLeft;
+                        if (root.isRight)
+                            return RoundCorner.CornerEnum.BottomRight;
                         return RoundCorner.CornerEnum.BottomRight;
                     }
                     color: "white"
@@ -355,17 +381,23 @@ Item {
                 RoundCorner {
                     id: corner2
                     x: {
-                        if (root.isBottom) return parent.width - dockContainer.cornerSize;
-                        if (root.isLeft) return 0;
-                        if (root.isRight) return parent.width - dockContainer.cornerSize;
+                        if (root.isBottom)
+                            return parent.width - dockContainer.cornerSize;
+                        if (root.isLeft)
+                            return 0;
+                        if (root.isRight)
+                            return parent.width - dockContainer.cornerSize;
                         return 0;
                     }
                     y: parent.height - dockContainer.cornerSize
                     size: Math.max(dockContainer.cornerSize, 1)
                     corner: {
-                        if (root.isBottom) return RoundCorner.CornerEnum.BottomLeft;
-                        if (root.isLeft) return RoundCorner.CornerEnum.TopLeft;
-                        if (root.isRight) return RoundCorner.CornerEnum.TopRight;
+                        if (root.isBottom)
+                            return RoundCorner.CornerEnum.BottomLeft;
+                        if (root.isLeft)
+                            return RoundCorner.CornerEnum.TopLeft;
+                        if (root.isRight)
+                            return RoundCorner.CornerEnum.TopRight;
                         return RoundCorner.CornerEnum.BottomLeft;
                     }
                     color: "white"
@@ -681,11 +713,13 @@ Item {
                 visible: root.isDefault && borderWidth > 0 && !root.unifiedEffectActive
 
                 onPaint: {
-                    if (!root.isDefault) return;
+                    if (!root.isDefault)
+                        return;
                     var ctx = getContext("2d");
                     ctx.clearRect(0, 0, width, height);
 
-                    if (borderWidth <= 0) return;
+                    if (borderWidth <= 0)
+                        return;
 
                     ctx.strokeStyle = borderColor;
                     ctx.lineWidth = borderWidth;
@@ -709,21 +743,29 @@ Item {
                             ctx.moveTo(offset, height - offset);
                             ctx.arc(offset, height - cs, filletRadius, Math.PI / 2, 0, true);
                             ctx.lineTo(cs, tl > 0 ? tl + offset : offset);
-                            if (tl > 0) ctx.arcTo(cs, offset, cs + tl, offset, tl - offset);
-                            else ctx.lineTo(cs, offset);
+                            if (tl > 0)
+                                ctx.arcTo(cs, offset, cs + tl, offset, tl - offset);
+                            else
+                                ctx.lineTo(cs, offset);
                             ctx.lineTo(width - cs - tr, offset);
-                            if (tr > 0) ctx.arcTo(width - cs, offset, width - cs, offset + tr, tr - offset);
-                            else ctx.lineTo(width - cs, offset);
+                            if (tr > 0)
+                                ctx.arcTo(width - cs, offset, width - cs, offset + tr, tr - offset);
+                            else
+                                ctx.lineTo(width - cs, offset);
                             ctx.lineTo(width - cs, height - cs);
                             ctx.arc(width - offset, height - cs, filletRadius, Math.PI, Math.PI / 2, true);
                         } else {
                             ctx.moveTo(offset, height - offset);
                             ctx.lineTo(offset, tl > 0 ? tl + offset : offset);
-                            if (tl > 0) ctx.arcTo(offset, offset, offset + tl, offset, tl - offset);
-                            else ctx.lineTo(offset, offset);
+                            if (tl > 0)
+                                ctx.arcTo(offset, offset, offset + tl, offset, tl - offset);
+                            else
+                                ctx.lineTo(offset, offset);
                             ctx.lineTo(width - tr - offset, offset);
-                            if (tr > 0) ctx.arcTo(width - offset, offset, width - offset, offset + tr, tr - offset);
-                            else ctx.lineTo(width - offset, offset);
+                            if (tr > 0)
+                                ctx.arcTo(width - offset, offset, width - offset, offset + tr, tr - offset);
+                            else
+                                ctx.lineTo(width - offset, offset);
                             ctx.lineTo(width - offset, height - offset);
                         }
                     } else if (root.isLeft) {
@@ -731,21 +773,29 @@ Item {
                             ctx.moveTo(offset, offset);
                             ctx.arc(cs, offset, filletRadius, Math.PI, Math.PI / 2, true);
                             ctx.lineTo(width - tr - offset, cs);
-                            if (tr > 0) ctx.arcTo(width - offset, cs, width - offset, cs + tr, tr - offset);
-                            else ctx.lineTo(width - offset, cs);
+                            if (tr > 0)
+                                ctx.arcTo(width - offset, cs, width - offset, cs + tr, tr - offset);
+                            else
+                                ctx.lineTo(width - offset, cs);
                             ctx.lineTo(width - offset, height - cs - br);
-                            if (br > 0) ctx.arcTo(width - offset, height - cs, width - offset - br, height - cs, br - offset);
-                            else ctx.lineTo(width - offset, height - cs);
+                            if (br > 0)
+                                ctx.arcTo(width - offset, height - cs, width - offset - br, height - cs, br - offset);
+                            else
+                                ctx.lineTo(width - offset, height - cs);
                             ctx.lineTo(cs, height - cs);
                             ctx.arc(cs, height - offset, filletRadius, 3 * Math.PI / 2, Math.PI, true);
                         } else {
                             ctx.moveTo(offset, offset);
                             ctx.lineTo(width - tr - offset, offset);
-                            if (tr > 0) ctx.arcTo(width - offset, offset, width - offset, offset + tr, tr - offset);
-                            else ctx.lineTo(width - offset, offset);
+                            if (tr > 0)
+                                ctx.arcTo(width - offset, offset, width - offset, offset + tr, tr - offset);
+                            else
+                                ctx.lineTo(width - offset, offset);
                             ctx.lineTo(width - offset, height - br - offset);
-                            if (br > 0) ctx.arcTo(width - offset, height - offset, width - offset - br, height - offset, br - offset);
-                            else ctx.lineTo(width - offset, height - offset);
+                            if (br > 0)
+                                ctx.arcTo(width - offset, height - offset, width - offset - br, height - offset, br - offset);
+                            else
+                                ctx.lineTo(width - offset, height - offset);
                             ctx.lineTo(offset, height - offset);
                         }
                     } else if (root.isRight) {
@@ -753,21 +803,29 @@ Item {
                             ctx.moveTo(width - offset, offset);
                             ctx.arc(width - cs, offset, filletRadius, 0, Math.PI / 2, false);
                             ctx.lineTo(tl + offset, cs);
-                            if (tl > 0) ctx.arcTo(offset, cs, offset, cs + tl, tl - offset);
-                            else ctx.lineTo(offset, cs);
+                            if (tl > 0)
+                                ctx.arcTo(offset, cs, offset, cs + tl, tl - offset);
+                            else
+                                ctx.lineTo(offset, cs);
                             ctx.lineTo(offset, height - cs - bl);
-                            if (bl > 0) ctx.arcTo(offset, height - cs, offset + bl, height - cs, bl - offset);
-                            else ctx.lineTo(offset, height - cs);
+                            if (bl > 0)
+                                ctx.arcTo(offset, height - cs, offset + bl, height - cs, bl - offset);
+                            else
+                                ctx.lineTo(offset, height - cs);
                             ctx.lineTo(width - cs, height - cs);
                             ctx.arc(width - cs, height - offset, filletRadius, 3 * Math.PI / 2, 2 * Math.PI, false);
                         } else {
                             ctx.moveTo(width - offset, offset);
                             ctx.lineTo(tl + offset, offset);
-                            if (tl > 0) ctx.arcTo(offset, offset, offset, offset + tl, tl - offset);
-                            else ctx.lineTo(offset, offset);
+                            if (tl > 0)
+                                ctx.arcTo(offset, offset, offset, offset + tl, tl - offset);
+                            else
+                                ctx.lineTo(offset, offset);
                             ctx.lineTo(offset, height - bl - offset);
-                            if (bl > 0) ctx.arcTo(offset, height - offset, offset + bl, height - offset, bl - offset);
-                            else ctx.lineTo(offset, height - offset);
+                            if (bl > 0)
+                                ctx.arcTo(offset, height - offset, offset + bl, height - offset, bl - offset);
+                            else
+                                ctx.lineTo(offset, height - offset);
                             ctx.lineTo(width - offset, height - offset);
                         }
                     }
@@ -777,20 +835,30 @@ Item {
 
                 Connections {
                     target: Colors
-                    function onPrimaryChanged() { outlineCanvas.requestPaint(); }
+                    function onPrimaryChanged() {
+                        outlineCanvas.requestPaint();
+                    }
                 }
                 Connections {
                     target: Config.theme.srBg
-                    function onBorderChanged() { outlineCanvas.requestPaint(); }
+                    function onBorderChanged() {
+                        outlineCanvas.requestPaint();
+                    }
                 }
                 Connections {
                     target: root
-                    function onPositionChanged() { outlineCanvas.requestPaint(); }
+                    function onPositionChanged() {
+                        outlineCanvas.requestPaint();
+                    }
                 }
                 Connections {
                     target: dockContainer
-                    function onWidthChanged() { outlineCanvas.requestPaint(); }
-                    function onHeightChanged() { outlineCanvas.requestPaint(); }
+                    function onWidthChanged() {
+                        outlineCanvas.requestPaint();
+                    }
+                    function onHeightChanged() {
+                        outlineCanvas.requestPaint();
+                    }
                 }
             }
         }

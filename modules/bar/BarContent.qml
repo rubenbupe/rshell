@@ -45,8 +45,8 @@ Item {
     property bool pinned: (Config.bar && Config.bar.pinnedOnStartup !== undefined ? Config.bar.pinnedOnStartup : true)
 
     // Monitor reference and reference to toplevels on monitor
-    readonly property var compositorMonitor: AxctlService.monitorFor(screen)
-    readonly property var toplevels: (!compositorMonitor || !compositorMonitor.activeWorkspace || !AxctlService.clients.values) ? [] : AxctlService.clients.values.filter(c => c.workspace.id === compositorMonitor.activeWorkspace.id)
+    readonly property var compositorMonitor: RctlService.monitorFor(screen)
+    readonly property var toplevels: (!compositorMonitor || !compositorMonitor.activeWorkspace || !RctlService.clients.values) ? [] : RctlService.clients.values.filter(c => c.workspace.id === compositorMonitor.activeWorkspace.id)
 
     // Fullscreen detection - use ToplevelManager (native Wayland) for reliable detection
     readonly property bool activeWindowFullscreen: {
@@ -514,18 +514,33 @@ Item {
                             visible: !(root.orientation === "horizontal" && integratedDockEnabled)
                         }
 
-                        PresetsButton {
-                            id: presetsButton
-                            startRadius: root.dockAtEnd ? root.innerRadius : root.outerRadius
-                            endRadius: root.innerRadius
-                            enableShadow: root.shadowsEnabled
+                        Loader {
+                            active: (Config.bar && Config.bar.showPresetsButton !== undefined ? Config.bar.showPresetsButton : true)
+                            visible: active
+                            Layout.alignment: Qt.AlignVCenter
+                            sourceComponent: PresetsButton {
+                                id: presetsButton
+                                implicitWidth: 36
+                                implicitHeight: 36
+                                startRadius: root.dockAtEnd ? root.innerRadius : root.outerRadius
+                                endRadius: root.innerRadius
+                                enableShadow: root.shadowsEnabled
+                            }
                         }
 
-                        ToolsButton {
-                            id: toolsButton
-                            startRadius: root.innerRadius
-                            endRadius: root.innerRadius
-                            enableShadow: root.shadowsEnabled
+                        Loader {
+                            active: (Config.bar && Config.bar.showToolsButton !== undefined ? Config.bar.showToolsButton : true)
+                            visible: active
+                            Layout.alignment: Qt.AlignVCenter
+
+                            sourceComponent: ToolsButton {
+                                id: toolsButton
+                                startRadius: root.innerRadius
+                                implicitWidth: 36
+                                implicitHeight: 36
+                                endRadius: root.innerRadius
+                                enableShadow: root.shadowsEnabled
+                            }
                         }
 
                         SysTray {
@@ -543,6 +558,7 @@ Item {
                             endRadius: root.innerRadius
                         }
 
+                        // TODO: No mostrar si no hay bateria
                         Bar.BatteryIndicator {
                             id: batteryIndicator
                             bar: root

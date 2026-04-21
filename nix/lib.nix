@@ -1,4 +1,4 @@
-# Utility functions for Ambxst flake
+# Utility functions for rshell flake
 { nixpkgs }:
 
 let

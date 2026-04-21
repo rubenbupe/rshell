@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Ambxst CLI - It was needed, so here it is. lol
+# rshell CLI - It was needed, so here it is. lol
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Use environment variables if set by flake, otherwise fall back to PATH
-QS_BIN="${AMBXST_QS:-qs}"
-NIXGL_BIN="${AMBXST_NIXGL:-}"
+QS_BIN="${RSHELL_QS:-qs}"
+NIXGL_BIN="${RSHELL_NIXGL:-}"
 
 if [ -z "${QML2_IMPORT_PATH:-}" ]; then
 	if command -v qs >/dev/null 2>&1; then
@@ -22,8 +22,8 @@ fi
 
 # Ensure config files exist - copy from preset if missing
 ensure_config_files() {
-	local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/ambxst/config"
-	local preset_dir="${SCRIPT_DIR}/assets/presets/Ambxst Default"
+	local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/rshell/config"
+	local preset_dir="${SCRIPT_DIR}/assets/presets/rshell Default"
 
 	# Create config directory if it doesn't exist
 	mkdir -p "$config_dir"
@@ -39,13 +39,13 @@ ensure_config_files
 
 show_help() {
 	cat <<EOF
-Ambxst CLI - Desktop Environment Control
+rshell CLI - Desktop Environment Control
 
-Usage: ambxst [COMMAND]
+Usage: rshell [COMMAND]
 
 Commands:
-    (none)                            Launch Ambxst
-    update                            Update Ambxst
+    (none)                            Launch rshell
+    update                            Update rshell
     refresh                           Refresh local/dev profile (for developers)
     lock                              Activate lockscreen
     brightness <percent> [monitor]    Set brightness (0-100)
@@ -54,52 +54,52 @@ Commands:
     brightness -r [monitor]           Restore saved brightness
     brightness -l                     List monitors and their brightness
     help                              Show this help message
-    version, -v, --version            Show Ambxst version
-    goodbye                           Uninstall Ambxst :(
+    version, -v, --version            Show rshell version
+    goodbye                           Uninstall rshell :(
     install <target>                    Install compositor config (hyprland)
     remove <target>                    Remove compositor config (hyprland)
 
 Examples:
-    ambxst brightness 75              Set all monitors to 75%
-    ambxst brightness 50 HDMI-A-1     Set HDMI-A-1 to 50%
-    ambxst brightness +10             Increase brightness by 10%
-    ambxst brightness -5 HDMI-A-1     Decrease HDMI-A-1 brightness by 5%
-    ambxst brightness 10 -s           Save current, then set all to 10%
-    ambxst brightness -s HDMI-A-1     Save current brightness of HDMI-A-1
-    ambxst brightness -r              Restore saved brightness
+    rshell brightness 75              Set all monitors to 75%
+    rshell brightness 50 HDMI-A-1     Set HDMI-A-1 to 50%
+    rshell brightness +10             Increase brightness by 10%
+    rshell brightness -5 HDMI-A-1     Decrease HDMI-A-1 brightness by 5%
+    rshell brightness 10 -s           Save current, then set all to 10%
+    rshell brightness -s HDMI-A-1     Save current brightness of HDMI-A-1
+    rshell brightness -r              Restore saved brightness
 
 EOF
 }
 
-AMBXST_HYPR_SOURCE="source = ~/.local/share/ambxst/hyprland.conf"
-AMBXST_HYPR_BLOCK=$(
+RSHELL_HYPR_SOURCE="source = ~/.local/share/rshell/hyprland.conf"
+RSHELL_HYPR_BLOCK=$(
 	cat <<'EOF'
-# Ambxst
-source = ~/.local/share/ambxst/hyprland.conf
+# rshell
+source = ~/.local/share/rshell/hyprland.conf
 
 # OVERRIDES
-# Down here you can write or source anything that you want to override from Ambxst's settings.
+# Down here you can write or source anything that you want to override from rshell's settings.
 EOF
 )
 
-append_ambxst_hyprland_block() {
+append_rshell_hyprland_block() {
 	local conf="$1"
 
-	if [ -f "$conf" ] && grep -qF "$AMBXST_HYPR_SOURCE" "$conf"; then
-		echo "Ambxst Hyprland block already present in $conf"
+	if [ -f "$conf" ] && grep -qF "$RSHELL_HYPR_SOURCE" "$conf"; then
+		echo "rshell Hyprland block already present in $conf"
 		return 0
 	fi
 
 	if [ -f "$conf" ] && [ -s "$conf" ]; then
-		printf "\n%s\n" "$AMBXST_HYPR_BLOCK" >>"$conf"
+		printf "\n%s\n" "$RSHELL_HYPR_BLOCK" >>"$conf"
 	else
-		printf "%s\n" "$AMBXST_HYPR_BLOCK" >"$conf"
+		printf "%s\n" "$RSHELL_HYPR_BLOCK" >"$conf"
 	fi
 
-	echo "Added Ambxst Hyprland block to $conf"
+	echo "Added rshell Hyprland block to $conf"
 }
 
-remove_ambxst_hyprland_block() {
+remove_rshell_hyprland_block() {
 	local conf="$1"
 
 	if [ ! -f "$conf" ]; then
@@ -107,12 +107,12 @@ remove_ambxst_hyprland_block() {
 		return 0
 	fi
 
-	awk -v source="$AMBXST_HYPR_SOURCE" '
+	awk -v source="$RSHELL_HYPR_SOURCE" '
 		function is_remove(line) {
 			return line == source \
-				|| line == "# Ambxst" \
+				|| line == "# rshell" \
 				|| line == "# OVERRIDES" \
-				|| line == "# Down here you can write or source anything that you want to override from Ambxst'\''s settings."
+				|| line == "# Down here you can write or source anything that you want to override from rshell'\''s settings."
 		}
 		{
 			lines[NR] = $0
@@ -132,10 +132,10 @@ remove_ambxst_hyprland_block() {
 		}
 	' "$conf" >"${conf}.tmp" && mv "${conf}.tmp" "$conf"
 
-	echo "Removed Ambxst Hyprland block from $conf"
+	echo "Removed rshell Hyprland block from $conf"
 }
 
-find_ambxst_pid() {
+find_rshell_pid() {
 	# Try to find QuickShell process running shell.qml
 	# QuickShell binary can be named 'qs' or 'quickshell'
 	local pid
@@ -165,9 +165,9 @@ find_ambxst_pid() {
 	echo "$pid"
 }
 
-find_ambxst_pid_cached() {
+find_rshell_pid_cached() {
 	# Optimized PID lookup: check cache file first, then fall back to pgrep
-	local pid_file="/tmp/ambxst.pid"
+	local pid_file="/tmp/rshell.pid"
 	local pid=""
 
 	# Check if cache file exists and process is alive
@@ -183,42 +183,42 @@ find_ambxst_pid_cached() {
 	fi
 
 	# Fallback: use expensive pgrep search
-	pid=$(find_ambxst_pid)
+	pid=$(find_rshell_pid)
 	echo "$pid"
 }
 
-restart_ambxst() {
-	# Kill axctl processes first (they survive parent death when forked/detached)
-	pkill -f "axctl.*daemon" 2>/dev/null || true
-	pkill -f "axctl subscribe" 2>/dev/null || true
+restart_rshell() {
+	# Kill rctl processes first (they survive parent death when forked/detached)
+	pkill -f "rctl.*daemon" 2>/dev/null || true
+	pkill -f "rctl subscribe" 2>/dev/null || true
 
-	PID=$(find_ambxst_pid_cached)
+	PID=$(find_rshell_pid_cached)
 	if [ -n "$PID" ]; then
-		echo "Stopping Ambxst (PID $PID)..."
+		echo "Stopping rshell (PID $PID)..."
 		kill "$PID"
 		# Wait for process to exit
 		while kill -0 "$PID" 2>/dev/null; do
 			sleep 0.1
 		done
 	fi
-	echo "Starting Ambxst..."
+	echo "Starting rshell..."
 	# Relaunch the script in background
 	nohup "$0" >/dev/null 2>&1 &
 }
 
 case "${1:-}" in
 update)
-	echo "Updating Ambxst..."
-	curl -fsSL get.axeni.de/ambxst | sh
-	restart_ambxst
+	echo "Updating rshell..."
+	curl -fsSL get.axeni.de/rshell | sh
+	restart_rshell
 	;;
 refresh)
-	echo "Refreshing Ambxst profile..."
-	exec nix profile upgrade Ambxst --refresh --impure
+	echo "Refreshing rshell profile..."
+	exec nix profile upgrade rshell --refresh --impure
 	;;
 run)
 	CMD="${2:-}"
-	PIPE="/tmp/ambxst_ipc.pipe"
+	PIPE="/tmp/rshell_ipc.pipe"
 
 	if [ -z "$CMD" ]; then
 		echo "Error: No command specified for run"
@@ -232,42 +232,42 @@ run)
 	fi
 
 	# Fallback path: Use QS IPC with cached PID lookup
-	PID=$(find_ambxst_pid_cached)
+	PID=$(find_rshell_pid_cached)
 	if [ -z "$PID" ]; then
-		echo "Error: Ambxst is not running"
+		echo "Error: rshell is not running"
 		exit 1
 	fi
 
-	qs ipc --pid "$PID" call ambxst run "$CMD" 2>/dev/null || {
+	qs ipc --pid "$PID" call rshell run "$CMD" 2>/dev/null || {
 		echo "Error: Could not run command '$CMD'"
 		exit 1
 	}
 	;;
 lock)
-	PID=$(find_ambxst_pid_cached)
+	PID=$(find_rshell_pid_cached)
 	if [ -z "$PID" ]; then
-		echo "Error: Ambxst is not running"
+		echo "Error: rshell is not running"
 		exit 1
 	fi
-	qs ipc --pid "$PID" call ambxst run lockscreen 2>/dev/null || {
+	qs ipc --pid "$PID" call rshell run lockscreen 2>/dev/null || {
 		echo "Error: Could not activate lockscreen"
 		exit 1
 	}
 	;;
 reload)
-	restart_ambxst
+	restart_rshell
 	;;
 quit)
-	# Kill axctl processes first
-	pkill -f "axctl.*daemon" 2>/dev/null || true
-	pkill -f "axctl subscribe" 2>/dev/null || true
+	# Kill rctl processes first
+	pkill -f "rctl.*daemon" 2>/dev/null || true
+	pkill -f "rctl subscribe" 2>/dev/null || true
 
-	PID=$(find_ambxst_pid_cached)
+	PID=$(find_rshell_pid_cached)
 	if [ -n "$PID" ]; then
-		echo "Stopping Ambxst (PID $PID)..."
+		echo "Stopping rshell (PID $PID)..."
 		kill "$PID"
 	else
-		echo "Ambxst is not running"
+		echo "rshell is not running"
 	fi
 	;;
 screen)
@@ -285,7 +285,7 @@ screen)
 			notify-send "Screen On" "Not supported on this compositor yet"
 		fi
 	else
-		echo "Usage: ambxst screen [on|off]"
+		echo "Usage: rshell screen [on|off]"
 		exit 1
 	fi
 	;;
@@ -300,13 +300,13 @@ suspend)
 	fi
 	;;
 brightness)
-	PID=$(find_ambxst_pid_cached)
+	PID=$(find_rshell_pid_cached)
 	if [ -z "$PID" ]; then
-		echo "Error: Ambxst is not running"
+		echo "Error: rshell is not running"
 		exit 1
 	fi
 
-	BRIGHTNESS_SAVE_FILE="/tmp/ambxst_brightness_saved.txt"
+	BRIGHTNESS_SAVE_FILE="/tmp/rshell_brightness_saved.txt"
 
 	# Parse arguments
 	ARG2="${2:-}"
@@ -431,7 +431,7 @@ brightness)
 		exit 0
 	else
 		echo "Error: Invalid brightness value. Must be 0-100 or +/-delta."
-		echo "Run 'ambxst help' for usage information"
+		echo "Run 'rshell help' for usage information"
 		exit 1
 	fi
 
@@ -520,7 +520,7 @@ brightness)
 	fi
 	;;
 version | -v | --version)
-	echo "Ambxst $(cat "${SCRIPT_DIR}/version")"
+	echo "rshell $(cat "${SCRIPT_DIR}/version")"
 	;;
 install)
 	TARGET="${2:-}"
@@ -530,7 +530,7 @@ install)
 		# Create directory if needed
 		mkdir -p "$HOME/.config/hypr"
 
-		append_ambxst_hyprland_block "$HYPR_CONF"
+		append_rshell_hyprland_block "$HYPR_CONF"
 	else
 		echo "Error: Unknown target '$TARGET'. Supported: hyprland"
 		exit 1
@@ -541,14 +541,14 @@ remove)
 	if [ "$TARGET" = "hyprland" ]; then
 		HYPR_CONF="$HOME/.config/hypr/hyprland.conf"
 
-		remove_ambxst_hyprland_block "$HYPR_CONF"
+		remove_rshell_hyprland_block "$HYPR_CONF"
 	else
 		echo "Error: Unknown target '$TARGET'. Supported: hyprland"
 		exit 1
 	fi
 	;;
 goodbye)
-	echo "Uninstalling Ambxst..."
+	echo "Uninstalling rshell..."
 
 	read -p "Are you sure? (y/N): " -n 1 -r
 	echo
@@ -558,13 +558,13 @@ goodbye)
 	fi
 
 	if [ -f /etc/NIXOS ]; then
-		if nix profile list 2>/dev/null | grep -q "Ambxst"; then
+		if nix profile list 2>/dev/null | grep -q "rshell"; then
 			echo "Removing from nix profile..."
-			nix profile remove Ambxst
-		elif command -v ambxst >/dev/null 2>&1; then
-			echo "Ambxst was declared in this system. Please remove it from your configuration in order to uninstall."
+			nix profile remove rshell
+		elif command -v rshell >/dev/null 2>&1; then
+			echo "rshell was declared in this system. Please remove it from your configuration in order to uninstall."
 		else
-			echo "Ambxst is not installed."
+			echo "rshell is not installed." 
 		fi
 		exit 0
 	fi
@@ -576,16 +576,16 @@ goodbye)
 		REMOVE_CONFIG=true
 	fi
 
-	rm -rf "$HOME/.local/src/ambxst"
-	rm -rf "$HOME/.local/share/ambxst"
-	rm -rf "$HOME/.local/state/ambxst"
+	rm -rf "$HOME/.local/src/rshell"
+	rm -rf "$HOME/.local/share/rshell"
+	rm -rf "$HOME/.local/state/rshell"
 
 	if [ "$REMOVE_CONFIG" = true ]; then
-		rm -rf "$HOME/.config/ambxst"
+		rm -rf "$HOME/.config/rshell"
 		echo "Configuration files removed."
 	fi
 
-	echo "Ambxst uninstalled. :("
+	echo "rshell uninstalled. :("
 	;;
 help | --help | -h)
 	show_help
@@ -605,7 +605,7 @@ help | --help | -h)
 	export QT_QPA_PLATFORMTHEME=qt6ct
 
 	# Cache this script's PID before exec (for fast PID lookups in future CLI calls)
-	echo $$ >/tmp/ambxst.pid
+	echo $$ >/tmp/rshell.pid
 
 	# Launch QuickShell with the main shell.qml
 	# If NIXGL_BIN is set (NixOS/Nix setup), use it. Otherwise, just run qs directly.
@@ -617,7 +617,7 @@ help | --help | -h)
 	;;
 *)
 	echo "Error: Unknown command '$1'"
-	echo "Run 'ambxst help' for usage information"
+	echo "Run 'rshell help' for usage information"
 	exit 1
 	;;
 esac

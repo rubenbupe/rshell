@@ -34,9 +34,9 @@ Singleton {
         onLoaded: root.version = text().trim()
     }
 
-    property string configDir: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/ambxst/config"
-    property string keybindsPath: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/ambxst/binds.json"
-    property string presetDir: Qt.resolvedUrl("../assets/presets/Ambxst Default").toString().replace("file://", "")
+    property string configDir: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/rshell/config"
+    property string keybindsPath: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/rshell/binds.json"
+    property string presetDir: Qt.resolvedUrl("../assets/presets/rshell Default").toString().replace("file://", "")
 
     property bool pauseAutoSave: false
 
@@ -70,23 +70,7 @@ Singleton {
     Process {
         id: ensureConfigDir
         running: true
-        command: [
-            "bash", "-c",
-            "mkdir -p '" + root.configDir + "' && " +
-            "cp -n '" + root.presetDir + "/theme.json' '" + root.configDir + "/theme.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/bar.json' '" + root.configDir + "/bar.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/workspaces.json' '" + root.configDir + "/workspaces.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/overview.json' '" + root.configDir + "/overview.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/notch.json' '" + root.configDir + "/notch.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/compositor.json' '" + root.configDir + "/compositor.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/performance.json' '" + root.configDir + "/performance.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/desktop.json' '" + root.configDir + "/desktop.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/lockscreen.json' '" + root.configDir + "/lockscreen.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/dock.json' '" + root.configDir + "/dock.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/ai.json' '" + root.configDir + "/ai.json' 2>/dev/null || true; " +
-            "cp -n '" + root.presetDir + "/system.json' '" + root.configDir + "/system.json' 2>/dev/null || true; " +
-            "echo 'Preset files copied if missing'"
-        ]
+        command: ["bash", "-c", "mkdir -p '" + root.configDir + "' && " + "cp -n '" + root.presetDir + "/theme.json' '" + root.configDir + "/theme.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/bar.json' '" + root.configDir + "/bar.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/workspaces.json' '" + root.configDir + "/workspaces.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/overview.json' '" + root.configDir + "/overview.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/notch.json' '" + root.configDir + "/notch.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/compositor.json' '" + root.configDir + "/compositor.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/performance.json' '" + root.configDir + "/performance.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/desktop.json' '" + root.configDir + "/desktop.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/lockscreen.json' '" + root.configDir + "/lockscreen.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/dock.json' '" + root.configDir + "/dock.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/ai.json' '" + root.configDir + "/ai.json' 2>/dev/null || true; " + "cp -n '" + root.presetDir + "/system.json' '" + root.configDir + "/system.json' 2>/dev/null || true; " + "echo 'Preset files copied if missing'"]
     }
 
     // Auto-migrate hyprland.json → compositor.json for existing users
@@ -543,6 +527,9 @@ Singleton {
             property int hoverRegionHeight: 8
             property bool showPinButton: true
             property bool showLayoutButton: true
+            property bool showToolsButton: true
+            property bool showPowerProfileButton: true
+            property bool showPresetsButton: true
             property bool availableOnFullscreen: false
             property bool use12hFormat: false
             property bool containBar: false
@@ -676,7 +663,7 @@ Singleton {
             property int hoverRegionHeight: 8
             property bool keepHidden: false
             property string noMediaDisplay: "userHost"
-            property string customText: "Ambxst"
+            property string customText: "rshell"
             property bool disableHoverExpansion: true
         }
     }
@@ -1008,15 +995,15 @@ Singleton {
             property bool updateServiceEnabled: true
             property JsonObject idle: JsonObject {
                 property JsonObject general: JsonObject {
-                    property string lock_cmd: "ambxst lock"
+                    property string lock_cmd: "rshell lock"
                     property string before_sleep_cmd: "loginctl lock-session"
-                    property string after_sleep_cmd: "ambxst screen on"
+                    property string after_sleep_cmd: "rshell screen on"
                 }
                 property list<var> listeners: [
                     {
                         "timeout": 150,
-                        "onTimeout": "ambxst brightness 10 -s",
-                        "onResume": "ambxst brightness -r"
+                        "onTimeout": "rshell brightness 10 -s",
+                        "onResume": "rshell brightness -r"
                     },
                     {
                         "timeout": 300,
@@ -1024,12 +1011,12 @@ Singleton {
                     },
                     {
                         "timeout": 330,
-                        "onTimeout": "ambxst screen off",
-                        "onResume": "ambxst screen on"
+                        "onTimeout": "rshell screen off",
+                        "onResume": "rshell screen on"
                     },
                     {
                         "timeout": 1800,
-                        "onTimeout": "ambxst suspend"
+                        "onTimeout": "rshell suspend"
                     }
                 ]
             }
@@ -1100,6 +1087,9 @@ Singleton {
             property bool showRunningIndicators: true
             property bool showPinButton: true
             property bool showLayoutButton: true
+            property bool showToolsButton: true
+            property bool showPowerProfileButton: true
+            property bool showPresetsButton: true
             property bool showOverviewButton: true
             property list<string> ignoredAppRegexes: ["quickshell.*", "xdg-desktop-portal.*"]
             property list<string> screenList: []
@@ -1138,7 +1128,7 @@ Singleton {
         }
 
         adapter: JsonAdapter {
-            property list<string> apps: ["kitty"]
+            property list<string> apps: ["ghostty"]
         }
     }
 
@@ -1198,7 +1188,6 @@ Singleton {
         }
     }
 
-
     // Timer to create binds.json if missing after initial load
     Timer {
         id: createKeybindsTimer
@@ -1216,78 +1205,80 @@ Singleton {
     // Repair missing binds
     function repairKeybinds() {
         const raw = keybindsLoader.text();
-        if (!raw) return;
+        if (!raw)
+            return;
 
         try {
             const current = JSON.parse(raw);
             let needsUpdate = false;
 
-            // Ensure ambxst structure exists
-            if (!current.ambxst) {
-                current.ambxst = {};
+            // Ensure rshell structure exists
+            if (!current.rshell) {
+                current.rshell = {};
                 needsUpdate = true;
             }
 
             // Migrate nested to flat structure
-            if (current.ambxst.dashboard && typeof current.ambxst.dashboard === "object" && !current.ambxst.dashboard.modifiers) {
-                console.log("Migrating nested ambxst binds to flat structure...");
-                const nested = current.ambxst.dashboard;
-                
+            if (current.rshell.dashboard && typeof current.rshell.dashboard === "object" && !current.rshell.dashboard.modifiers) {
+                console.log("Migrating nested rshell binds to flat structure...");
+                const nested = current.rshell.dashboard;
+
                 // Map old names to new names and update arguments
                 if (nested.widgets) {
-                    current.ambxst.launcher = nested.widgets;
-                    current.ambxst.launcher.argument = "ambxst run launcher";
-                    current.ambxst.launcher.action = createAction(current.ambxst.launcher);
+                    current.rshell.launcher = nested.widgets;
+                    current.rshell.launcher.argument = "rshell run launcher";
+                    current.rshell.launcher.action = createAction(current.rshell.launcher);
                 }
                 if (nested.dashboard) {
-                    current.ambxst.dashboard = nested.dashboard;
-                    current.ambxst.dashboard.argument = "ambxst run dashboard";
-                    current.ambxst.dashboard.action = createAction(current.ambxst.dashboard);
+                    current.rshell.dashboard = nested.dashboard;
+                    current.rshell.dashboard.argument = "rshell run dashboard";
+                    current.rshell.dashboard.action = createAction(current.rshell.dashboard);
                 }
                 if (nested.assistant) {
-                    current.ambxst.assistant = nested.assistant;
-                    current.ambxst.assistant.argument = "ambxst run assistant";
-                    current.ambxst.assistant.action = createAction(current.ambxst.assistant);
+                    current.rshell.assistant = nested.assistant;
+                    current.rshell.assistant.argument = "rshell run assistant";
+                    current.rshell.assistant.action = createAction(current.rshell.assistant);
                 }
                 if (nested.clipboard) {
-                    current.ambxst.clipboard = nested.clipboard;
-                    current.ambxst.clipboard.argument = "ambxst run clipboard";
-                    current.ambxst.clipboard.action = createAction(current.ambxst.clipboard);
+                    current.rshell.clipboard = nested.clipboard;
+                    current.rshell.clipboard.argument = "rshell run clipboard";
+                    current.rshell.clipboard.action = createAction(current.rshell.clipboard);
                 }
                 if (nested.emoji) {
-                    current.ambxst.emoji = nested.emoji;
-                    current.ambxst.emoji.argument = "ambxst run emoji";
-                    current.ambxst.emoji.action = createAction(current.ambxst.emoji);
+                    current.rshell.emoji = nested.emoji;
+                    current.rshell.emoji.argument = "rshell run emoji";
+                    current.rshell.emoji.action = createAction(current.rshell.emoji);
                 }
                 if (nested.notes) {
-                    current.ambxst.notes = nested.notes;
-                    current.ambxst.notes.argument = "ambxst run notes";
-                    current.ambxst.notes.action = createAction(current.ambxst.notes);
+                    current.rshell.notes = nested.notes;
+                    current.rshell.notes.argument = "rshell run notes";
+                    current.rshell.notes.action = createAction(current.rshell.notes);
                 }
                 if (nested.tmux) {
-                    current.ambxst.tmux = nested.tmux;
-                    current.ambxst.tmux.argument = "ambxst run tmux";
-                    current.ambxst.tmux.action = createAction(current.ambxst.tmux);
+                    current.rshell.tmux = nested.tmux;
+                    current.rshell.tmux.argument = "rshell run tmux";
+                    current.rshell.tmux.action = createAction(current.rshell.tmux);
                 }
                 if (nested.wallpapers) {
-                    current.ambxst.wallpapers = nested.wallpapers;
-                    current.ambxst.wallpapers.argument = "ambxst run wallpapers";
-                    current.ambxst.wallpapers.action = createAction(current.ambxst.wallpapers);
+                    current.rshell.wallpapers = nested.wallpapers;
+                    current.rshell.wallpapers.argument = "rshell run wallpapers";
+                    current.rshell.wallpapers.action = createAction(current.rshell.wallpapers);
                 }
 
                 // Remove the old nested object
-                delete current.ambxst.dashboard;
+                delete current.rshell.dashboard;
                 needsUpdate = true;
             }
 
-            if (!current.ambxst.system) {
-                current.ambxst.system = {};
+            if (!current.rshell.system) {
+                current.rshell.system = {};
                 needsUpdate = true;
             }
 
             // Get default binds from adapter
             const adapter = keybindsLoader.adapter;
-            if (!adapter || !adapter.ambxst) return;
+            if (!adapter || !adapter.rshell)
+                return;
 
             // Helper function to create clean bind object
             function createAction(bindObj) {
@@ -1305,18 +1296,18 @@ Singleton {
                 };
             }
 
-            // Check ambxst core binds
-            const ambxstKeys = ["launcher", "dashboard", "assistant", "clipboard", "emoji", "notes", "tmux", "wallpapers"];
-            for (const key of ambxstKeys) {
-                if (!current.ambxst[key] && adapter.ambxst[key]) {
-                    console.log("Adding missing ambxst bind:", key);
-                    current.ambxst[key] = createCleanBind(adapter.ambxst[key]);
+            // Check rshell core binds
+            const rshellKeys = ["launcher", "dashboard", "assistant", "clipboard", "emoji", "notes", "tmux", "wallpapers"];
+            for (const key of rshellKeys) {
+                if (!current.rshell[key] && adapter.rshell[key]) {
+                    console.log("Adding missing rshell bind:", key);
+                    current.rshell[key] = createCleanBind(adapter.rshell[key]);
                     needsUpdate = true;
-                } else if (current.ambxst[key] && !current.ambxst[key].action) {
-                    current.ambxst[key].action = createAction(current.ambxst[key]);
-                    delete current.ambxst[key].dispatcher;
-                    delete current.ambxst[key].argument;
-                    delete current.ambxst[key].flags;
+                } else if (current.rshell[key] && !current.rshell[key].action) {
+                    current.rshell[key].action = createAction(current.rshell[key]);
+                    delete current.rshell[key].dispatcher;
+                    delete current.rshell[key].argument;
+                    delete current.rshell[key].flags;
                     needsUpdate = true;
                 }
             }
@@ -1324,15 +1315,15 @@ Singleton {
             // Check system binds
             const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens", "reload", "quit"];
             for (const key of systemKeys) {
-                if (!current.ambxst.system[key] && adapter.ambxst.system && adapter.ambxst.system[key]) {
+                if (!current.rshell.system[key] && adapter.rshell.system && adapter.rshell.system[key]) {
                     console.log("Adding missing system bind:", key);
-                    current.ambxst.system[key] = createCleanBind(adapter.ambxst.system[key]);
+                    current.rshell.system[key] = createCleanBind(adapter.rshell.system[key]);
                     needsUpdate = true;
-                } else if (current.ambxst.system[key] && !current.ambxst.system[key].action) {
-                    current.ambxst.system[key].action = createAction(current.ambxst.system[key]);
-                    delete current.ambxst.system[key].dispatcher;
-                    delete current.ambxst.system[key].argument;
-                    delete current.ambxst.system[key].flags;
+                } else if (current.rshell.system[key] && !current.rshell.system[key].action) {
+                    current.rshell.system[key].action = createAction(current.rshell.system[key]);
+                    delete current.rshell.system[key].dispatcher;
+                    delete current.rshell.system[key].argument;
+                    delete current.rshell.system[key].flags;
                     needsUpdate = true;
                 }
             }
@@ -1407,129 +1398,309 @@ Singleton {
         }
 
         adapter: JsonAdapter {
-            property JsonObject ambxst: JsonObject {
+            property JsonObject rshell: JsonObject {
                 property JsonObject launcher: JsonObject {
                     property list<string> modifiers: ["SUPER"]
                     property string key: "Super_L"
-                property var action: ({ "id": "ambxst.launcher", "args": {} })
-            }
-            property JsonObject dashboard: JsonObject {
-                property list<string> modifiers: ["SUPER"]
-                property string key: "D"
-                property var action: ({ "id": "ambxst.dashboard", "args": {} })
-            }
-            property JsonObject assistant: JsonObject {
-                property list<string> modifiers: ["SUPER"]
-                property string key: "A"
-                property var action: ({ "id": "ambxst.assistant", "args": {} })
-            }
-            property JsonObject clipboard: JsonObject {
-                property list<string> modifiers: ["SUPER"]
-                property string key: "V"
-                property var action: ({ "id": "ambxst.clipboard", "args": {} })
-            }
-            property JsonObject emoji: JsonObject {
-                property list<string> modifiers: ["SUPER"]
-                property string key: "PERIOD"
-                property var action: ({ "id": "ambxst.emoji", "args": {} })
-            }
-            property JsonObject notes: JsonObject {
-                property list<string> modifiers: ["SUPER"]
-                property string key: "N"
-                property var action: ({ "id": "ambxst.notes", "args": {} })
-            }
-            property JsonObject tmux: JsonObject {
-                property list<string> modifiers: ["SUPER"]
-                property string key: "T"
-                property var action: ({ "id": "ambxst.tmux", "args": {} })
-            }
-            property JsonObject wallpapers: JsonObject {
-                property list<string> modifiers: ["SUPER"]
-                property string key: "COMMA"
-                property var action: ({ "id": "ambxst.wallpapers", "args": {} })
-            }
-            property JsonObject system: JsonObject {
-                property JsonObject config: JsonObject {
-                    property list<string> modifiers: ["SUPER", "SHIFT"]
-                    property string key: "C"
-                    property var action: ({ "id": "ambxst.config", "args": {} })
+                    property var action: ({
+                            "id": "rshell.launcher",
+                            "args": {}
+                        })
                 }
-                property JsonObject lockscreen: JsonObject {
+                property JsonObject dashboard: JsonObject {
                     property list<string> modifiers: ["SUPER"]
-                    property string key: "L"
-                    property var action: ({ "id": "system.lock", "args": {} })
+                    property string key: "D"
+                    property var action: ({
+                            "id": "rshell.dashboard",
+                            "args": {}
+                        })
                 }
-                property JsonObject overview: JsonObject {
+                property JsonObject assistant: JsonObject {
                     property list<string> modifiers: ["SUPER"]
-                    property string key: "TAB"
-                    property var action: ({ "id": "ambxst.overview", "args": {} })
-                }
-                property JsonObject powermenu: JsonObject {
-                    property list<string> modifiers: ["SUPER"]
-                    property string key: "ESCAPE"
-                    property var action: ({ "id": "ambxst.powermenu", "args": {} })
-                }
-                property JsonObject tools: JsonObject {
-                    property list<string> modifiers: ["SUPER"]
-                    property string key: "S"
-                    property var action: ({ "id": "ambxst.tools", "args": {} })
-                }
-                property JsonObject screenshot: JsonObject {
-                    property list<string> modifiers: ["SUPER", "SHIFT"]
-                    property string key: "S"
-                    property var action: ({ "id": "ambxst.screenshot", "args": {} })
-                }
-                property JsonObject screenrecord: JsonObject {
-                    property list<string> modifiers: ["SUPER", "SHIFT"]
-                    property string key: "R"
-                    property var action: ({ "id": "ambxst.screenrecord", "args": {} })
-                }
-                property JsonObject lens: JsonObject {
-                    property list<string> modifiers: ["SUPER", "SHIFT"]
                     property string key: "A"
-                    property var action: ({ "id": "ambxst.lens", "args": {} })
+                    property var action: ({
+                            "id": "rshell.assistant",
+                            "args": {}
+                        })
                 }
-                property JsonObject reload: JsonObject {
-                    property list<string> modifiers: ["SUPER", "ALT"]
-                    property string key: "B"
-                    property var action: ({ "id": "ambxst.reload", "args": {} })
+                property JsonObject clipboard: JsonObject {
+                    property list<string> modifiers: ["SUPER"]
+                    property string key: "V"
+                    property var action: ({
+                            "id": "rshell.clipboard",
+                            "args": {}
+                        })
                 }
-                property JsonObject quit: JsonObject {
-                    property list<string> modifiers: ["SUPER", "CTRL", "ALT"]
-                    property string key: "B"
-                    property var action: ({ "id": "ambxst.quit", "args": {} })
+                property JsonObject emoji: JsonObject {
+                    property list<string> modifiers: ["SUPER"]
+                    property string key: "PERIOD"
+                    property var action: ({
+                            "id": "rshell.emoji",
+                            "args": {}
+                        })
                 }
-            }
+                property JsonObject notes: JsonObject {
+                    property list<string> modifiers: ["SUPER"]
+                    property string key: "N"
+                    property var action: ({
+                            "id": "rshell.notes",
+                            "args": {}
+                        })
+                }
+                property JsonObject tmux: JsonObject {
+                    property list<string> modifiers: ["SUPER"]
+                    property string key: "T"
+                    property var action: ({
+                            "id": "rshell.tmux",
+                            "args": {}
+                        })
+                }
+                property JsonObject wallpapers: JsonObject {
+                    property list<string> modifiers: ["SUPER"]
+                    property string key: "COMMA"
+                    property var action: ({
+                            "id": "rshell.wallpapers",
+                            "args": {}
+                        })
+                }
+                property JsonObject system: JsonObject {
+                    property JsonObject config: JsonObject {
+                        property list<string> modifiers: ["SUPER", "SHIFT"]
+                        property string key: "C"
+                        property var action: ({
+                                "id": "rshell.config",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject lockscreen: JsonObject {
+                        property list<string> modifiers: ["SUPER"]
+                        property string key: "L"
+                        property var action: ({
+                                "id": "system.lock",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject overview: JsonObject {
+                        property list<string> modifiers: ["SUPER"]
+                        property string key: "TAB"
+                        property var action: ({
+                                "id": "rshell.overview",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject powermenu: JsonObject {
+                        property list<string> modifiers: ["SUPER"]
+                        property string key: "ESCAPE"
+                        property var action: ({
+                                "id": "rshell.powermenu",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject tools: JsonObject {
+                        property list<string> modifiers: ["SUPER"]
+                        property string key: "S"
+                        property var action: ({
+                                "id": "rshell.tools",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject screenshot: JsonObject {
+                        property list<string> modifiers: ["SUPER", "SHIFT"]
+                        property string key: "S"
+                        property var action: ({
+                                "id": "rshell.screenshot",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject screenrecord: JsonObject {
+                        property list<string> modifiers: ["SUPER", "SHIFT"]
+                        property string key: "R"
+                        property var action: ({
+                                "id": "rshell.screenrecord",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject lens: JsonObject {
+                        property list<string> modifiers: ["SUPER", "SHIFT"]
+                        property string key: "A"
+                        property var action: ({
+                                "id": "rshell.lens",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject reload: JsonObject {
+                        property list<string> modifiers: ["SUPER", "ALT"]
+                        property string key: "B"
+                        property var action: ({
+                                "id": "rshell.reload",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject quit: JsonObject {
+                        property list<string> modifiers: ["SUPER", "CTRL", "ALT"]
+                        property string key: "B"
+                        property var action: ({
+                                "id": "rshell.quit",
+                                "args": {}
+                            })
+                    }
+                }
             }
             // Default getters
-            readonly property var defaultAmbxstBinds: {
-                "ambxst": {
-                    "launcher": { "modifiers": ["SUPER"], "key": "Super_L", "action": { "id": "ambxst.launcher", "args": {} } },
-                    "dashboard": { "modifiers": ["SUPER"], "key": "D", "action": { "id": "ambxst.dashboard", "args": {} } },
-                    "assistant": { "modifiers": ["SUPER"], "key": "A", "action": { "id": "ambxst.assistant", "args": {} } },
-                    "clipboard": { "modifiers": ["SUPER"], "key": "V", "action": { "id": "ambxst.clipboard", "args": {} } },
-                    "emoji": { "modifiers": ["SUPER"], "key": "PERIOD", "action": { "id": "ambxst.emoji", "args": {} } },
-                    "notes": { "modifiers": ["SUPER"], "key": "N", "action": { "id": "ambxst.notes", "args": {} } },
-                    "tmux": { "modifiers": ["SUPER"], "key": "T", "action": { "id": "ambxst.tmux", "args": {} } },
-                    "wallpapers": { "modifiers": ["SUPER"], "key": "COMMA", "action": { "id": "ambxst.wallpapers", "args": {} } }
+            readonly property var defaultrshellBinds: {
+                "rshell": {
+                    "launcher": {
+                        "modifiers": ["SUPER"],
+                        "key": "Super_L",
+                        "action": {
+                            "id": "rshell.launcher",
+                            "args": {}
+                        }
+                    },
+                    "dashboard": {
+                        "modifiers": ["SUPER"],
+                        "key": "D",
+                        "action": {
+                            "id": "rshell.dashboard",
+                            "args": {}
+                        }
+                    },
+                    "assistant": {
+                        "modifiers": ["SUPER"],
+                        "key": "A",
+                        "action": {
+                            "id": "rshell.assistant",
+                            "args": {}
+                        }
+                    },
+                    "clipboard": {
+                        "modifiers": ["SUPER"],
+                        "key": "V",
+                        "action": {
+                            "id": "rshell.clipboard",
+                            "args": {}
+                        }
+                    },
+                    "emoji": {
+                        "modifiers": ["SUPER"],
+                        "key": "PERIOD",
+                        "action": {
+                            "id": "rshell.emoji",
+                            "args": {}
+                        }
+                    },
+                    "notes": {
+                        "modifiers": ["SUPER"],
+                        "key": "N",
+                        "action": {
+                            "id": "rshell.notes",
+                            "args": {}
+                        }
+                    },
+                    "tmux": {
+                        "modifiers": ["SUPER"],
+                        "key": "T",
+                        "action": {
+                            "id": "rshell.tmux",
+                            "args": {}
+                        }
+                    },
+                    "wallpapers": {
+                        "modifiers": ["SUPER"],
+                        "key": "COMMA",
+                        "action": {
+                            "id": "rshell.wallpapers",
+                            "args": {}
+                        }
+                    }
                 },
                 "system": {
-                    "config": { "modifiers": ["SUPER", "SHIFT"], "key": "C", "action": { "id": "ambxst.config", "args": {} } },
-                    "lockscreen": { "modifiers": ["SUPER"], "key": "L", "action": { "id": "system.lock", "args": {} } },
-                    "overview": { "modifiers": ["SUPER"], "key": "TAB", "action": { "id": "ambxst.overview", "args": {} } },
-                    "powermenu": { "modifiers": ["SUPER"], "key": "ESCAPE", "action": { "id": "ambxst.powermenu", "args": {} } },
-                    "tools": { "modifiers": ["SUPER"], "key": "S", "action": { "id": "ambxst.tools", "args": {} } },
-                    "screenshot": { "modifiers": ["SUPER", "SHIFT"], "key": "S", "action": { "id": "ambxst.screenshot", "args": {} } },
-                    "screenrecord": { "modifiers": ["SUPER", "SHIFT"], "key": "R", "action": { "id": "ambxst.screenrecord", "args": {} } },
-                    "lens": { "modifiers": ["SUPER", "SHIFT"], "key": "A", "action": { "id": "ambxst.lens", "args": {} } },
-                    "reload": { "modifiers": ["SUPER", "ALT"], "key": "B", "action": { "id": "ambxst.reload", "args": {} } },
-                    "quit": { "modifiers": ["SUPER", "CTRL", "ALT"], "key": "B", "action": { "id": "ambxst.quit", "args": {} } }
+                    "config": {
+                        "modifiers": ["SUPER", "SHIFT"],
+                        "key": "C",
+                        "action": {
+                            "id": "rshell.config",
+                            "args": {}
+                        }
+                    },
+                    "lockscreen": {
+                        "modifiers": ["SUPER"],
+                        "key": "L",
+                        "action": {
+                            "id": "system.lock",
+                            "args": {}
+                        }
+                    },
+                    "overview": {
+                        "modifiers": ["SUPER"],
+                        "key": "TAB",
+                        "action": {
+                            "id": "rshell.overview",
+                            "args": {}
+                        }
+                    },
+                    "powermenu": {
+                        "modifiers": ["SUPER"],
+                        "key": "ESCAPE",
+                        "action": {
+                            "id": "rshell.powermenu",
+                            "args": {}
+                        }
+                    },
+                    "tools": {
+                        "modifiers": ["SUPER"],
+                        "key": "S",
+                        "action": {
+                            "id": "rshell.tools",
+                            "args": {}
+                        }
+                    },
+                    "screenshot": {
+                        "modifiers": ["SUPER", "SHIFT"],
+                        "key": "S",
+                        "action": {
+                            "id": "rshell.screenshot",
+                            "args": {}
+                        }
+                    },
+                    "screenrecord": {
+                        "modifiers": ["SUPER", "SHIFT"],
+                        "key": "R",
+                        "action": {
+                            "id": "rshell.screenrecord",
+                            "args": {}
+                        }
+                    },
+                    "lens": {
+                        "modifiers": ["SUPER", "SHIFT"],
+                        "key": "A",
+                        "action": {
+                            "id": "rshell.lens",
+                            "args": {}
+                        }
+                    },
+                    "reload": {
+                        "modifiers": ["SUPER", "ALT"],
+                        "key": "B",
+                        "action": {
+                            "id": "rshell.reload",
+                            "args": {}
+                        }
+                    },
+                    "quit": {
+                        "modifiers": ["SUPER", "CTRL", "ALT"],
+                        "key": "B",
+                        "action": {
+                            "id": "rshell.quit",
+                            "args": {}
+                        }
+                    }
                 }
             }
 
-            function getAmbxstDefault(section, key) {
-                if (defaultAmbxstBinds[section] && defaultAmbxstBinds[section][key]) {
-                    const bind = defaultAmbxstBinds[section][key];
+            function getrshellDefault(section, key) {
+                if (defaultrshellBinds[section] && defaultrshellBinds[section][key]) {
+                    const bind = defaultrshellBinds[section][key];
                     return {
                         "modifiers": bind.modifiers || [],
                         "key": bind.key || "",
@@ -2412,7 +2583,7 @@ Singleton {
                     "actions": [
                         {
                             "dispatcher": "exec",
-                            "argument": "ambxst brightness +5",
+                            "argument": "rshell brightness +5",
                             "flags": "le",
                             "layouts": []
                         }
@@ -2430,7 +2601,7 @@ Singleton {
                     "actions": [
                         {
                             "dispatcher": "exec",
-                            "argument": "ambxst brightness -5",
+                            "argument": "rshell brightness -5",
                             "flags": "le",
                             "layouts": []
                         }
@@ -2526,7 +2697,7 @@ Singleton {
                     "actions": [
                         {
                             "dispatcher": "exec",
-                            "argument": "axctl monitor set-dpms 0 0",
+                            "argument": "rctl monitor set-dpms 0 0",
                             "flags": "l",
                             "layouts": []
                         }
@@ -2544,7 +2715,7 @@ Singleton {
                     "actions": [
                         {
                             "dispatcher": "exec",
-                            "argument": "axctl monitor set-dpms 0 1",
+                            "argument": "rctl monitor set-dpms 0 1",
                             "flags": "l",
                             "layouts": []
                         }
@@ -3210,11 +3381,7 @@ Singleton {
         console.log(name + ".json not found, checking preset: " + presetPath);
 
         // Create a Process component dynamically to copy the file
-        var copyProcess = Qt.createQmlObject(
-            "import QtQuick 2.0; Process { running: true; command: ['cp', '" + presetPath + "', '" + targetPath + "']; onFinished: { console.log('Copy finished for " + name + "'); } }",
-            root,
-            "copyProcess"
-        );
+        var copyProcess = Qt.createQmlObject("import QtQuick 2.0; Process { running: true; command: ['cp', '" + presetPath + "', '" + targetPath + "']; onFinished: { console.log('Copy finished for " + name + "'); } }", root, "copyProcess");
 
         // Reload the loader to pick up the copied file
         loader.reload();
@@ -3228,7 +3395,6 @@ Singleton {
             onComplete();
         });
     }
-
 
     // Exposed properties
     // Theme configuration
@@ -3269,7 +3435,8 @@ Singleton {
     property string notchPosition: notch.position
 
     onNotchPositionChanged: {
-        if (!initialLoadComplete || !dockReady) return;
+        if (!initialLoadComplete || !dockReady)
+            return;
 
         // If notch moves bottom
         if (notchPosition === "bottom") {
@@ -3285,9 +3452,9 @@ Singleton {
                 // Trigger save
                 GlobalStates.markShellChanged();
             }
-        } 
+        } else
         // If notch moves top
-        else if (notchPosition === "top") {
+        if (notchPosition === "top") {
             // Restore Dock if displaced
             if (dock.position === "left" || dock.position === "right") {
                 console.log("Notch moved to top, restoring Dock to bottom...");
@@ -3386,21 +3553,24 @@ Singleton {
     }
 
     function resolveColor(colorValue) {
-        if (!colorValue) return "transparent"; // Fallback
-        
+        if (!colorValue)
+            return "transparent"; // Fallback
+
         if (isHexColor(colorValue)) {
             return colorValue;
         }
-        
+
         // Check Colors singleton
-        if (typeof Colors === 'undefined' || !Colors) return "transparent";
-        
-        return Colors[colorValue] || "transparent"; 
+        if (typeof Colors === 'undefined' || !Colors)
+            return "transparent";
+
+        return Colors[colorValue] || "transparent";
     }
 
     function resolveColorWithOpacity(colorValue, opacity) {
-        if (!colorValue) return Qt.rgba(0,0,0,0);
-        
+        if (!colorValue)
+            return Qt.rgba(0, 0, 0, 0);
+
         const color = isHexColor(colorValue) ? Qt.color(colorValue) : (Colors[colorValue] || Qt.color("transparent"));
         return Qt.rgba(color.r, color.g, color.b, opacity);
     }

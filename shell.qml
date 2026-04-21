@@ -1,7 +1,7 @@
 //@ pragma UseQApplication
-//@ pragma ShellId ambxst
-//@ pragma DataDir $BASE/ambxst
-//@ pragma StateDir $BASE/ambxst
+//@ pragma ShellId rshell
+//@ pragma DataDir $BASE/rshell
+//@ pragma StateDir $BASE/rshell
 
 import QtQuick
 import Quickshell
@@ -273,7 +273,7 @@ ShellRoot {
     Connections {
         target: ClipboardService
         function onListCompleted() {
-        // Service initialized and ready
+            // Service initialized and ready
         }
     }
 

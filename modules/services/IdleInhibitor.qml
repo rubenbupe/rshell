@@ -14,7 +14,7 @@ Item {
         stdout: StdioCollector {
             id: _createStdout
         }
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0 && _createStdout.text) {
                 try {
                     var json = JSON.parse(_createStdout.text.trim());
@@ -35,7 +35,7 @@ Item {
         stdout: StdioCollector {
             id: _destroyStdout
         }
-        onExited: (code) => {
+        onExited: code => {
             _inhibitorId = 0;
         }
     }
@@ -47,21 +47,21 @@ Item {
         stdout: StdioCollector {
             id: _toggleStdout
         }
-        onExited: (code) => {
-            // Toggle complete
+        onExited: code => {
+        // Toggle complete
         }
     }
 
     function _createInhibitor() {
         var en = enabled ? 1 : 0;
-        var cmd = "axctl system idle-inhibitor-create " + en;
+        var cmd = "rctl system idle-inhibitor-create " + en;
         _createProcess.command = ["sh", "-c", cmd];
         _createProcess.running = true;
     }
 
     function _destroyInhibitor() {
         if (_inhibitorId > 0) {
-            var cmd = "axctl system idle-inhibitor-destroy " + _inhibitorId;
+            var cmd = "rctl system idle-inhibitor-destroy " + _inhibitorId;
             _destroyProcess.command = ["sh", "-c", cmd];
             _destroyProcess.running = true;
         }
@@ -69,7 +69,7 @@ Item {
 
     function _toggleInhibitor(enable) {
         if (_inhibitorId > 0) {
-            var cmd = "axctl system idle-inhibitor-set " + _inhibitorId + " " + (enable ? 1 : 0);
+            var cmd = "rctl system idle-inhibitor-set " + _inhibitorId + " " + (enable ? 1 : 0);
             _toggleProcess.command = ["sh", "-c", cmd];
             _toggleProcess.running = true;
         }

@@ -1,9 +1,9 @@
-# Main Ambxst package
-{ pkgs, lib, self, system, axctl }:
+# Main rshell package
+{ pkgs, lib, self, system, rctl }:
 
 let
   quickshellPkg = pkgs.quickshell;
-  axctlPkg = axctl.packages.${system}.default;
+  rctlPkg = rctl.packages.${system}.default;
 
   # Import sub-packages
   ttf-phosphor-icons = import ./phosphor-icons.nix { inherit pkgs; };
@@ -18,30 +18,30 @@ let
 
   # Combine all packages (NixOS-specific deps handled by the module)
   baseEnv = corePkgs
-    ++ [ axctlPkg ]
+    ++ [ rctlPkg ]
     ++ toolsPkgs
     ++ mediaPkgs
     ++ appsPkgs
     ++ fontsPkgs
     ++ tesseractPkgs;
 
-  envAmbxst = pkgs.buildEnv {
-    name = "Ambxst-env";
+  envrshell = pkgs.buildEnv {
+    name = "rshell-env";
     paths = baseEnv;
   };
 
   # Create fontconfig configuration to find bundled fonts
-  fontconfigConf = pkgs.writeTextDir "etc/fonts/conf.d/99-ambxst-fonts.conf" ''
+  fontconfigConf = pkgs.writeTextDir "etc/fonts/conf.d/99-rshell-fonts.conf" ''
     <?xml version="1.0"?>
     <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
     <fontconfig>
-      <dir>${envAmbxst}/share/fonts</dir>
+      <dir>${envrshell}/share/fonts</dir>
     </fontconfig>
   '';
 
   # Copy shell sources to the Nix store
   shellSrc = pkgs.stdenv.mkDerivation {
-    pname = "ambxst-shell";
+    pname = "rshell-shell";
     version = lib.removeSuffix "\n" (builtins.readFile ../../version);
     src = lib.cleanSource self;
     dontBuild = true;
@@ -51,12 +51,12 @@ let
     '';
   };
 
-  launcher = pkgs.writeShellScriptBin "ambxst" ''
-    export AMBXST_QS="${quickshellPkg}/bin/qs"
-    export PATH="${envAmbxst}/bin:$PATH"
+  launcher = pkgs.writeShellScriptBin "rshell" ''
+    export RSHELL_QS="${quickshellPkg}/bin/qs"
+    export PATH="${envrshell}/bin:$PATH"
 
-    # Set QML2_IMPORT_PATH to include modules from envAmbxst (like syntax-highlighting)
-    export QML2_IMPORT_PATH="${envAmbxst}/lib/qt-6/qml:$QML2_IMPORT_PATH"
+    # Set QML2_IMPORT_PATH to include modules from envrshell (like syntax-highlighting)
+    export QML2_IMPORT_PATH="${envrshell}/lib/qt-6/qml:$QML2_IMPORT_PATH"
     export QML_IMPORT_PATH="$QML2_IMPORT_PATH"
 
     # Make bundled fonts available to fontconfig
@@ -67,7 +67,7 @@ let
   '';
 
 in pkgs.buildEnv {
-  name = "Ambxst";
-  paths = [ envAmbxst launcher ];
-  meta.mainProgram = "ambxst";
+  name = "rshell";
+  paths = [ envrshell launcher ];
+  meta.mainProgram = "rshell";
 }

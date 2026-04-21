@@ -29,17 +29,20 @@ Item {
     property real length: player?.length ?? 1.0
     property bool hasArtwork: (player?.trackArtUrl ?? "") !== ""
     property string wallpaperPath: {
-        if (!GlobalStates.wallpaperManager) return "";
+        if (!GlobalStates.wallpaperManager)
+            return "";
         let path = GlobalStates.wallpaperManager.currentWallpaper;
         let frame = GlobalStates.wallpaperManager.getLockscreenFramePath(path);
         return frame ? "file://" + frame : "";
     }
 
     readonly property string focusedTitle: {
-        const activeWsId = AxctlService.focusedMonitor?.activeWorkspace?.id;
-        if (!activeWsId) return "";
+        const activeWsId = RctlService.focusedMonitor?.activeWorkspace?.id;
+        if (!activeWsId)
+            return "";
         const windows = CompositorData.workspaceWindowsMap[activeWsId] || [];
-        if (windows.length === 0) return "";
+        if (windows.length === 0)
+            return "";
         const best = windows.reduce((best, win) => {
             const bestFocus = best?.focusHistoryID ?? Infinity;
             const winFocus = win?.focusHistoryID ?? Infinity;
@@ -74,9 +77,11 @@ Item {
 
     readonly property string noMediaText: {
         const displayType = Config.notch.noMediaDisplay ?? "userHost";
-        if (displayType === "userHost") return userHostText;
-        if (displayType === "compositor") return "AxctlService";
-        return Config.notch.customText ?? "Ambxst";
+        if (displayType === "userHost")
+            return userHostText;
+        if (displayType === "compositor")
+            return "RctlService";
+        return Config.notch.customText ?? "rshell";
     }
 
     readonly property string displayedTitle: {
@@ -159,8 +164,8 @@ Item {
             color: "transparent"
 
             Image {
-                mipmap: true
                 id: backgroundArt
+                mipmap: true
                 anchors.fill: parent
                 source: (compactPlayer.player?.trackArtUrl ?? "") !== "" ? compactPlayer.player.trackArtUrl : compactPlayer.wallpaperPath
                 sourceSize: Qt.size(64, 64)
@@ -236,8 +241,8 @@ Item {
                     radius: compactPlayer.isPlaying ? Styling.radius(-8) : Styling.radius(-4)
                     color: "transparent"
                     Image {
-                        mipmap: true
                         id: artworkImage
+                        mipmap: true
                         anchors.fill: parent
                         source: (compactPlayer.player?.trackArtUrl ?? "") !== "" ? compactPlayer.player.trackArtUrl : compactPlayer.wallpaperPath
                         sourceSize: Qt.size(48, 48)

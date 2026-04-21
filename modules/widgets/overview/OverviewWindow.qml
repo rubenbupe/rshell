@@ -78,7 +78,7 @@ Item {
 
     clip: true
 
-    // Timer to reset override position after a delay (waiting for AxctlService update)
+    // Timer to reset override position after a delay (waiting for RctlService update)
     Timer {
         id: resetOverrideTimer
         interval: 200
@@ -166,8 +166,8 @@ Item {
 
     // Overlay content when preview is not available
     Image {
-        mipmap: true
         id: windowIcon
+        mipmap: true
         readonly property real iconSize: Math.round(Math.min(root.targetWindowWidth, root.targetWindowHeight) * (root.compactMode ? 0.6 : 0.35))
         anchors.centerIn: parent
         width: iconSize
@@ -251,13 +251,13 @@ Item {
             root.hovered = true;
             // Only focus window on hover if it's in the current workspace
             if (root.windowData) {
-                // Get current active workspace from AxctlService
-                let currentWorkspace = AxctlService.focusedMonitor?.activeWorkspace?.id;
+                // Get current active workspace from RctlService
+                let currentWorkspace = RctlService.focusedMonitor?.activeWorkspace?.id;
                 let windowWorkspace = root.windowData?.workspace?.id;
 
                 // Only focus if the window is in the current workspace
                 if (currentWorkspace && windowWorkspace && currentWorkspace === windowWorkspace) {
-                    AxctlService.dispatch(`focuswindow address:${windowData.address}`);
+                    RctlService.dispatch(`focuswindow address:${windowData.address}`);
                 }
             }
         }
@@ -283,11 +283,9 @@ Item {
                     // Calculate which workspace we're over based on position
                     const workspaceColIndex = Math.floor((root.x - root.xOffset + root.availableWorkspaceWidth / 2) / (root.availableWorkspaceWidth + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing));
                     const workspaceRowIndex = Math.floor((root.y - root.yOffset + root.availableWorkspaceHeight / 2) / (root.availableWorkspaceHeight + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing));
-                    
-                    if (workspaceColIndex >= 0 && workspaceColIndex < overviewRoot.columns && 
-                        workspaceRowIndex >= 0 && workspaceRowIndex < overviewRoot.rows) {
-                        targetWorkspace = overviewRoot.workspaceGroup * overviewRoot.workspacesShown + 
-                                        workspaceRowIndex * overviewRoot.columns + workspaceColIndex + 1;
+
+                    if (workspaceColIndex >= 0 && workspaceColIndex < overviewRoot.columns && workspaceRowIndex >= 0 && workspaceRowIndex < overviewRoot.rows) {
+                        targetWorkspace = overviewRoot.workspaceGroup * overviewRoot.workspacesShown + workspaceRowIndex * overviewRoot.columns + workspaceColIndex + 1;
                     } else {
                         // Out of bounds, default to current workspace
                         targetWorkspace = windowData?.workspace.id;
@@ -307,29 +305,29 @@ Item {
                         const targetRowIndex = Math.floor((targetWorkspace - 1) % overviewRoot.workspacesShown / overviewRoot.columns);
                         const targetXOffset = Math.round((overviewRoot.workspaceImplicitWidth + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing) * targetColIndex + overviewRoot.workspacePadding / 2);
                         const targetYOffset = Math.round((overviewRoot.workspaceImplicitHeight + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing) * targetRowIndex + overviewRoot.workspacePadding / 2);
-                        
+
                         // Calculate relative position in target workspace
                         const relativeX = root.x - targetXOffset;
                         const relativeY = root.y - targetYOffset;
-                        
+
                         // Convert to percentage
                         const percentageX = Math.round((relativeX / root.availableWorkspaceWidth) * 100);
                         const percentageY = Math.round((relativeY / root.availableWorkspaceHeight) * 100);
-                        
+
                         // Move to workspace and set position
-                        AxctlService.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
-                        AxctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
-                        
+                        RctlService.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
+                        RctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
+
                         // Force immediate window data update
                         CompositorData.updateWindowList();
                     } else {
                         // Just move workspace without repositioning
-                        AxctlService.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
-                        
+                        RctlService.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
+
                         // Force immediate window data update
                         CompositorData.updateWindowList();
                     }
-                    
+
                     // Reset position in overview
                     root.x = root.initX;
                     root.y = root.initY;
@@ -337,26 +335,26 @@ Item {
                     // Dropped on same workspace and floating - reposition
                     const relativeX = root.x - root.xOffset;
                     const relativeY = root.y - root.yOffset;
-                    
+
                     const percentageX = Math.round((relativeX / root.availableWorkspaceWidth) * 100);
                     const percentageY = Math.round((relativeY / root.availableWorkspaceHeight) * 100);
-                    
+
                     const draggedX = root.x;
                     const draggedY = root.y;
-                    
-                    AxctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
-                    
+
+                    RctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
+
                     // Force immediate window data update
                     CompositorData.updateWindowList();
-                    
+
                     // Set override position for immediate visual update
                     root.overrideX = draggedX;
                     root.overrideY = draggedY;
                     root.useOverridePosition = true;
-                    
+
                     root.x = draggedX;
                     root.y = draggedY;
-                    
+
                     resetOverrideTimer.restart();
                 } else {
                     // Reset position for non-floating or non-moved windows
@@ -372,7 +370,7 @@ Item {
 
             if (mouse.button === Qt.LeftButton) {
                 // Single click just focuses the window without closing overview
-                AxctlService.dispatch(`focuswindow address:${windowData.address}`);
+                RctlService.dispatch(`focuswindow address:${windowData.address}`);
             } else if (mouse.button === Qt.MiddleButton) {
                 root.windowClosed();
             }

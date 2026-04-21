@@ -330,7 +330,8 @@ Singleton {
     property bool _initialized: false
 
     function initialize() {
-        if (_initialized) return;
+        if (_initialized)
+            return;
         _initialized = true;
         Qt.callLater(() => getDesktopDir());
     }
@@ -665,7 +666,7 @@ Singleton {
         id: thumbnailProcess
         running: false
         // QUICKSHELL-GIT: command: ["python3", decodeURIComponent(Qt.resolvedUrl("../../scripts/desktop_thumbgen.py").toString().replace("file://", "")), desktopDir, Quickshell.cacheDir + "/desktop_thumbnails"]
-        command: ["python3", decodeURIComponent(Qt.resolvedUrl("../../scripts/desktop_thumbgen.py").toString().replace("file://", "")), desktopDir, Quickshell.env("HOME") + "/.cache/ambxst" + "/desktop_thumbnails"]
+        command: ["python3", decodeURIComponent(Qt.resolvedUrl("../../scripts/desktop_thumbgen.py").toString().replace("file://", "")), desktopDir, Quickshell.env("HOME") + "/.cache/rshell" + "/desktop_thumbnails"]
 
         stdout: StdioCollector {
             onStreamFinished: {

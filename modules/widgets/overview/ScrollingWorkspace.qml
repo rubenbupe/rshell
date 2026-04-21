@@ -266,7 +266,7 @@ Item {
             TapHandler {
                 acceptedButtons: Qt.LeftButton
                 onDoubleTapped: {
-                    AxctlService.dispatch(`workspace ${root.workspaceId}`);
+                    RctlService.dispatch(`workspace ${root.workspaceId}`);
                     Visibilities.setActiveModule("", true);
                 }
             }
@@ -282,9 +282,11 @@ Item {
                     readonly property var toplevel: {
                         const toplevels = ToplevelManager.toplevels.values;
                         const cls = windowData.class || "";
-                        if (!cls) return null;
+                        if (!cls)
+                            return null;
                         const candidates = toplevels.filter(t => t.appId === cls);
-                        if (candidates.length <= 1) return candidates[0] || null;
+                        if (candidates.length <= 1)
+                            return candidates[0] || null;
                         return candidates.find(t => t.title === (windowData.title || "")) || candidates[0];
                     }
 
@@ -337,7 +339,7 @@ Item {
                     Drag.hotSpot.x: width / 2
                     Drag.hotSpot.y: height / 2
 
-                    // Timer to reset override position after AxctlService update
+                    // Timer to reset override position after RctlService update
                     Timer {
                         id: resetOverrideTimer
                         interval: 200
@@ -405,8 +407,8 @@ Item {
 
                     // Icon
                     Image {
-                        mipmap: true
                         id: windowIcon
+                        mipmap: true
                         readonly property real iconSize: Math.round(Math.min(windowDelegate.targetWidth, windowDelegate.targetHeight) * (windowDelegate.compactMode ? 0.6 : 0.35))
                         anchors.centerIn: parent
                         width: iconSize
@@ -552,17 +554,17 @@ Item {
                                             // Calculate position for floating window in target workspace
                                             const draggedX = windowDelegate.x;
                                             const draggedY = windowDelegate.y;
-                                            
+
                                             const workspaceGlobalPos = windowsContainer.mapToItem(root.dragOverlay, 0, 0);
                                             const relativeX = draggedX - workspaceGlobalPos.x;
                                             const relativeY = draggedY - workspaceGlobalPos.y;
-                                            
+
                                             const workspaceX = relativeX - root.horizontalScrollOffset - root.viewportOffset;
                                             const workspaceY = relativeY;
-                                            
+
                                             const monitorWidth = ((monitorData && monitorData.width !== undefined ? monitorData.width : 1920) || 1920) / ((monitorData && monitorData.scale !== undefined ? monitorData.scale : 1.0) || 1.0);
                                             const monitorHeight = ((monitorData && monitorData.height !== undefined ? monitorData.height : 1080) || 1080) / ((monitorData && monitorData.scale !== undefined ? monitorData.scale : 1.0) || 1.0);
-                                            
+
                                             let adjustedMonitorWidth = monitorWidth;
                                             let adjustedMonitorHeight = monitorHeight;
                                             if (barPosition === "left" || barPosition === "right") {
@@ -571,27 +573,27 @@ Item {
                                             if (barPosition === "top" || barPosition === "bottom") {
                                                 adjustedMonitorHeight -= barReserved;
                                             }
-                                            
+
                                             const actualX = workspaceX / scale_;
                                             const actualY = workspaceY / scale_;
-                                            
+
                                             const percentageX = Math.round((actualX / adjustedMonitorWidth) * 100);
                                             const percentageY = Math.round((actualY / adjustedMonitorHeight) * 100);
-                                            
+
                                             // Move to workspace and set position
-                                            AxctlService.dispatch(`movetoworkspacesilent ${targetWs}, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
-                                            AxctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
-                                            
+                                            RctlService.dispatch(`movetoworkspacesilent ${targetWs}, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
+                                            RctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
+
                                             // Force immediate window data update
                                             CompositorData.updateWindowList();
                                         } else {
                                             // Just move workspace without repositioning for tiled windows
-                                            AxctlService.dispatch(`movetoworkspacesilent ${targetWs}, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
-                                            
+                                            RctlService.dispatch(`movetoworkspacesilent ${targetWs}, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
+
                                             // Force immediate window data update
                                             CompositorData.updateWindowList();
                                         }
-                                        
+
                                         // Restore original parent and reset position
                                         if (windowDelegate.originalParent) {
                                             windowDelegate.parent = windowDelegate.originalParent;
@@ -599,30 +601,29 @@ Item {
                                         }
                                         windowDelegate.x = windowDelegate.initX;
                                         windowDelegate.y = windowDelegate.initY;
-                                        
                                     } else if ((windowDelegate.windowData && windowDelegate.windowData.floating !== undefined ? windowDelegate.windowData.floating : false) && (windowDelegate.x !== windowDelegate.initX || windowDelegate.y !== windowDelegate.initY)) {
                                         // Dropped on same workspace and window is floating - reposition it
                                         // The window is currently in the drag overlay with global coordinates
-                                        
+
                                         // Store current drag position
                                         const draggedX = windowDelegate.x;
                                         const draggedY = windowDelegate.y;
-                                        
+
                                         // Get the workspace container position
                                         const workspaceGlobalPos = windowsContainer.mapToItem(root.dragOverlay, 0, 0);
-                                        
+
                                         // Calculate position relative to workspace
                                         const relativeX = draggedX - workspaceGlobalPos.x;
                                         const relativeY = draggedY - workspaceGlobalPos.y;
-                                        
+
                                         // Remove horizontal scroll offset to get actual position in workspace
                                         const workspaceX = relativeX - root.horizontalScrollOffset - root.viewportOffset;
                                         const workspaceY = relativeY;
-                                        
+
                                         // Convert to percentage of workspace dimensions (in scaled space)
                                         const monitorWidth = ((monitorData && monitorData.width !== undefined ? monitorData.width : 1920) || 1920) / ((monitorData && monitorData.scale !== undefined ? monitorData.scale : 1.0) || 1.0);
                                         const monitorHeight = ((monitorData && monitorData.height !== undefined ? monitorData.height : 1080) || 1080) / ((monitorData && monitorData.scale !== undefined ? monitorData.scale : 1.0) || 1.0);
-                                        
+
                                         // Adjust for bar reserved space
                                         let adjustedMonitorWidth = monitorWidth;
                                         let adjustedMonitorHeight = monitorHeight;
@@ -632,37 +633,37 @@ Item {
                                         if (barPosition === "top" || barPosition === "bottom") {
                                             adjustedMonitorHeight -= barReserved;
                                         }
-                                        
+
                                         // Convert from scaled overview space to actual position
                                         const actualX = workspaceX / scale_;
                                         const actualY = workspaceY / scale_;
-                                        
+
                                         // Calculate percentage
                                         const percentageX = Math.round((actualX / adjustedMonitorWidth) * 100);
                                         const percentageY = Math.round((actualY / adjustedMonitorHeight) * 100);
-                                        
+
                                         // Dispatch movewindowpixel command
-                                        AxctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
-                                        
+                                        RctlService.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${(windowDelegate.windowData && windowDelegate.windowData.address !== undefined ? windowDelegate.windowData.address : "")}`);
+
                                         // Force immediate window data update
                                         CompositorData.updateWindowList();
-                                        
+
                                         // Restore original parent
                                         if (windowDelegate.originalParent) {
                                             windowDelegate.parent = windowDelegate.originalParent;
                                             windowDelegate.originalParent = null;
                                         }
-                                        
+
                                         // Set override position for immediate visual update
                                         // Calculate what baseX/baseY should be at the dropped position
                                         windowDelegate.overrideBaseX = relativeX;
                                         windowDelegate.overrideBaseY = relativeY;
                                         windowDelegate.useOverridePosition = true;
-                                        
+
                                         // Force position to dropped location
                                         windowDelegate.x = relativeX;
                                         windowDelegate.y = relativeY;
-                                        
+
                                         // Start timer to clear override
                                         resetOverrideTimer.restart();
                                     } else {
@@ -687,9 +688,9 @@ Item {
                             if (!windowDelegate.windowData)
                                 return;
                             if (mouse.button === Qt.LeftButton && !windowDelegate.dragging) {
-                                AxctlService.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
+                                RctlService.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
                             } else if (mouse.button === Qt.MiddleButton) {
-                                AxctlService.dispatch(`closewindow address:${windowDelegate.windowData.address}`);
+                                RctlService.dispatch(`closewindow address:${windowDelegate.windowData.address}`);
                             }
                         }
 
@@ -699,7 +700,7 @@ Item {
                             if (mouse.button === Qt.LeftButton) {
                                 Visibilities.setActiveModule("", true);
                                 Qt.callLater(() => {
-                                    AxctlService.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
+                                    RctlService.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
                                 });
                             }
                         }

@@ -53,16 +53,19 @@ Item {
         }
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ambxst:reservation:top"
-        
+        WlrLayershell.namespace: "rshell:reservation:top"
+
         exclusiveZone: {
-            if (!Config.barReady) return 0;
+            if (!Config.barReady)
+                return 0;
             let zone = actualFrameSize;
             if (barEnabled && barPosition === "top" && barPinned) {
                 zone += barSize + barOuterMargin;
-                if (containBar && frameEnabled) zone += actualFrameSize;
+                if (containBar && frameEnabled)
+                    zone += actualFrameSize;
             }
-            if (dockEnabled && dockPosition === "top" && dockPinned) zone += dockHeight;
+            if (dockEnabled && dockPosition === "top" && dockPinned)
+                zone += dockHeight;
             return zone;
         }
         exclusionMode: exclusiveZone > 0 ? ExclusionMode.Normal : ExclusionMode.Ignore
@@ -85,16 +88,19 @@ Item {
         }
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ambxst:reservation:bottom"
+        WlrLayershell.namespace: "rshell:reservation:bottom"
 
         exclusiveZone: {
-            if (!Config.barReady) return 0;
+            if (!Config.barReady)
+                return 0;
             let zone = actualFrameSize;
             if (barEnabled && barPosition === "bottom" && barPinned) {
                 zone += barSize + barOuterMargin;
-                if (containBar && frameEnabled) zone += actualFrameSize;
+                if (containBar && frameEnabled)
+                    zone += actualFrameSize;
             }
-            if (dockEnabled && dockPosition === "bottom" && dockPinned) zone += dockHeight;
+            if (dockEnabled && dockPosition === "bottom" && dockPinned)
+                zone += dockHeight;
             return zone;
         }
         exclusionMode: exclusiveZone > 0 ? ExclusionMode.Normal : ExclusionMode.Ignore
@@ -117,20 +123,23 @@ Item {
         }
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ambxst:reservation:left"
+        WlrLayershell.namespace: "rshell:reservation:left"
 
         exclusiveZone: {
-            if (!Config.barReady) return 0;
+            if (!Config.barReady)
+                return 0;
             let zone = actualFrameSize;
             if (barEnabled && barPosition === "left" && barPinned) {
                 zone += barSize + barOuterMargin;
-                if (containBar && frameEnabled) zone += actualFrameSize;
+                if (containBar && frameEnabled)
+                    zone += actualFrameSize;
             }
             if (sidebarEnabled && sidebarPosition === "left" && sidebarPinned) {
                 zone += sidebarWidth;
                 zone += frameEnabled ? actualFrameSize : sidebarMargin;
             }
-            if (dockEnabled && dockPosition === "left" && dockPinned) zone += dockHeight;
+            if (dockEnabled && dockPosition === "left" && dockPinned)
+                zone += dockHeight;
             return zone;
         }
         exclusionMode: exclusiveZone > 0 ? ExclusionMode.Normal : ExclusionMode.Ignore
@@ -153,20 +162,23 @@ Item {
         }
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ambxst:reservation:right"
+        WlrLayershell.namespace: "rshell:reservation:right"
 
         exclusiveZone: {
-            if (!Config.barReady) return 0;
+            if (!Config.barReady)
+                return 0;
             let zone = actualFrameSize;
             if (barEnabled && barPosition === "right" && barPinned) {
                 zone += barSize + barOuterMargin;
-                if (containBar && frameEnabled) zone += actualFrameSize;
+                if (containBar && frameEnabled)
+                    zone += actualFrameSize;
             }
             if (sidebarEnabled && sidebarPosition === "right" && sidebarPinned) {
                 zone += sidebarWidth;
                 zone += frameEnabled ? actualFrameSize : sidebarMargin;
             }
-            if (dockEnabled && dockPosition === "right" && dockPinned) zone += dockHeight;
+            if (dockEnabled && dockPosition === "right" && dockPinned)
+                zone += dockHeight;
             return zone;
         }
         exclusionMode: exclusiveZone > 0 ? ExclusionMode.Normal : ExclusionMode.Ignore

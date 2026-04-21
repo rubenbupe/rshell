@@ -14,13 +14,13 @@ QtObject {
 
     property var currentAnimationConfig: null
     property Process readAnimationsProcess: Process {
-        command: ["axctl", "config", "get-animations"]
+        command: ["rctl", "config", "get-animations"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     const parsed = JSON.parse(text);
                     if (Array.isArray(parsed) && parsed.length > 0) {
-                        // axctl config get-animations returns [animations, beziers]
+                        // rctl config get-animations returns [animations, beziers]
                         currentAnimationConfig = parsed;
                     }
                 } catch (e) {
@@ -57,7 +57,7 @@ QtObject {
     }
 
     function formatColorForCompositor(color) {
-        // AxctlService expects colors in format: rgb(rrggbb) or rgba(rrggbbaa)
+        // RctlService expects colors in format: rgb(rrggbb) or rgba(rrggbbaa)
         const r = Math.round(color.r * 255).toString(16).padStart(2, '0');
         const g = Math.round(color.g * 255).toString(16).padStart(2, '0');
         const b = Math.round(color.b * 255).toString(16).padStart(2, '0');
@@ -84,7 +84,7 @@ QtObject {
 
         // Wait for layout to be ready.
         if (!GlobalStates.compositorLayoutReady) {
-            console.log("CompositorConfig: Esperando que se detecte el layout de AxctlService...");
+            console.log("CompositorConfig: Esperando que se detecte el layout de RctlService...");
             return;
         }
 
@@ -138,7 +138,7 @@ QtObject {
         const barOrientation = getBarOrientation();
         let speed = 2.5;
         let bezier = "default";
-        
+
         if (currentAnimationConfig && currentAnimationConfig[0]) {
             const workspaceAnim = currentAnimationConfig[0].find(anim => anim.name === "workspaces");
             if (workspaceAnim) {
@@ -392,7 +392,6 @@ QtObject {
             }
         }
     }
-
 
     Component.onCompleted: {
         // Apply immediately if Config is already loaded.

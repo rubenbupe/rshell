@@ -17,7 +17,7 @@ Item {
     readonly property real sideMargin: (width - contentWidth) / 2
 
     // Current category being viewed
-    property string currentCategory: "ambxst"
+    property string currentCategory: "rshell"
 
     // Process for unbinding keybinds
     Process {
@@ -35,7 +35,7 @@ Item {
                 const keyObj = bind.keys[k];
                 const mods = keyObj.modifiers && keyObj.modifiers.length > 0 ? keyObj.modifiers.join(" ") : "";
                 const key = keyObj.key || "";
-                const command = `axctl config unbind-key ${mods},${key}`;
+                const command = `rctl config unbind-key ${mods},${key}`;
                 console.log("BindsPanel: Unbinding keybind:", command);
                 unbindProcess.command = ["sh", "-c", command];
                 unbindProcess.running = true;
@@ -44,7 +44,7 @@ Item {
             // Old format fallback
             const mods = bind.modifiers && bind.modifiers.length > 0 ? bind.modifiers.join(" ") : "";
             const key = bind.key || "";
-            const command = `axctl config unbind-key ${mods},${key}`;
+            const command = `rctl config unbind-key ${mods},${key}`;
             console.log("BindsPanel: Unbinding keybind:", command);
             unbindProcess.command = ["sh", "-c", command];
             unbindProcess.running = true;
@@ -55,7 +55,7 @@ Item {
     property bool editMode: false
     property int editingIndex: -1
     property var editingBind: null
-    property bool isEditingAmbxst: false
+    property bool isEditingrshell: false
     property bool isCreatingNew: false
 
     // Edit form state - new format with keys[] and actions[]
@@ -76,7 +76,13 @@ Item {
     readonly property var actionOptions: {
         const options = KeybindActions.getActionOptions();
         if (editActionId === "legacy.dispatcher") {
-            return options.concat([{ id: "legacy.dispatcher", label: "Legacy Dispatcher", category: "Advanced" }]);
+            return options.concat([
+                {
+                    id: "legacy.dispatcher",
+                    label: "Legacy Dispatcher",
+                    category: "Advanced"
+                }
+            ]);
         }
         return options;
     }
@@ -237,14 +243,14 @@ Item {
         }
     }
 
-    function openEditDialog(bind, index, isAmbxst) {
+    function openEditDialog(bind, index, isrshell) {
         root.editingIndex = index;
         root.editingBind = bind;
-        root.isEditingAmbxst = isAmbxst;
+        root.isEditingrshell = isrshell;
 
         // Initialize edit form state
-        if (isAmbxst) {
-            // Ambxst binds still use old format (single key)
+        if (isrshell) {
+            // rshell binds still use old format (single key)
             const bindData = bind.bind;
             root.editName = "";
             root.editKeys = [
@@ -254,9 +260,9 @@ Item {
                 }
             ];
             const action = KeybindActions.ensureAction(bindData.action || bindData);
-            root.editActions = [
-                Object.assign({ layouts: [] }, action)
-            ];
+            root.editActions = [Object.assign({
+                    layouts: []
+                }, action)];
         } else {
             // Custom binds use new format
             root.editName = bind.name || "";
@@ -278,9 +284,9 @@ Item {
                     }
                 ];
                 const action = KeybindActions.ensureAction(bind);
-                root.editActions = [
-                    Object.assign({ layouts: [] }, action)
-                ];
+                root.editActions = [Object.assign({
+                        layouts: []
+                    }, action)];
             }
         }
 
@@ -327,20 +333,20 @@ Item {
     }
 
     function saveEdit() {
-        if (root.isEditingAmbxst) {
-            // Save ambxst bind (still uses old format internally)
+        if (root.isEditingrshell) {
+            // Save rshell bind (still uses old format internally)
             const path = root.editingBind.path.split(".");
-            // path = ["ambxst", "section"?, "bindName"]
-            
+            // path = ["rshell", "section"?, "bindName"]
+
             const adapter = Config.keybindsLoader.adapter;
-            if (adapter && adapter.ambxst) {
+            if (adapter && adapter.rshell) {
                 let bindObj = null;
                 if (path.length === 2) {
-                    // Top level: ambxst.bindName
-                    bindObj = adapter.ambxst[path[1]];
+                    // Top level: rshell.bindName
+                    bindObj = adapter.rshell[path[1]];
                 } else if (path.length === 3) {
-                    // Nested: ambxst.system.bindName
-                    bindObj = adapter.ambxst[path[1]][path[2]];
+                    // Nested: rshell.system.bindName
+                    bindObj = adapter.rshell[path[1]][path[2]];
                 }
 
                 if (bindObj) {
@@ -395,8 +401,8 @@ Item {
 
     readonly property var categories: [
         {
-            id: "ambxst",
-            label: "Ambxst",
+            id: "rshell",
+            label: "rshell",
             icon: Icons.widgets
         },
         {
@@ -431,38 +437,38 @@ Item {
         return mods ? mods + " + " + bind.key : bind.key;
     }
 
-    // Get ambxst binds as a flat list
-    function getAmbxstBinds() {
+    // Get rshell binds as a flat list
+    function getrshellBinds() {
         const adapter = Config.keybindsLoader.adapter;
-        if (!adapter || !adapter.ambxst)
+        if (!adapter || !adapter.rshell)
             return [];
 
         const binds = [];
-        const ambxst = adapter.ambxst;
+        const rshell = adapter.rshell;
 
-        // Core Ambxst binds (Launcher, Dashboard, etc.)
+        // Core rshell binds (Launcher, Dashboard, etc.)
         const coreKeys = ["launcher", "dashboard", "assistant", "clipboard", "emoji", "notes", "tmux", "wallpapers"];
         for (const key of coreKeys) {
-            if (ambxst[key]) {
+            if (rshell[key]) {
                 binds.push({
-                    category: "Ambxst",
+                    category: "rshell",
                     name: key.charAt(0).toUpperCase() + key.slice(1),
-                    path: "ambxst." + key,
-                    bind: ambxst[key]
+                    path: "rshell." + key,
+                    bind: rshell[key]
                 });
             }
         }
 
         // System binds
-        if (ambxst.system) {
+        if (rshell.system) {
             const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens", "reload", "quit"];
             for (const key of systemKeys) {
-                if (ambxst.system[key]) {
+                if (rshell.system[key]) {
                     binds.push({
                         category: "System",
                         name: key.charAt(0).toUpperCase() + key.slice(1),
-                        path: "ambxst.system." + key,
-                        bind: ambxst.system[key]
+                        path: "rshell.system." + key,
+                        bind: rshell.system[key]
                     });
                 }
             }
@@ -481,23 +487,23 @@ Item {
 
     // Add a new custom bind
     function addNewBind() {
-            const newBind = {
-                "name": "",
-                "keys": [
-                    {
-                        "modifiers": ["SUPER"],
-                        "key": ""
-                    }
-                ],
-                "actions": [
-                    {
-                        "id": "command.run",
-                        "args": KeybindActions.defaultArgs("command.run"),
-                        "layouts": []
-                    }
-                ],
-                "enabled": true
-            };
+        const newBind = {
+            "name": "",
+            "keys": [
+                {
+                    "modifiers": ["SUPER"],
+                    "key": ""
+                }
+            ],
+            "actions": [
+                {
+                    "id": "command.run",
+                    "args": KeybindActions.defaultArgs("command.run"),
+                    "layouts": []
+                }
+            ],
+            "enabled": true
+        };
 
         // Switch to custom category
         root.currentCategory = "custom";
@@ -707,10 +713,10 @@ Item {
             x: root.sideMargin
             spacing: 4
 
-            // Ambxst binds view
+            // rshell binds view
             Repeater {
-                id: ambxstRepeater
-                model: root.currentCategory === "ambxst" ? root.getAmbxstBinds() : []
+                id: rshellRepeater
+                model: root.currentCategory === "rshell" ? root.getrshellBinds() : []
 
                 delegate: BindItem {
                     required property var modelData
@@ -721,7 +727,7 @@ Item {
                     keybindText: root.formatKeybind(modelData.bind)
                     dispatcher: KeybindActions.describeAction(modelData.bind.action || modelData.bind)
                     argument: ""
-                    isAmbxst: true
+                    isrshell: true
 
                     onEditRequested: {
                         root.openEditDialog(modelData, index, true);
@@ -768,7 +774,7 @@ Item {
                     dispatcher: firstDispatcher
                     argument: firstArgument
                     isEnabled: modelData.enabled !== false
-                    isAmbxst: false
+                    isrshell: false
                     layouts: getUniqueLayouts()
 
                     onToggleEnabled: {
@@ -798,8 +804,8 @@ Item {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 20
-                visible: (root.currentCategory === "ambxst" && ambxstRepeater.count === 0) || (root.currentCategory === "custom" && customRepeater.count === 0)
-                text: root.currentCategory === "ambxst" ? "No Ambxst binds configured" : "No custom binds configured"
+                visible: (root.currentCategory === "rshell" && rshellRepeater.count === 0) || (root.currentCategory === "custom" && customRepeater.count === 0)
+                text: root.currentCategory === "rshell" ? "No rshell binds configured" : "No custom binds configured"
                 font.family: Config.theme.font
                 font.pixelSize: Styling.fontSize(0)
                 color: Colors.overSurfaceVariant
@@ -911,7 +917,7 @@ Item {
                         // Delete button (only for existing custom binds)
                         StyledRect {
                             id: deleteButton
-                            visible: !root.isEditingAmbxst && !root.isCreatingNew
+                            visible: !root.isEditingrshell && !root.isCreatingNew
                             variant: deleteButtonArea.containsMouse ? "focus" : "common"
                             Layout.preferredWidth: 36
                             Layout.preferredHeight: 36
@@ -939,10 +945,10 @@ Item {
                             }
                         }
 
-                        // Reset button (only for Ambxst binds)
+                        // Reset button (only for rshell binds)
                         StyledRect {
                             id: resetButton
-                            visible: root.isEditingAmbxst
+                            visible: root.isEditingrshell
                             variant: resetButtonArea.pressed ? "primary" : (resetButtonArea.containsMouse ? "focus" : "common")
                             Layout.preferredWidth: resetButtonContent.width + 24
                             Layout.preferredHeight: 36
@@ -977,26 +983,30 @@ Item {
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    if (root.isEditingAmbxst && root.editingBind) {
+                                    if (root.isEditingrshell && root.editingBind) {
                                         const path = root.editingBind.path.split(".");
-                                        // path = ["ambxst", "dashboard"|"system", "bindName"]
+                                        // path = ["rshell", "dashboard"|"system", "bindName"]
                                         const section = path[1];
                                         const bindName = path[2];
-                                        
+
                                         // Use the new helper in Config.qml to get the default values
-                                        const defaultBind = Config.keybindsLoader.adapter.getAmbxstDefault(section, bindName);
-                                        
+                                        const defaultBind = Config.keybindsLoader.adapter.getrshellDefault(section, bindName);
+
                                         if (defaultBind) {
-                                            root.editKeys = [{
-                                                "modifiers": defaultBind.modifiers || [],
-                                                "key": defaultBind.key || ""
-                                            }];
-                                            root.editActions = [{
-                                                "dispatcher": defaultBind.dispatcher || "",
-                                                "argument": defaultBind.argument || "",
-                                                "flags": defaultBind.flags || ""
-                                            }];
-                                            
+                                            root.editKeys = [
+                                                {
+                                                    "modifiers": defaultBind.modifiers || [],
+                                                    "key": defaultBind.key || ""
+                                                }
+                                            ];
+                                            root.editActions = [
+                                                {
+                                                    "dispatcher": defaultBind.dispatcher || "",
+                                                    "argument": defaultBind.argument || "",
+                                                    "flags": defaultBind.flags || ""
+                                                }
+                                            ];
+
                                             // Auto-save immediately
                                             root.saveEdit();
                                         }
@@ -1062,7 +1072,7 @@ Item {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 8
-                            visible: !root.isEditingAmbxst
+                            visible: !root.isEditingrshell
 
                             Text {
                                 text: "Name (optional)"
@@ -1090,7 +1100,7 @@ Item {
                                     selectByMouse: true
                                     onTextChanged: {
                                         if (root.editName !== text) {
-                                            root.editName = text
+                                            root.editName = text;
                                         }
                                     }
 
@@ -1105,9 +1115,9 @@ Item {
                             }
                         }
 
-                        // Bind name/info (for ambxst binds only)
+                        // Bind name/info (for rshell binds only)
                         Text {
-                            visible: root.isEditingAmbxst && root.editingBind !== null
+                            visible: root.isEditingrshell && root.editingBind !== null
                             text: root.editingBind ? (root.editingBind.name || "") : ""
                             font.family: Config.theme.font
                             font.pixelSize: Styling.fontSize(1)
@@ -1179,7 +1189,7 @@ Item {
                                 // Remove key button
                                 StyledRect {
                                     id: removeKeyBtn
-                                    visible: root.editKeys.length > 1 && !root.isEditingAmbxst
+                                    visible: root.editKeys.length > 1 && !root.isEditingrshell
                                     variant: removeKeyBtnArea.containsMouse ? "focus" : "common"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1272,7 +1282,7 @@ Item {
                                 // Add key button
                                 StyledRect {
                                     id: addKeyBtn
-                                    visible: !root.isEditingAmbxst
+                                    visible: !root.isEditingrshell
                                     variant: addKeyBtnArea.containsMouse ? "primaryfocus" : "primary"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1383,12 +1393,12 @@ Item {
                         }
 
                         // =====================
-                        // ACTIONS SECTION (custom binds & flags for ambxst)
+                        // ACTIONS SECTION (custom binds & flags for rshell)
                         // =====================
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 8
-                            // visible: !root.isEditingAmbxst - Removed to allow editing flags for Ambxst binds
+                            // visible: !root.isEditingrshell - Removed to allow editing flags for rshell binds
 
                             // Actions section header with pager controls
                             RowLayout {
@@ -1406,7 +1416,7 @@ Item {
 
                                 // Page indicator
                                 Text {
-                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
+                                    visible: root.editActions.length > 1 && !root.isEditingrshell
                                     text: (root.currentActionPage + 1) + " / " + root.editActions.length
                                     font.family: Config.theme.font
                                     font.pixelSize: Styling.fontSize(-1)
@@ -1416,7 +1426,7 @@ Item {
                                 // Remove action button
                                 StyledRect {
                                     id: removeActionBtn
-                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
+                                    visible: root.editActions.length > 1 && !root.isEditingrshell
                                     variant: removeActionBtnArea.containsMouse ? "focus" : "common"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1447,7 +1457,7 @@ Item {
                                 // Previous action button
                                 StyledRect {
                                     id: prevActionBtn
-                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
+                                    visible: root.editActions.length > 1 && !root.isEditingrshell
                                     variant: prevActionBtnArea.containsMouse ? "focus" : "common"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1478,7 +1488,7 @@ Item {
                                 // Next action button
                                 StyledRect {
                                     id: nextActionBtn
-                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
+                                    visible: root.editActions.length > 1 && !root.isEditingrshell
                                     variant: nextActionBtnArea.containsMouse ? "focus" : "common"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1509,7 +1519,7 @@ Item {
                                 // Add action button
                                 StyledRect {
                                     id: addActionBtn
-                                    visible: !root.isEditingAmbxst
+                                    visible: !root.isEditingrshell
                                     variant: addActionBtnArea.containsMouse ? "primaryfocus" : "primary"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1687,10 +1697,10 @@ Item {
                             }
 
                             // =====================
-                            // LAYOUT SELECTOR (for AxctlService)
+                            // LAYOUT SELECTOR (for RctlService)
                             // =====================
                             Text {
-                                text: "Layouts (AxctlService)"
+                                text: "Layouts (RctlService)"
                                 font.family: Config.theme.font
                                 font.pixelSize: Styling.fontSize(-1)
                                 font.weight: Font.Medium
@@ -1855,7 +1865,7 @@ Item {
         property string dispatcher: ""
         property string argument: ""
         property bool isEnabled: true
-        property bool isAmbxst: true
+        property bool isrshell: true
         property bool isHovered: false
         property var layouts: []  // Layouts this bind is restricted to (empty = all layouts)
 
@@ -1890,7 +1900,7 @@ Item {
             // Checkbox for custom binds (styled like OLED Mode)
             Item {
                 id: checkboxItem
-                visible: !bindItem.isAmbxst
+                visible: !bindItem.isrshell
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
 
@@ -1971,7 +1981,7 @@ Item {
 
                     // Layout indicator
                     Row {
-                        visible: !bindItem.isAmbxst
+                        visible: !bindItem.isrshell
                         spacing: 4
                         Layout.alignment: Qt.AlignVCenter
 
@@ -2048,7 +2058,7 @@ Item {
         // Checkbox MouseArea needs to be on top
         MouseArea {
             id: checkboxClickArea
-            visible: !bindItem.isAmbxst
+            visible: !bindItem.isrshell
             x: 12
             y: (parent.height - 32) / 2
             width: 32

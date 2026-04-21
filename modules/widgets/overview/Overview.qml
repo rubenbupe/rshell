@@ -11,8 +11,6 @@ import qs.modules.bar.workspaces
 import qs.modules.services
 import qs.config
 
-
-
 Item {
     id: overviewRoot
 
@@ -27,7 +25,7 @@ Item {
 
     // Use the screen's monitor instead of focused monitor for multi-monitor support
     property var currentScreen: null  // This will be set from parent
-    readonly property var monitor: currentScreen ? AxctlService.monitorFor(currentScreen) : AxctlService.focusedMonitor
+    readonly property var monitor: currentScreen ? RctlService.monitorFor(currentScreen) : RctlService.focusedMonitor
     readonly property int workspaceGroup: Math.floor((monitor?.activeWorkspace?.id - 1 || 0) / workspacesShown)
 
     // Cache these references
@@ -144,7 +142,7 @@ Item {
         // Close overview and focus the matched window
         Visibilities.setActiveModule("", true);
         Qt.callLater(() => {
-            AxctlService.dispatch(`focuswindow address:${win.address}`);
+            RctlService.dispatch(`focuswindow address:${win.address}`);
         });
     }
 
@@ -265,14 +263,14 @@ Item {
                                 onClicked: {
                                     if (overviewRoot.draggingTargetWorkspace === -1) {
                                         // Only switch workspace, don't close overview
-                                        AxctlService.dispatch(`workspace ${workspaceValue}`);
+                                        RctlService.dispatch(`workspace ${workspaceValue}`);
                                     }
                                 }
                                 onDoubleClicked: {
                                     if (overviewRoot.draggingTargetWorkspace === -1) {
                                         // Double click closes overview and switches workspace
                                         Visibilities.setActiveModule("");
-                                        AxctlService.dispatch(`workspace ${workspaceValue}`);
+                                        RctlService.dispatch(`workspace ${workspaceValue}`);
                                     }
                                 }
                             }
@@ -316,12 +314,14 @@ Item {
                 }).map(win => ({
                             windowData: win,
                             toplevel: (() => {
-                                const cls = win.class || "";
-                                if (!cls) return null;
-                                const candidates = toplevels.filter(t => t.appId === cls);
-                                if (candidates.length <= 1) return candidates[0] || null;
-                                return candidates.find(t => t.title === (win.title || "")) || candidates[0];
-                            })()
+                                    const cls = win.class || "";
+                                    if (!cls)
+                                        return null;
+                                    const candidates = toplevels.filter(t => t.appId === cls);
+                                    if (candidates.length <= 1)
+                                        return candidates[0] || null;
+                                    return candidates.find(t => t.title === (win.title || "")) || candidates[0];
+                                })()
                         }));
             }
 
@@ -354,7 +354,7 @@ Item {
                     onDragFinished: targetWorkspace => {
                         overviewRoot.draggingFromWorkspace = -1;
                         if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) {
-                            AxctlService.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
+                            RctlService.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
                         }
                     }
                     onWindowClicked: {
@@ -362,11 +362,11 @@ Item {
                         // Skip generic focus restoration since we're handling it specifically
                         Visibilities.setActiveModule("", true);
                         Qt.callLater(() => {
-                            AxctlService.dispatch(`focuswindow address:${windowData.address}`);
+                            RctlService.dispatch(`focuswindow address:${windowData.address}`);
                         });
                     }
                     onWindowClosed: {
-                        AxctlService.dispatch(`closewindow address:${windowData.address}`);
+                        RctlService.dispatch(`closewindow address:${windowData.address}`);
                     }
                 }
             }

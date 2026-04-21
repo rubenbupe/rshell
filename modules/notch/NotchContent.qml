@@ -24,11 +24,11 @@ Item {
 
     // Get this screen's visibility state
     readonly property var screenVisibilities: Visibilities.getForScreen(screen.name)
-    readonly property bool isScreenFocused: AxctlService.focusedMonitor && AxctlService.focusedMonitor.name === screen.name
+    readonly property bool isScreenFocused: RctlService.focusedMonitor && RctlService.focusedMonitor.name === screen.name
 
     // Monitor reference and refrence to toplevels on monitor
-    readonly property var compositorMonitor: AxctlService.monitorFor(screen)
-    readonly property var toplevels: (!compositorMonitor || !compositorMonitor.activeWorkspace || !AxctlService.clients.values) ? [] : AxctlService.clients.values.filter(c => c.workspace.id === compositorMonitor.activeWorkspace.id)
+    readonly property var compositorMonitor: RctlService.monitorFor(screen)
+    readonly property var toplevels: (!compositorMonitor || !compositorMonitor.activeWorkspace || !RctlService.clients.values) ? [] : RctlService.clients.values.filter(c => c.workspace.id === compositorMonitor.activeWorkspace.id)
 
     // Check if there are any windows on the current monitor and workspace
     readonly property bool hasWindows: toplevels.length > 0
@@ -49,7 +49,7 @@ Item {
         // Fallback to config only if panel ref is missing
         return (Config.bar && Config.bar.pinnedOnStartup !== undefined) ? Config.bar.pinnedOnStartup : true;
     }
-    
+
     // Check if bar is hovering (for synchronized reveal when bar is at same side)
     readonly property bool barHoverActive: {
         if (barPosition !== notchPosition)
@@ -78,7 +78,8 @@ Item {
     // 2. If notch and bar are on same side: hide only if bar is unpinned OR if fullscreen is present
     readonly property bool shouldAutoHide: {
         if (barPosition !== notchPosition) {
-            if ((Config.notch && Config.notch.keepHidden !== undefined) ? Config.notch.keepHidden : false) return true;
+            if ((Config.notch && Config.notch.keepHidden !== undefined) ? Config.notch.keepHidden : false)
+                return true;
             return hasWindows || activeWindowFullscreen;
         }
         return !barPinned || activeWindowFullscreen;
@@ -112,14 +113,15 @@ Item {
         }
 
         // If not auto-hiding (pinned and not fullscreen), always show
-        if (!shouldAutoHide) return true;
-        
+        if (!shouldAutoHide)
+            return true;
+
         // Show on interaction (hover, open, notifications)
         // This works even in fullscreen, ensuring hover always works
         if (screenNotchOpen || hasActiveNotifications || hoverActive || barHoverActive) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -160,27 +162,43 @@ Item {
     Loader {
         id: persistentLauncherViewLoader
         active: false
-        sourceComponent: Component { LauncherView { visible: false } }
+        sourceComponent: Component {
+            LauncherView {
+                visible: false
+            }
+        }
     }
 
     Loader {
         id: persistentDashboardViewLoader
         active: false
-        sourceComponent: Component { DashboardView { visible: false } }
+        sourceComponent: Component {
+            DashboardView {
+                visible: false
+            }
+        }
     }
 
     // Persistent power menu view
     Loader {
         id: persistentPowerMenuViewLoader
         active: false
-        sourceComponent: Component { PowerMenuView { visible: false } }
+        sourceComponent: Component {
+            PowerMenuView {
+                visible: false
+            }
+        }
     }
 
     // Persistent tools menu view
     Loader {
         id: persistentToolsMenuViewLoader
         active: false
-        sourceComponent: Component { ToolsMenuView { visible: false } }
+        sourceComponent: Component {
+            ToolsMenuView {
+                visible: false
+            }
+        }
     }
 
     // Notification view component
@@ -217,7 +235,7 @@ Item {
 
     Item {
         id: notchRegionContainer
-        
+
         width: Math.max(notchAnimationContainer.width, notificationPopupContainer.visible ? notificationPopupContainer.width : 0)
         height: notchAnimationContainer.height + (notificationPopupContainer.visible ? notificationPopupContainer.height + notificationPopupContainer.anchors.topMargin : 0)
 
@@ -253,7 +271,8 @@ Item {
             // Slide animation (slide up when hidden)
             transform: Translate {
                 y: {
-                    if (root.reveal) return 0;
+                    if (root.reveal)
+                        return 0;
                     if (root.notchPosition === "top")
                         return -(Math.max(notchContainer.height, 50) + 16);
                     else
@@ -312,7 +331,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.topMargin: root.notchPosition === "top" ? 4 : 0
             anchors.bottomMargin: root.notchPosition === "bottom" ? 4 : 0
-            
+
             width: Math.round(popupHovered ? 420 + 48 : 320 + 48)
             height: shouldShowNotificationPopup ? (popupHovered ? notificationPopup.implicitHeight + 32 : notificationPopup.implicitHeight + 32) : 0
             clip: false
@@ -332,7 +351,8 @@ Item {
 
             transform: Translate {
                 y: {
-                    if (root.reveal) return 0;
+                    if (root.reveal)
+                        return 0;
                     if (root.notchPosition === "top")
                         return -(notchContainer.height + 16);
                     else

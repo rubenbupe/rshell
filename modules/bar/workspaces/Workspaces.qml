@@ -15,7 +15,7 @@ Item {
     id: workspacesWidget
     required property var bar
     required property string orientation
-    readonly property var monitor: AxctlService.monitorFor(bar.screen)
+    readonly property var monitor: RctlService.monitorFor(bar.screen)
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
 
     readonly property int workspaceGroup: Math.floor(((monitor && monitor.activeWorkspace ? monitor.activeWorkspace.id : undefined) - 1 || 0) / Config.workspaces.shown)
@@ -26,7 +26,7 @@ Item {
     property real radius: Styling.radius(0)
     property real startRadius: radius
     property real endRadius: radius
-    
+
     property int baseSize: 36
     property int workspaceButtonSize: baseSize - widgetPadding * 2
     property int workspaceButtonWidth: workspaceButtonSize
@@ -42,7 +42,7 @@ Item {
     function updateWorkspaceOccupied() {
         if (Config.workspaces.dynamic) {
             // Get occupied workspace IDs using the precomputed occupation map, sorted and limited by 'shown'
-            const occupiedIds = AxctlService.workspaces.values.filter(ws => CompositorData.workspaceOccupationMap[ws.id]).map(ws => ws.id).sort((a, b) => a - b).slice(0, Config.workspaces.shown);
+            const occupiedIds = RctlService.workspaces.values.filter(ws => CompositorData.workspaceOccupationMap[ws.id]).map(ws => ws.id).sort((a, b) => a - b).slice(0, Config.workspaces.shown);
 
             // Always include active workspace, even if empty
             const activeId = (monitor && monitor.activeWorkspace ? monitor.activeWorkspace.id : undefined) || 1;
@@ -125,7 +125,7 @@ Item {
     Component.onCompleted: updateTimer.restart()
 
     Connections {
-        target: AxctlService.workspaces
+        target: RctlService.workspaces
         function onValuesChanged() {
             updateTimer.restart();
         }
@@ -159,7 +159,7 @@ Item {
         variant: "bg"
         anchors.fill: parent
         enableShadow: Config.showBackground && (!effectiveContainBar || Config.bar.keepBarShadow)
-        
+
         topLeftRadius: orientation === "vertical" ? workspacesWidget.startRadius : workspacesWidget.startRadius
         topRightRadius: orientation === "vertical" ? workspacesWidget.startRadius : workspacesWidget.endRadius
         bottomLeftRadius: orientation === "vertical" ? workspacesWidget.endRadius : workspacesWidget.startRadius
@@ -177,10 +177,10 @@ Item {
 
             while (Math.abs(workspacesWidget.wheelDeltaAccumulator) >= workspacesWidget.wheelStepThreshold) {
                 if (workspacesWidget.wheelDeltaAccumulator < 0) {
-                    AxctlService.dispatch(`workspace r+1`);
+                    RctlService.dispatch(`workspace r+1`);
                     workspacesWidget.wheelDeltaAccumulator += workspacesWidget.wheelStepThreshold;
                 } else {
-                    AxctlService.dispatch(`workspace r-1`);
+                    RctlService.dispatch(`workspace r-1`);
                     workspacesWidget.wheelDeltaAccumulator -= workspacesWidget.wheelStepThreshold;
                 }
             }
@@ -195,7 +195,7 @@ Item {
         acceptedButtons: Qt.BackButton
         onPressed: event => {
             if (event.button === Qt.BackButton) {
-                AxctlService.dispatch(`togglespecialworkspace`);
+                RctlService.dispatch(`togglespecialworkspace`);
             }
         }
     }
@@ -431,7 +431,7 @@ Item {
                 id: button
                 property int workspaceValue: getWorkspaceId(index)
                 Layout.fillHeight: true
-                onPressed: AxctlService.dispatch(`workspace ${workspaceValue}`)
+                onPressed: RctlService.dispatch(`workspace ${workspaceValue}`)
                 width: workspaceButtonWidth
 
                 background: Item {
@@ -568,7 +568,7 @@ Item {
                 id: buttonVert
                 property int workspaceValue: getWorkspaceId(index)
                 Layout.fillWidth: true
-                onPressed: AxctlService.dispatch(`workspace ${workspaceValue}`)
+                onPressed: RctlService.dispatch(`workspace ${workspaceValue}`)
                 height: workspaceButtonWidth
 
                 background: Item {

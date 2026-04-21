@@ -7,7 +7,7 @@ import qs.config
 FileView {
     id: colors
     // QUICKSHELL-GIT: path: Quickshell.cachePath("colors.json")
-    path: Quickshell.env("HOME") + "/.cache/ambxst/colors.json"
+    path: Quickshell.env("HOME") + "/.cache/rshell/colors.json"
     preload: true
     watchChanges: true
     onFileChanged: {
@@ -41,8 +41,8 @@ FileView {
         id: pywalGenerator
     }
 
-    property KittyGenerator kittyGenerator: KittyGenerator {
-        id: kittyGenerator
+    property GhosttyGenerator ghosttyGenerator: GhosttyGenerator {
+        id: ghosttyGenerator
     }
 
     property NvChadGenerator nvChadGenerator: NvChadGenerator {
@@ -61,7 +61,7 @@ FileView {
             qtCtGenerator.generate(colors);
             gtkGenerator.generate(colors);
             pywalGenerator.generate(colors);
-            kittyGenerator.generate(colors);
+            ghosttyGenerator.generate(colors);
             nvChadGenerator.generate(colors);
             discordGenerator.generate(colors);
         }

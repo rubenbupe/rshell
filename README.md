@@ -1,5 +1,5 @@
 <p align="center">
-<img src="./assets/ambxst/ambxst-logo-color.svg" alt="Ambxst Logo" style="width: 50%;" align="center" />
+<img src="./assets/rshell/rshell-icon-dark.png" alt="Ambxst Logo" style="width: 50%;" align="center" />
   <br>
   <br>
 An <i><b>Ax</b>tremely</i> customizable shell.
@@ -19,45 +19,23 @@ An <i><b>Ax</b>tremely</i> customizable shell.
 
 ---
 
-<h2><sub><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Camera%20with%20Flash.png" alt="Camera with Flash" width="32" height="32" /></sub> Screenshots</h2>
-
-<div align="center">
-  <img src="./assets/screenshots/1.png" width="100%" />
-
-  <br />
-
-  <img src="./assets/screenshots/2.png" width="32%" />
-  <img src="./assets/screenshots/3.png" width="32%" />
-  <img src="./assets/screenshots/4.png" width="32%" />
-
-  <img src="./assets/screenshots/5.png" width="32%" />
-  <img src="./assets/screenshots/6.png" width="32%" />
-  <img src="./assets/screenshots/7.png" width="32%" />
-
-  <img src="./assets/screenshots/8.png" width="32%" />
-  <img src="./assets/screenshots/9.png" width="32%" />
-  <img src="./assets/screenshots/10.png" width="32%" />
-</div>
-
----
-
 <h2><sub><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Package.png" alt="Package" width="32" height="32" /></sub> Installation</h2>
 
 ```bash
-curl -L get.axeni.de/ambxst | sh
+curl -L get.axeni.de/rshell | sh
 ```
 
-This will install Ambxst and its dependencies. You will have the `ambxst` command available in your terminal, which you can use to start the shell.
+This will install Ambxst and its dependencies. You will have the `rshell` command available in your terminal, which you can use to start the shell.
 
 ### Hyprland (more compositors coming soon!)
 
 1. Run the installation command above.
 
-2. Run `ambxst install hyprland` to add Ambxst's configuration to Hyprland. This will source a config file that applies Ambxst's settings. It will look like this:
+2. Run `rshell install hyprland` to add Ambxst's configuration to Hyprland. This will source a config file that applies Ambxst's settings. It will look like this:
 
 ```bash
 # Ambxst
-source = ~/.local/share/ambxst/hyprland.conf
+source = ~/.local/share/rshell/hyprland.conf
 
 # OVERRIDES
 # Down here you can write or source anything that you want to override from Ambxst's settings.
@@ -65,7 +43,7 @@ source = ~/.local/share/ambxst/hyprland.conf
 
 As stated, anything you want to override from Ambxst's settings should be written under the "OVERRIDES" section.
 
-3. Start Ambxst by running `ambxst` in your terminal. If you want to keep it running without having the terminal window open, you can run `ambxst & disown`. This will be only necessary for your first test run, as Ambxst will start automatically on login after step 2.
+3. Start Ambxst by running `rshell` in your terminal. If you want to keep it running without having the terminal window open, you can run `rshell & disown`. This will be only necessary for your first test run, as Ambxst will start automatically on login after step 2.
 
 Ambxst is currently supported on **Arch**, **Fedora**, and **NixOS**. This means both based and derivative distributions.
 
@@ -128,7 +106,7 @@ Nope! Besides the source line in your `hyprland.conf`, Ambxst is designed to be 
 If you are having trouble or have any questions:
 - You can ask anything on [Discord](https://discord.com/invite/gHG9WHyNvH) or in the [GitHub discussions](https://github.com/Axenide/Ambxst/discussions).
 - You can open an issue on the [GitHub repository](https://github.com/Axenide/Ambxst/issues).
-- The main configuration is located at `~/.config/ambxst`.
+- The main configuration is located at `~/.config/rshell`.
 
 ---
 

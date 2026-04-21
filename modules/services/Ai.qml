@@ -14,8 +14,8 @@ Singleton {
     // PROPERTIES
     // ============================================
 
-    property string chatDir: Quickshell.env("HOME") + "/.local/share/ambxst/chats"
-    property string tmpDir: "/tmp/ambxst-ai"
+    property string chatDir: Quickshell.env("HOME") + "/.local/share/rshell/chats"
+    property string tmpDir: "/tmp/rshell-ai"
 
     property list<AiModel> models: []
 
@@ -107,15 +107,24 @@ Singleton {
 
     function getStrategyForProvider(providerName) {
         switch (providerName) {
-        case "openai": return openaiStrategy;
-        case "gemini": return geminiStrategy;
-        case "anthropic": return anthropicStrategy;
-        case "mistral": return mistralStrategy;
-        case "groq": return groqStrategy;
-        case "ollama": return ollamaStrategy;
-        case "minimax": return minimaxStrategy;
-        case "custom": return openaiStrategy; // custom endpoints use OpenAI-compatible format by default
-        default: return openaiStrategy;
+        case "openai":
+            return openaiStrategy;
+        case "gemini":
+            return geminiStrategy;
+        case "anthropic":
+            return anthropicStrategy;
+        case "mistral":
+            return mistralStrategy;
+        case "groq":
+            return groqStrategy;
+        case "ollama":
+            return ollamaStrategy;
+        case "minimax":
+            return minimaxStrategy;
+        case "custom":
+            return openaiStrategy; // custom endpoints use OpenAI-compatible format by default
+        default:
+            return openaiStrategy;
         }
     }
 
@@ -443,10 +452,7 @@ Singleton {
         let curlCmd;
         if (customCurl) {
             // Replace placeholders in custom curl
-            curlCmd = customCurl
-                .replace("{{BODY_PATH}}", bodyPath)
-                .replace("{{ENDPOINT}}", payload.endpoint)
-                .replace("{{API_KEY}}", getApiKey(currentModel));
+            curlCmd = customCurl.replace("{{BODY_PATH}}", bodyPath).replace("{{ENDPOINT}}", payload.endpoint).replace("{{API_KEY}}", getApiKey(currentModel));
         } else {
             curlCmd = "curl -s --no-buffer -N -X POST \"" + payload.endpoint + "\" " + headerArgs + " -d @" + bodyPath;
         }
@@ -514,7 +520,7 @@ Singleton {
                     }
                 }
 
-                // Note: done is handled in onExited
+            // Note: done is handled in onExited
             }
         }
 
@@ -627,6 +633,7 @@ for f in files:
     except: pass
     print(f"{id}|{title}")
 `;
+
         listHistoryProcess.command = ["python3", "-c", pyScript];
         listHistoryProcess.running = true;
     }
@@ -808,7 +815,8 @@ for f in files:
                                     requires_key: true,
                                     key_id: "GEMINI_API_KEY"
                                 });
-                                if (m) newModels.push(m);
+                                if (m)
+                                    newModels.push(m);
                             }
                         }
                         mergeModels(newModels);
@@ -854,7 +862,8 @@ for f in files:
                                     requires_key: true,
                                     key_id: "OPENAI_API_KEY"
                                 });
-                                if (m) newModels.push(m);
+                                if (m)
+                                    newModels.push(m);
                             }
                         }
                         mergeModels(newModels);
@@ -891,7 +900,8 @@ for f in files:
                                 requires_key: true,
                                 key_id: "MISTRAL_API_KEY"
                             });
-                            if (m) newModels.push(m);
+                            if (m)
+                                newModels.push(m);
                         }
                         mergeModels(newModels);
                     }
@@ -927,7 +937,8 @@ for f in files:
                                 requires_key: true,
                                 key_id: "GROQ_API_KEY"
                             });
-                            if (m) newModels.push(m);
+                            if (m)
+                                newModels.push(m);
                         }
                         mergeModels(newModels);
                     }
@@ -963,7 +974,8 @@ for f in files:
                                 requires_key: true,
                                 key_id: "ANTHROPIC_API_KEY"
                             });
-                            if (m) newModels.push(m);
+                            if (m)
+                                newModels.push(m);
                         }
                         mergeModels(newModels);
                     }
@@ -997,7 +1009,8 @@ for f in files:
                                 provider: "ollama",
                                 requires_key: false
                             });
-                            if (m) newModels.push(m);
+                            if (m)
+                                newModels.push(m);
                         }
                         mergeModels(newModels);
                     }
@@ -1014,18 +1027,58 @@ for f in files:
         onExited: exitCode => {
             if (exitCode === 0) {
                 let newModels = [];
-                
+
                 let models = [
-                    { name: "MiniMax-M2.7", model: "MiniMax-M2.7", description: "Latest model with recursive self-improvement, SOTA coding capabilities", endpoint: "https://api.minimax.io" },
-                    { name: "MiniMax-M2.7-highspeed", model: "MiniMax-M2.7-highspeed", description: "Same performance as M2.7, faster inference (~100 tps)", endpoint: "https://api.minimax.io" },
-                    { name: "MiniMax-M2.5", model: "MiniMax-M2.5", description: "Peak performance, ultimate value, master the complex", endpoint: "https://api.minimax.io" },
-                    { name: "MiniMax-M2.5-highspeed", model: "MiniMax-M2.5-highspeed", description: "Same performance as M2.5, faster inference (~100 tps)", endpoint: "https://api.minimax.io" },
-                    { name: "MiniMax-M2.1", model: "MiniMax-M2.1", description: "Powerful multi-language programming, enhanced reasoning", endpoint: "https://api.minimax.io" },
-                    { name: "MiniMax-M2.1-highspeed", model: "MiniMax-M2.1-highspeed", description: "Same performance as M2.1, faster inference (~100 tps)", endpoint: "https://api.minimax.io" },
-                    { name: "MiniMax-M2", model: "MiniMax-M2", description: "Agentic capabilities, advanced reasoning, 200k context", endpoint: "https://api.minimax.io" },
-                    { name: "M2-her", model: "M2-her", description: "Role-playing, multi-turn conversations, emotional expression", endpoint: "https://api.minimax.io" }
+                    {
+                        name: "MiniMax-M2.7",
+                        model: "MiniMax-M2.7",
+                        description: "Latest model with recursive self-improvement, SOTA coding capabilities",
+                        endpoint: "https://api.minimax.io"
+                    },
+                    {
+                        name: "MiniMax-M2.7-highspeed",
+                        model: "MiniMax-M2.7-highspeed",
+                        description: "Same performance as M2.7, faster inference (~100 tps)",
+                        endpoint: "https://api.minimax.io"
+                    },
+                    {
+                        name: "MiniMax-M2.5",
+                        model: "MiniMax-M2.5",
+                        description: "Peak performance, ultimate value, master the complex",
+                        endpoint: "https://api.minimax.io"
+                    },
+                    {
+                        name: "MiniMax-M2.5-highspeed",
+                        model: "MiniMax-M2.5-highspeed",
+                        description: "Same performance as M2.5, faster inference (~100 tps)",
+                        endpoint: "https://api.minimax.io"
+                    },
+                    {
+                        name: "MiniMax-M2.1",
+                        model: "MiniMax-M2.1",
+                        description: "Powerful multi-language programming, enhanced reasoning",
+                        endpoint: "https://api.minimax.io"
+                    },
+                    {
+                        name: "MiniMax-M2.1-highspeed",
+                        model: "MiniMax-M2.1-highspeed",
+                        description: "Same performance as M2.1, faster inference (~100 tps)",
+                        endpoint: "https://api.minimax.io"
+                    },
+                    {
+                        name: "MiniMax-M2",
+                        model: "MiniMax-M2",
+                        description: "Agentic capabilities, advanced reasoning, 200k context",
+                        endpoint: "https://api.minimax.io"
+                    },
+                    {
+                        name: "M2-her",
+                        model: "M2-her",
+                        description: "Role-playing, multi-turn conversations, emotional expression",
+                        endpoint: "https://api.minimax.io"
+                    }
                 ];
-                
+
                 for (let i = 0; i < models.length; i++) {
                     let item = models[i];
                     let m = aiModelFactory.createObject(root, {
@@ -1038,15 +1091,15 @@ for f in files:
                         requires_key: true,
                         key_id: "MINIMAX_API_KEY"
                     });
-                    if (m) newModels.push(m);
+                    if (m)
+                        newModels.push(m);
                 }
-                
+
                 mergeModels(newModels);
             }
             checkFetchCompletion();
         }
     }
-
 
     function checkFetchCompletion() {
         pendingFetches--;

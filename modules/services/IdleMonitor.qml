@@ -20,7 +20,7 @@ Item {
         stdout: StdioCollector {
             id: _createStdout
         }
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0 && _createStdout.text) {
                 try {
                     var json = JSON.parse(_createStdout.text.trim());
@@ -43,15 +43,14 @@ Item {
         stdout: StdioCollector {
             id: _getStdout
         }
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0 && _getStdout.text) {
                 try {
                     var json = JSON.parse(_getStdout.text.trim());
                     if (json.is_idle !== undefined && json.is_idle !== root.isIdle) {
                         root.isIdle = json.is_idle;
                     }
-                } catch (e) {
-                }
+                } catch (e) {}
             }
         }
     }
@@ -63,7 +62,7 @@ Item {
         stdout: StdioCollector {
             id: _updateStdout
         }
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0) {
                 root._checkIdle();
             }
@@ -77,27 +76,28 @@ Item {
         stdout: StdioCollector {
             id: _destroyStdout
         }
-        onExited: (code) => {
+        onExited: code => {
             _monitorId = 0;
             _initialized = false;
         }
     }
 
     function _initMonitor() {
-        if (_initialized || !enabled || timeout <= 0) return;
+        if (_initialized || !enabled || timeout <= 0)
+            return;
 
         var timeoutMs = Math.round(timeout * 1000);
         var respect = respectInhibitors ? 1 : 0;
         var en = enabled ? 1 : 0;
 
-        var cmd = "axctl system idle-monitor-create " + timeoutMs + " " + respect + " " + en;
+        var cmd = "rctl system idle-monitor-create " + timeoutMs + " " + respect + " " + en;
         _createProcess.command = ["sh", "-c", cmd];
         _createProcess.running = true;
     }
 
     function _destroyMonitor() {
         if (_monitorId > 0) {
-            var cmd = "axctl system idle-monitor-destroy " + _monitorId;
+            var cmd = "rctl system idle-monitor-destroy " + _monitorId;
             _destroyProcess.command = ["sh", "-c", cmd];
             _destroyProcess.running = true;
         }
@@ -112,17 +112,19 @@ Item {
     }
 
     function _checkIdle() {
-        if (!_initialized || _monitorId === 0) return;
+        if (!_initialized || _monitorId === 0)
+            return;
 
-        var cmd = "axctl system idle-monitor-get " + _monitorId;
+        var cmd = "rctl system idle-monitor-get " + _monitorId;
         _getProcess.command = ["sh", "-c", cmd];
         _getProcess.running = true;
     }
 
     function _checkMediaInhibitor() {
-        if (!root.respectInhibitors) return;
+        if (!root.respectInhibitors)
+            return;
 
-        var cmd = "axctl system media-inhibit-check";
+        var cmd = "rctl system media-inhibit-check";
         _mediaCheckProcess.command = ["sh", "-c", cmd];
         _mediaCheckProcess.running = true;
     }
@@ -134,7 +136,7 @@ Item {
         stdout: StdioCollector {
             id: _mediaCheckStdout
         }
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0 && _mediaCheckStdout.text) {
                 try {
                     var json = JSON.parse(_mediaCheckStdout.text.trim());
@@ -164,7 +166,7 @@ Item {
         var respect = respectInhibitors ? 1 : 0;
         var en = enabled ? 1 : 0;
 
-        var cmd = "axctl system idle-monitor-update " + _monitorId + " " + timeoutMs + " " + respect + " " + en;
+        var cmd = "rctl system idle-monitor-update " + _monitorId + " " + timeoutMs + " " + respect + " " + en;
         _updateProcess.command = ["sh", "-c", cmd];
         _updateProcess.running = true;
     }

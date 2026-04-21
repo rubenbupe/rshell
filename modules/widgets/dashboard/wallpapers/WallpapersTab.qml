@@ -22,17 +22,19 @@ FocusScope {
         selectedIndex = newIndex;
     }
 
-    readonly property string currentScreenName: AxctlService.focusedMonitor ? AxctlService.focusedMonitor.name : ""
+    readonly property string currentScreenName: RctlService.focusedMonitor ? RctlService.focusedMonitor.name : ""
 
     property bool isPerScreen: {
-        if (!GlobalStates.wallpaperManager || currentScreenName === "") return false;
+        if (!GlobalStates.wallpaperManager || currentScreenName === "")
+            return false;
         let perScreen = GlobalStates.wallpaperManager.perScreenWallpapers || {};
         return perScreen[currentScreenName] !== undefined;
     }
 
     function togglePerScreenMode() {
-        if (!GlobalStates.wallpaperManager || currentScreenName === "") return;
-        
+        if (!GlobalStates.wallpaperManager || currentScreenName === "")
+            return;
+
         if (isPerScreen) {
             GlobalStates.wallpaperManager.clearPerScreenWallpaper(currentScreenName);
         } else {
@@ -161,7 +163,7 @@ FocusScope {
 
         let perScreen = GlobalStates.wallpaperManager.perScreenWallpapers || {};
         let currentWallpaper = "";
-        
+
         if (currentScreenName !== "" && perScreen[currentScreenName] !== undefined) {
             currentWallpaper = perScreen[currentScreenName];
         } else {
@@ -384,7 +386,7 @@ FocusScope {
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 elide: Text.ElideRight
-                                
+
                                 Behavior on color {
                                     enabled: Config.animDuration > 0
                                     ColorAnimation {
@@ -399,7 +401,7 @@ FocusScope {
                             id: perScreenCheckbox
                             Layout.preferredWidth: 40
                             Layout.preferredHeight: 40
-                            
+
                             property bool checked: isPerScreen
 
                             onActiveFocusChanged: {
@@ -483,7 +485,7 @@ FocusScope {
                     }
                 }
             }
-            
+
             // OLED Mode
             Item {
                 id: oledCheckboxContainer
@@ -943,7 +945,7 @@ FocusScope {
                                 property bool isCurrentWallpaper: {
                                     if (!GlobalStates.wallpaperManager || wallpaperGrid.currentIndex < 0)
                                         return false;
-                                        
+
                                     let perScreen = GlobalStates.wallpaperManager.perScreenWallpapers || {};
                                     let currentWall = "";
                                     if (currentScreenName !== "" && perScreen[currentScreenName] !== undefined) {
@@ -951,7 +953,7 @@ FocusScope {
                                     } else {
                                         currentWall = GlobalStates.wallpaperManager.currentWallpaper;
                                     }
-                                        
+
                                     return currentWall === filteredWallpapers[wallpaperGrid.currentIndex];
                                 }
                                 property bool showHoveredItem: currentItem && currentItem.isHovered && !visible
@@ -1059,7 +1061,7 @@ FocusScope {
                     property bool isCurrentWallpaper: {
                         if (!GlobalStates.wallpaperManager)
                             return false;
-                            
+
                         let perScreen = GlobalStates.wallpaperManager.perScreenWallpapers || {};
                         let currentWall = "";
                         if (currentScreenName !== "" && perScreen[currentScreenName] !== undefined) {
@@ -1095,13 +1097,13 @@ FocusScope {
                             color: Colors.surface
                             radius: Styling.radius(4)
 
-                                // Lazy loader que solo carga cuando el item está visible
-                                Loader {
-                                    anchors.fill: parent
-                                    sourceComponent: staticImageComponent
-                                    property string sourceFile: modelData
-                                    active: isInViewport && wallpapersTabRoot.visible && GlobalStates.dashboardOpen
-                                    asynchronous: true
+                            // Lazy loader que solo carga cuando el item está visible
+                            Loader {
+                                anchors.fill: parent
+                                sourceComponent: staticImageComponent
+                                property string sourceFile: modelData
+                                active: isInViewport && wallpapersTabRoot.visible && GlobalStates.dashboardOpen
+                                asynchronous: true
 
                                 // Placeholder mientras carga
                                 Rectangle {

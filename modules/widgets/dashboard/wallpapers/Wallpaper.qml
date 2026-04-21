@@ -18,7 +18,7 @@ PanelWindow {
     }
 
     WlrLayershell.layer: WlrLayer.Background
-    WlrLayershell.namespace: "ambxst:wallpaper"
+    WlrLayershell.namespace: "rshell:wallpaper"
     exclusionMode: ExclusionMode.Ignore
 
     color: "transparent"
@@ -41,7 +41,7 @@ PanelWindow {
     property int thumbnailsVersion: 0
 
     // QUICKSHELL-GIT: property string mpvShaderDir: Quickshell.cacheDir + "/mpv_shaders_" + (currentScreenName ? currentScreenName : "ALL")
-    property string mpvShaderDir: Quickshell.env("HOME") + "/.cache/ambxst/mpv_shaders_" + (currentScreenName ? currentScreenName : "ALL")
+    property string mpvShaderDir: Quickshell.env("HOME") + "/.cache/rshell/mpv_shaders_" + (currentScreenName ? currentScreenName : "ALL")
     property string mpvShaderPath: ""
     property bool mpvShaderReady: false
 
@@ -76,7 +76,7 @@ PanelWindow {
         when: GlobalStates.wallpaperManager !== null && GlobalStates.wallpaperManager !== wallpaper
     }
 
-    property string colorPresetsDir: Quickshell.env("HOME") + "/.config/ambxst/colors"
+    property string colorPresetsDir: Quickshell.env("HOME") + "/.config/rshell/colors"
     property string officialColorPresetsDir: decodeURIComponent(Qt.resolvedUrl("../../../../assets/colors").toString().replace("file://", ""))
     onColorPresetsDirChanged: console.log("Color Presets Directory:", colorPresetsDir)
     property list<string> colorPresets: []
@@ -114,7 +114,7 @@ PanelWindow {
         var officialFile = officialColorPresetsDir + "/" + activeColorPreset + "/" + mode;
         var userFile = colorPresetsDir + "/" + activeColorPreset + "/" + mode;
         // QUICKSHELL-GIT: var dest = Quickshell.cachePath("colors.json");
-        var dest = Quickshell.env("HOME") + "/.cache/ambxst/colors.json";
+        var dest = Quickshell.env("HOME") + "/.cache/rshell/colors.json";
 
         // Try official first, then user. Use bash conditional.
         var cmd = "if [ -f '" + officialFile + "' ]; then cp '" + officialFile + "' '" + dest + "'; else cp '" + userFile + "' '" + dest + "'; fi";
@@ -126,7 +126,7 @@ PanelWindow {
 
     function setColorPreset(name) {
         wallpaperConfig.adapter.activeColorPreset = name;
-    // activeColorPreset property will update automatically via binding to adapter
+        // activeColorPreset property will update automatically via binding to adapter
     }
 
     // Funciones utilitarias para tipos de archivo
@@ -155,7 +155,7 @@ PanelWindow {
 
         // Build the proxy path
         // QUICKSHELL-GIT: var thumbnailPath = Quickshell.cacheDir + "/thumbnails/" + relativeDir + "/" + thumbnailName;
-        var thumbnailPath = Quickshell.env("HOME") + "/.cache/ambxst" + "/thumbnails/" + relativeDir + "/" + thumbnailName;
+        var thumbnailPath = Quickshell.env("HOME") + "/.cache/rshell" + "/thumbnails/" + relativeDir + "/" + thumbnailName;
         return thumbnailPath;
     }
 
@@ -201,7 +201,7 @@ PanelWindow {
         if (fileType === 'video' || fileType === 'gif') {
             var fileName = filePath.split('/').pop();
             // QUICKSHELL-GIT: var cachePath = Quickshell.cacheDir + "/lockscreen/" + fileName + ".jpg";
-            var cachePath = Quickshell.env("HOME") + "/.cache/ambxst" + "/lockscreen/" + fileName + ".jpg";
+            var cachePath = Quickshell.env("HOME") + "/.cache/rshell" + "/lockscreen/" + fileName + ".jpg";
             return cachePath;
         }
 
@@ -218,7 +218,7 @@ PanelWindow {
 
         var scriptPath = decodeURIComponent(Qt.resolvedUrl("../../../../scripts/lockwall.py").toString().replace("file://", ""));
         // QUICKSHELL-GIT: var dataPath = Quickshell.cacheDir;
-        var dataPath = Quickshell.env("HOME") + "/.cache/ambxst";
+        var dataPath = Quickshell.env("HOME") + "/.cache/rshell";
 
         lockscreenWallpaperScript.command = ["python3", scriptPath, filePath, dataPath];
 
@@ -296,7 +296,7 @@ PanelWindow {
                 let perScreen = Object.assign({}, wallpaperConfig.adapter.perScreenWallpapers || {});
                 perScreen[targetScreen] = path;
                 wallpaperConfig.adapter.perScreenWallpapers = perScreen;
-                
+
                 // If this targetScreen is the primary screen, it must update currentWall
                 // because currentWall is exactly the primary monitor fallback.
                 let isPrimary = false;
@@ -328,7 +328,7 @@ PanelWindow {
             GlobalStates.wallpaperManager.clearPerScreenWallpaper(targetScreen);
             return;
         }
-        
+
         console.log("Clearing per-screen wallpaper for:", targetScreen);
         let perScreen = Object.assign({}, wallpaperConfig.adapter.perScreenWallpapers || {});
         if (perScreen[targetScreen]) {
@@ -397,8 +397,8 @@ PanelWindow {
         }
     }
 
-    // property string mpvSocket: "/tmp/ambxst_mpv_socket"
-    property string mpvSocket: "/tmp/ambxst_mpv_socket_" + (currentScreenName ? currentScreenName : "ALL")
+    // property string mpvSocket: "/tmp/rshell_mpv_socket"
+    property string mpvSocket: "/tmp/rshell_mpv_socket_" + (currentScreenName ? currentScreenName : "ALL")
 
     function runMatugenForCurrentWallpaper() {
         if (activeColorPreset) {
@@ -484,7 +484,7 @@ PanelWindow {
     Process {
         id: mpvSyncProcess
         running: false
-        command: ["bash", "-c", "for sock in /tmp/ambxst_mpv_socket_*; do echo '{ \"command\": [\"set_property\", \"time-pos\", 0] }' | socat - \"$sock\" 2>/dev/null; done"]
+        command: ["bash", "-c", "for sock in /tmp/rshell_mpv_socket_*; do echo '{ \"command\": [\"set_property\", \"time-pos\", 0] }' | socat - \"$sock\" 2>/dev/null; done"]
         onExited: code => {
             console.log("Video sync broadcast completed with code:", code);
         }
@@ -685,7 +685,7 @@ PanelWindow {
     FileView {
         id: wallpaperConfig
         // QUICKSHELL-GIT: path: Quickshell.cachePath("wallpapers.json")
-        path: Quickshell.env("HOME") + "/.cache/ambxst/wallpapers.json"
+        path: Quickshell.env("HOME") + "/.cache/rshell/wallpapers.json"
         watchChanges: true
 
         onLoaded: {
@@ -778,7 +778,7 @@ PanelWindow {
         id: checkWallpapersJson
         running: false
         // QUICKSHELL-GIT: command: ["test", "-f", Quickshell.cachePath("wallpapers.json")]
-        command: ["test", "-f", Quickshell.env("HOME") + "/.cache/ambxst/wallpapers.json"]
+        command: ["test", "-f", Quickshell.env("HOME") + "/.cache/rshell/wallpapers.json"]
 
         onExited: function (exitCode) {
             if (exitCode !== 0) {
@@ -847,7 +847,7 @@ PanelWindow {
         id: thumbnailGeneratorScript
         running: false
         // QUICKSHELL-GIT: command: ["python3", decodeURIComponent(Qt.resolvedUrl("../../../../scripts/thumbgen.py").toString().replace("file://", "")), Quickshell.cacheDir + "/wallpapers.json", Quickshell.cacheDir, fallbackDir]
-        command: ["python3", decodeURIComponent(Qt.resolvedUrl("../../../../scripts/thumbgen.py").toString().replace("file://", "")), Quickshell.env("HOME") + "/.cache/ambxst" + "/wallpapers.json", Quickshell.env("HOME") + "/.cache/ambxst", fallbackDir]
+        command: ["python3", decodeURIComponent(Qt.resolvedUrl("../../../../scripts/thumbgen.py").toString().replace("file://", "")), Quickshell.env("HOME") + "/.cache/rshell" + "/wallpapers.json", Quickshell.env("HOME") + "/.cache/rshell", fallbackDir]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -1360,8 +1360,8 @@ PanelWindow {
                 }
 
                 Image {
-                    mipmap: true
                     id: rawImage
+                    mipmap: true
                     anchors.fill: parent
                     source: parent.sourceFile ? "file://" + parent.sourceFile : ""
                     fillMode: Image.PreserveAspectCrop

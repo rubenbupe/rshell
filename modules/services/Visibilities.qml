@@ -80,10 +80,10 @@ Singleton {
     }
 
     function getForActive() {
-        if (!AxctlService.focusedMonitor) {
+        if (!RctlService.focusedMonitor) {
             return null;
         }
-        return getForScreen(AxctlService.focusedMonitor.name);
+        return getForScreen(RctlService.focusedMonitor.name);
     }
 
     // Helper to clone map and trigger update
@@ -181,7 +181,7 @@ Singleton {
     }
 
     function setActiveModule(moduleName) {
-        const focusedMonitor = AxctlService.focusedMonitor;
+        const focusedMonitor = RctlService.focusedMonitor;
         if (!focusedMonitor)
             return;
 
@@ -201,7 +201,7 @@ Singleton {
     }
 
     function moveActiveModuleToFocusedScreen() {
-        const focusedMonitor = AxctlService.focusedMonitor;
+        const focusedMonitor = RctlService.focusedMonitor;
         if (!focusedMonitor || !currentActiveModule)
             return;
 
@@ -248,7 +248,7 @@ Singleton {
 
     // Monitor focus changes
     Connections {
-        target: AxctlService
+        target: RctlService
         function onFocusedMonitorChanged() {
             moveActiveModuleToFocusedScreen();
         }

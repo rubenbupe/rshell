@@ -39,7 +39,7 @@ PanelWindow {
         }
         return WlrKeyboardFocus.None;
     }
-    WlrLayershell.namespace: "ambxst"
+    WlrLayershell.namespace: "rshell"
     WlrLayershell.layer: WlrLayer.Overlay
     exclusionMode: ExclusionMode.Ignore
 
@@ -48,13 +48,15 @@ PanelWindow {
     readonly property bool needsFullScreenInput: notchContent.screenNotchOpen || FocusGrabManager.hasActiveGrab || (assistantSidebar.active && assistantSidebar.wantsFocus)
 
     readonly property bool barEnabled: {
-        if (!Config.barReady) return false;
+        if (!Config.barReady)
+            return false;
         const list = Config.bar.screenList;
         return (!list || list.length === 0 || list.indexOf(targetScreen.name) !== -1);
     }
 
     readonly property bool dockEnabled: {
-        if (!Config.dockReady) return false;
+        if (!Config.dockReady)
+            return false;
         if (!(Config.dock.enabled ?? false) || (Config.dock.theme ?? "default") === "integrated")
             return false;
         const list = Config.dock.screenList;
@@ -88,7 +90,7 @@ PanelWindow {
 
     readonly property bool unifiedEffectActive: false // Flag to notify children to disable internal borders
 
-    readonly property var compositorMonitor: AxctlService.monitorFor(targetScreen)
+    readonly property var compositorMonitor: RctlService.monitorFor(targetScreen)
     readonly property bool hasFullscreenWindow: {
         if (!compositorMonitor)
             return false;
@@ -98,7 +100,7 @@ PanelWindow {
 
         // Check active toplevel first (fast path)
         const toplevel = ToplevelManager.activeToplevel;
-        if (toplevel && toplevel.fullscreen && AxctlService.focusedMonitor.id === monId) {
+        if (toplevel && toplevel.fullscreen && RctlService.focusedMonitor.id === monId) {
             return true;
         }
 
@@ -246,7 +248,7 @@ PanelWindow {
             id: assistantSidebar
             targetScreen: unifiedPanel.targetScreen
             z: 1
-            
+
             // Respect top/bottom bar reservations so the sidebar doesn't overlap them
             anchors.topMargin: {
                 let frameOn = (Config.bar?.frameEnabled ?? false);
@@ -257,7 +259,7 @@ PanelWindow {
                 }
                 return margin;
             }
-            
+
             anchors.bottomMargin: {
                 let frameOn = (Config.bar?.frameEnabled ?? false);
                 let frameWrapped = frameOn && GlobalStates.assistantPinned;

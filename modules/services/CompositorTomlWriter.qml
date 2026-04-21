@@ -8,13 +8,13 @@ import qs.modules.globals
 import "../../config/KeybindActions.js" as KeybindActions
 
 /**
- * CompositorTomlWriter - Generates TOML configuration for axctl
- * Writes to ~/.local/share/ambxst/axctl.toml
+ * CompositorTomlWriter - Generates TOML configuration for rctl
+ * Writes to ~/.local/share/rshell/rctl.toml
  */
 Singleton {
     id: root
 
-    property string outputPath: (Quickshell.env("XDG_DATA_HOME") || (Quickshell.env("HOME") + "/.local/share")) + "/ambxst/axctl.toml"
+    property string outputPath: (Quickshell.env("XDG_DATA_HOME") || (Quickshell.env("HOME") + "/.local/share")) + "/rshell/rctl.toml"
 
     property Process writeProcess: Process {
         running: false
@@ -64,7 +64,7 @@ Singleton {
         if (!colorNames || colorNames.length === 0) {
             return [];
         }
-        
+
         if (colorNames.length > 1) {
             // Multi-color gradient
             const formattedColors = colorNames.map(colorName => {
@@ -83,7 +83,7 @@ Singleton {
         if (!colorNames || colorNames.length === 0) {
             return [];
         }
-        
+
         if (colorNames.length > 1) {
             // Multi-color gradient - force full opacity
             const formattedColors = colorNames.map(colorName => {
@@ -129,15 +129,12 @@ Singleton {
         let toml = "";
 
         toml += "[startup]\n";
-        toml += "exec-once = \"ambxst\"\n";
+        toml += "exec-once = \"rshell\"\n";
 
         function tomlEscape(str) {
             if (str === null || str === undefined)
                 return "";
-            return String(str)
-                .replace(/\\/g, "\\\\")
-                .replace(/\"/g, "\\\"")
-                .replace(/\n/g, "\\n");
+            return String(str).replace(/\\/g, "\\\\").replace(/\"/g, "\\\"").replace(/\n/g, "\\n");
         }
 
         function tomlString(str) {
@@ -165,7 +162,8 @@ Singleton {
 
         function resolveBindAction(action, fallback) {
             const resolved = KeybindActions.resolveAction(action || fallback);
-            if (!resolved) return null;
+            if (!resolved)
+                return null;
             return {
                 dispatcher: resolved.dispatcher || "",
                 argument: resolved.argument || "",
@@ -240,7 +238,7 @@ Singleton {
         // Keybinds
         if (Config.keybindsLoader.loaded && Config.keybindsLoader.adapter) {
             const adapter = Config.keybindsLoader.adapter;
-            const ambxst = adapter.ambxst;
+            const rshell = adapter.rshell;
 
             function pushCoreBind(keybind) {
                 if (!keybind)
@@ -248,36 +246,32 @@ Singleton {
                 const resolved = resolveBindAction(keybind.action, keybind);
                 if (!resolved)
                     return;
-                pushKeybindEntry(
-                    keybind.modifiers || [],
-                    keybind.key || "",
-                    resolved.dispatcher,
-                    resolved.argument,
-                    resolved.flags
-                );
+                pushKeybindEntry(keybind.modifiers || [], keybind.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
             }
 
-            if (ambxst) {
-                pushCoreBind(ambxst.launcher);
-                pushCoreBind(ambxst.dashboard);
-                pushCoreBind(ambxst.assistant);
-                pushCoreBind(ambxst.clipboard);
-                pushCoreBind(ambxst.emoji);
-                pushCoreBind(ambxst.notes);
-                pushCoreBind(ambxst.tmux);
-                pushCoreBind(ambxst.wallpapers);
+            if (rshell) {
+                pushCoreBind(rshell.launcher);
+                pushCoreBind(rshell.dashboard);
+                pushCoreBind(rshell.assistant);
+                pushCoreBind(rshell.clipboard);
+                pushCoreBind(rshell.emoji);
+                pushCoreBind(rshell.notes);
+                pushCoreBind(rshell.tmux);
+                pushCoreBind(rshell.wallpapers);
 
-                if (ambxst.system) {
-                    pushCoreBind(ambxst.system.overview);
-                    pushCoreBind(ambxst.system.powermenu);
-                    pushCoreBind(ambxst.system.config);
-                    pushCoreBind(ambxst.system.lockscreen);
-                    pushCoreBind(ambxst.system.tools);
-                    pushCoreBind(ambxst.system.screenshot);
-                    pushCoreBind(ambxst.system.screenrecord);
-                    pushCoreBind(ambxst.system.lens);
-                    if (ambxst.system.reload) pushCoreBind(ambxst.system.reload);
-                    if (ambxst.system.quit) pushCoreBind(ambxst.system.quit);
+                if (rshell.system) {
+                    pushCoreBind(rshell.system.overview);
+                    pushCoreBind(rshell.system.powermenu);
+                    pushCoreBind(rshell.system.config);
+                    pushCoreBind(rshell.system.lockscreen);
+                    pushCoreBind(rshell.system.tools);
+                    pushCoreBind(rshell.system.screenshot);
+                    pushCoreBind(rshell.system.screenrecord);
+                    pushCoreBind(rshell.system.lens);
+                    if (rshell.system.reload)
+                        pushCoreBind(rshell.system.reload);
+                    if (rshell.system.quit)
+                        pushCoreBind(rshell.system.quit);
                 }
             }
 
@@ -299,13 +293,7 @@ Singleton {
                                 const resolved = resolveBindAction(action, action);
                                 if (!resolved)
                                     continue;
-                                pushKeybindEntry(
-                                    keyObj.modifiers || [],
-                                    keyObj.key || "",
-                                    resolved.dispatcher,
-                                    resolved.argument,
-                                    resolved.flags
-                                );
+                                pushKeybindEntry(keyObj.modifiers || [], keyObj.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
                             }
                         }
                     } else if (bind) {
@@ -313,13 +301,7 @@ Singleton {
                         const resolved = resolveBindAction(bind.action, bind);
                         if (!resolved)
                             continue;
-                        pushKeybindEntry(
-                            bind.modifiers || [],
-                            bind.key || "",
-                            resolved.dispatcher,
-                            resolved.argument,
-                            resolved.flags
-                        );
+                        pushKeybindEntry(bind.modifiers || [], bind.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
                     }
                 }
             }
@@ -355,7 +337,7 @@ Singleton {
         toml += "ignore_alpha_value = 0.4\n";
 
         toml += "\n[[layer_rules]]\n";
-        toml += "namespace = \"ambxst\"\n";
+        toml += "namespace = \"rshell\"\n";
         toml += "blur = true\n";
         toml += "blur_popups = true\n";
         toml += "no_anim = true\n";
@@ -372,8 +354,6 @@ Singleton {
         toml += "blur = true\n";
         toml += "blur_popups = true\n";
         toml += "no_anim = true\n";
-
-
 
         // Input section (placeholder for keyboard layout)
         toml += "\n[input]\n";
@@ -415,84 +395,186 @@ Singleton {
 
     property Connections keybindsConnections: Connections {
         target: Config.keybindsLoader
-        function onLoaded() { writeTomlFile(); }
-        function onFileChanged() { writeTomlFile(); }
-        function onAdapterUpdated() { writeTomlFile(); }
-        function onPathChanged() { writeTomlFile(); }
+        function onLoaded() {
+            writeTomlFile();
+        }
+        function onFileChanged() {
+            writeTomlFile();
+        }
+        function onAdapterUpdated() {
+            writeTomlFile();
+        }
+        function onPathChanged() {
+            writeTomlFile();
+        }
     }
 
     // Compositor section connections
     property Connections compositorConnections: Connections {
         target: Config.compositor
-        
+
         // Border settings
-        function onBorderSizeChanged() { writeTomlFile(); }
-        function onRoundingChanged() { writeTomlFile(); }
-        function onGapsInChanged() { writeTomlFile(); }
-        function onGapsOutChanged() { writeTomlFile(); }
-        function onActiveBorderColorChanged() { writeTomlFile(); }
-        function onInactiveBorderColorChanged() { writeTomlFile(); }
-        function onBorderAngleChanged() { writeTomlFile(); }
-        function onInactiveBorderAngleChanged() { writeTomlFile(); }
-        
+        function onBorderSizeChanged() {
+            writeTomlFile();
+        }
+        function onRoundingChanged() {
+            writeTomlFile();
+        }
+        function onGapsInChanged() {
+            writeTomlFile();
+        }
+        function onGapsOutChanged() {
+            writeTomlFile();
+        }
+        function onActiveBorderColorChanged() {
+            writeTomlFile();
+        }
+        function onInactiveBorderColorChanged() {
+            writeTomlFile();
+        }
+        function onBorderAngleChanged() {
+            writeTomlFile();
+        }
+        function onInactiveBorderAngleChanged() {
+            writeTomlFile();
+        }
+
         // Sync settings that affect derived values
-        function onSyncRoundnessChanged() { writeTomlFile(); }
-        function onSyncBorderWidthChanged() { writeTomlFile(); }
-        function onSyncBorderColorChanged() { writeTomlFile(); }
-        function onSyncShadowOpacityChanged() { writeTomlFile(); }
-        function onSyncShadowColorChanged() { writeTomlFile(); }
-        
+        function onSyncRoundnessChanged() {
+            writeTomlFile();
+        }
+        function onSyncBorderWidthChanged() {
+            writeTomlFile();
+        }
+        function onSyncBorderColorChanged() {
+            writeTomlFile();
+        }
+        function onSyncShadowOpacityChanged() {
+            writeTomlFile();
+        }
+        function onSyncShadowColorChanged() {
+            writeTomlFile();
+        }
+
         // Shadow settings
-        function onShadowEnabledChanged() { writeTomlFile(); }
-        function onShadowRangeChanged() { writeTomlFile(); }
-        function onShadowRenderPowerChanged() { writeTomlFile(); }
-        function onShadowSharpChanged() { writeTomlFile(); }
-        function onShadowIgnoreWindowChanged() { writeTomlFile(); }
-        function onShadowColorChanged() { writeTomlFile(); }
-        function onShadowColorInactiveChanged() { writeTomlFile(); }
-        function onShadowOpacityChanged() { writeTomlFile(); }
-        function onShadowOffsetChanged() { writeTomlFile(); }
-        function onShadowScaleChanged() { writeTomlFile(); }
-        
+        function onShadowEnabledChanged() {
+            writeTomlFile();
+        }
+        function onShadowRangeChanged() {
+            writeTomlFile();
+        }
+        function onShadowRenderPowerChanged() {
+            writeTomlFile();
+        }
+        function onShadowSharpChanged() {
+            writeTomlFile();
+        }
+        function onShadowIgnoreWindowChanged() {
+            writeTomlFile();
+        }
+        function onShadowColorChanged() {
+            writeTomlFile();
+        }
+        function onShadowColorInactiveChanged() {
+            writeTomlFile();
+        }
+        function onShadowOpacityChanged() {
+            writeTomlFile();
+        }
+        function onShadowOffsetChanged() {
+            writeTomlFile();
+        }
+        function onShadowScaleChanged() {
+            writeTomlFile();
+        }
+
         // Blur settings
-        function onBlurEnabledChanged() { writeTomlFile(); }
-        function onBlurSizeChanged() { writeTomlFile(); }
-        function onBlurPassesChanged() { writeTomlFile(); }
-        function onBlurIgnoreOpacityChanged() { writeTomlFile(); }
-        function onBlurExplicitIgnoreAlphaChanged() { writeTomlFile(); }
-        function onBlurIgnoreAlphaValueChanged() { writeTomlFile(); }
-        function onBlurNewOptimizationsChanged() { writeTomlFile(); }
-        function onBlurXrayChanged() { writeTomlFile(); }
-        function onBlurNoiseChanged() { writeTomlFile(); }
-        function onBlurContrastChanged() { writeTomlFile(); }
-        function onBlurBrightnessChanged() { writeTomlFile(); }
-        function onBlurVibrancyChanged() { writeTomlFile(); }
-        function onBlurVibrancyDarknessChanged() { writeTomlFile(); }
-        function onBlurSpecialChanged() { writeTomlFile(); }
-        function onBlurPopupsChanged() { writeTomlFile(); }
-        function onBlurPopupsIgnorealphaChanged() { writeTomlFile(); }
-        function onBlurInputMethodsChanged() { writeTomlFile(); }
-        function onBlurInputMethodsIgnorealphaChanged() { writeTomlFile(); }
+        function onBlurEnabledChanged() {
+            writeTomlFile();
+        }
+        function onBlurSizeChanged() {
+            writeTomlFile();
+        }
+        function onBlurPassesChanged() {
+            writeTomlFile();
+        }
+        function onBlurIgnoreOpacityChanged() {
+            writeTomlFile();
+        }
+        function onBlurExplicitIgnoreAlphaChanged() {
+            writeTomlFile();
+        }
+        function onBlurIgnoreAlphaValueChanged() {
+            writeTomlFile();
+        }
+        function onBlurNewOptimizationsChanged() {
+            writeTomlFile();
+        }
+        function onBlurXrayChanged() {
+            writeTomlFile();
+        }
+        function onBlurNoiseChanged() {
+            writeTomlFile();
+        }
+        function onBlurContrastChanged() {
+            writeTomlFile();
+        }
+        function onBlurBrightnessChanged() {
+            writeTomlFile();
+        }
+        function onBlurVibrancyChanged() {
+            writeTomlFile();
+        }
+        function onBlurVibrancyDarknessChanged() {
+            writeTomlFile();
+        }
+        function onBlurSpecialChanged() {
+            writeTomlFile();
+        }
+        function onBlurPopupsChanged() {
+            writeTomlFile();
+        }
+        function onBlurPopupsIgnorealphaChanged() {
+            writeTomlFile();
+        }
+        function onBlurInputMethodsChanged() {
+            writeTomlFile();
+        }
+        function onBlurInputMethodsIgnorealphaChanged() {
+            writeTomlFile();
+        }
     }
 
     // Theme connections (for blur ignorealpha calculation and shadow color sync)
     property Connections themeConnections: Connections {
         target: Config.theme
-        function onSrBarBgChanged() { writeTomlFile(); }
-        function onSrBgChanged() { writeTomlFile(); }
-        function onShadowColorChanged() { writeTomlFile(); }
-        function onShadowOpacityChanged() { writeTomlFile(); }
+        function onSrBarBgChanged() {
+            writeTomlFile();
+        }
+        function onSrBgChanged() {
+            writeTomlFile();
+        }
+        function onShadowColorChanged() {
+            writeTomlFile();
+        }
+        function onShadowOpacityChanged() {
+            writeTomlFile();
+        }
     }
 
     // Bar position connection (for workspace animation orientation)
     property Connections barConnections: Connections {
         target: Config.bar
-        function onPositionChanged() { writeTomlFile(); }
+        function onPositionChanged() {
+            writeTomlFile();
+        }
     }
 
     // GlobalStates connection (for layout)
     property Connections globalStatesConnections: Connections {
         target: GlobalStates
-        function onCompositorLayoutChanged() { writeTomlFile(); }
+        function onCompositorLayoutChanged() {
+            writeTomlFile();
+        }
     }
 }

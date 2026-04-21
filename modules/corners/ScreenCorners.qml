@@ -12,7 +12,7 @@ PanelWindow {
     property bool activeWindowFullscreen: false
 
     function updateFullscreen() {
-        const mon = AxctlService.monitorFor(screen);
+        const mon = RctlService.monitorFor(screen);
         if (mon) {
             monitor = mon;
         }
@@ -27,7 +27,7 @@ PanelWindow {
 
         // Check active toplevel first (fast path)
         const toplevel = ToplevelManager.activeToplevel;
-        if (toplevel && toplevel.fullscreen && AxctlService.focusedMonitor && AxctlService.focusedMonitor.id === monId) {
+        if (toplevel && toplevel.fullscreen && RctlService.focusedMonitor && RctlService.focusedMonitor.id === monId) {
             activeWindowFullscreen = true;
             return;
         }
@@ -44,18 +44,24 @@ PanelWindow {
     }
 
     Connections {
-        target: AxctlService.monitors
-        function onValuesChanged() { screenCorners.updateFullscreen(); }
+        target: RctlService.monitors
+        function onValuesChanged() {
+            screenCorners.updateFullscreen();
+        }
     }
 
     Connections {
         target: CompositorData
-        function onWindowListChanged() { screenCorners.updateFullscreen(); }
+        function onWindowListChanged() {
+            screenCorners.updateFullscreen();
+        }
     }
 
     Connections {
-        target: AxctlService
-        function onFocusedMonitorChanged() { screenCorners.updateFullscreen(); }
+        target: RctlService
+        function onFocusedMonitorChanged() {
+            screenCorners.updateFullscreen();
+        }
     }
 
     Component.onCompleted: updateFullscreen()
@@ -64,7 +70,7 @@ PanelWindow {
 
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.namespace: "ambxst:screenCorners"
+    WlrLayershell.namespace: "rshell:screenCorners"
     WlrLayershell.layer: WlrLayer.Overlay
     mask: Region {
         item: null
