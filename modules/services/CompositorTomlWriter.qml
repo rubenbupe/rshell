@@ -179,133 +179,133 @@ Singleton {
             return action.layouts.indexOf(GlobalStates.compositorLayout) !== -1;
         }
 
-        // Appearance section
-        toml += "[appearance]\n";
+        // // Appearance section
+        // toml += "[appearance]\n";
 
-        // Gaps
-        toml += "[appearance.gaps]\n";
-        toml += `inner = ${Config.compositor.gapsIn}\n`;
-        toml += `outer = ${Config.compositor.gapsOut}\n`;
+        // // Gaps
+        // toml += "[appearance.gaps]\n";
+        // toml += `inner = ${Config.compositor.gapsIn}\n`;
+        // toml += `outer = ${Config.compositor.gapsOut}\n`;
 
-        // Border
-        toml += "[appearance.border]\n";
-        toml += `width = ${Config.compositorBorderSize}\n`;
+        // // Border
+        // toml += "[appearance.border]\n";
+        // toml += `width = ${Config.compositorBorderSize}\n`;
 
-        // Active border colors (supports gradients)
-        const borderColors = Config.compositor.syncBorderColor ? [Config.compositorBorderColor] : Config.compositor.activeBorderColor;
-        const activeBorderFormatted = formatBorderColors(borderColors || ["primary"], Config.compositor.borderAngle);
-        if (activeBorderFormatted.length > 0) {
-            toml += `active_color = "${activeBorderFormatted[0]}"\n`;
-        }
+        // // Active border colors (supports gradients)
+        // const borderColors = Config.compositor.syncBorderColor ? [Config.compositorBorderColor] : Config.compositor.activeBorderColor;
+        // const activeBorderFormatted = formatBorderColors(borderColors || ["primary"], Config.compositor.borderAngle);
+        // if (activeBorderFormatted.length > 0) {
+        //     toml += `active_color = "${activeBorderFormatted[0]}"\n`;
+        // }
 
-        // Inactive border colors (supports gradients)
-        const inactiveBorderColors = Config.compositor.inactiveBorderColor;
-        const inactiveBorderFormatted = formatInactiveBorderColors(inactiveBorderColors, Config.compositor.inactiveBorderAngle);
-        if (inactiveBorderFormatted.length > 0) {
-            toml += `inactive_color = "${inactiveBorderFormatted[0]}"\n`;
-        }
+        // // Inactive border colors (supports gradients)
+        // const inactiveBorderColors = Config.compositor.inactiveBorderColor;
+        // const inactiveBorderFormatted = formatInactiveBorderColors(inactiveBorderColors, Config.compositor.inactiveBorderAngle);
+        // if (inactiveBorderFormatted.length > 0) {
+        //     toml += `inactive_color = "${inactiveBorderFormatted[0]}"\n`;
+        // }
 
-        toml += `rounding = ${Config.compositorRounding}\n`;
+        // toml += `rounding = ${Config.compositorRounding}\n`;
 
-        // Opacity - placeholder (not synced in current implementation)
-        toml += "[appearance.opacity]\n";
-        toml += "active = 1.0\n";
-        toml += "inactive = 1.0\n";
+        // // Opacity - placeholder (not synced in current implementation)
+        // toml += "[appearance.opacity]\n";
+        // toml += "active = 1.0\n";
+        // toml += "inactive = 1.0\n";
 
-        // Blur - all settings
-        toml += "[appearance.blur]\n";
-        toml += `enabled = ${Config.compositor.blurEnabled}\n`;
-        toml += `size = ${Config.compositor.blurSize}\n`;
-        toml += `passes = ${Config.compositor.blurPasses}\n`;
+        // // Blur - all settings
+        // toml += "[appearance.blur]\n";
+        // toml += `enabled = ${Config.compositor.blurEnabled}\n`;
+        // toml += `size = ${Config.compositor.blurSize}\n`;
+        // toml += `passes = ${Config.compositor.blurPasses}\n`;
 
-        // Shadow - all settings
-        toml += "[appearance.shadow]\n";
-        toml += `enabled = ${Config.compositor.shadowEnabled}\n`;
-        toml += `size = ${Config.compositor.shadowRange}\n`;
-        const shadowColorFormatted = formatShadowColors(Config.compositorShadowColor, Config.compositorShadowOpacity);
-        toml += `color = "${shadowColorFormatted}"\n`;
+        // // Shadow - all settings
+        // toml += "[appearance.shadow]\n";
+        // toml += `enabled = ${Config.compositor.shadowEnabled}\n`;
+        // toml += `size = ${Config.compositor.shadowRange}\n`;
+        // const shadowColorFormatted = formatShadowColors(Config.compositorShadowColor, Config.compositorShadowOpacity);
+        // toml += `color = "${shadowColorFormatted}"\n`;
 
-        // Animations
-        toml += "[appearance.animations]\n";
-        toml += "enabled = true\n";
+        // // Animations
+        // toml += "[appearance.animations]\n";
+        // toml += "enabled = true\n";
 
-        // Layout (if set)
-        if (GlobalStates.compositorLayout && GlobalStates.compositorLayout.length > 0) {
-            toml += "\n[general]\n";
-            toml += `layout = "${GlobalStates.compositorLayout}"\n`;
-        }
+        // // Layout (if set)
+        // if (GlobalStates.compositorLayout && GlobalStates.compositorLayout.length > 0) {
+        //     toml += "\n[general]\n";
+        //     toml += `layout = "${GlobalStates.compositorLayout}"\n`;
+        // }
 
-        // Keybinds
-        if (Config.keybindsLoader.loaded && Config.keybindsLoader.adapter) {
-            const adapter = Config.keybindsLoader.adapter;
-            const rshell = adapter.rshell;
+        // // Keybinds
+        // if (Config.keybindsLoader.loaded && Config.keybindsLoader.adapter) {
+        //     const adapter = Config.keybindsLoader.adapter;
+        //     const rshell = adapter.rshell;
 
-            function pushCoreBind(keybind) {
-                if (!keybind)
-                    return;
-                const resolved = resolveBindAction(keybind.action, keybind);
-                if (!resolved)
-                    return;
-                pushKeybindEntry(keybind.modifiers || [], keybind.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
-            }
+        //     function pushCoreBind(keybind) {
+        //         if (!keybind)
+        //             return;
+        //         const resolved = resolveBindAction(keybind.action, keybind);
+        //         if (!resolved)
+        //             return;
+        //         pushKeybindEntry(keybind.modifiers || [], keybind.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
+        //     }
 
-            if (rshell) {
-                pushCoreBind(rshell.launcher);
-                pushCoreBind(rshell.dashboard);
-                pushCoreBind(rshell.assistant);
-                pushCoreBind(rshell.clipboard);
-                pushCoreBind(rshell.emoji);
-                pushCoreBind(rshell.notes);
-                pushCoreBind(rshell.tmux);
-                pushCoreBind(rshell.wallpapers);
+        //     if (rshell) {
+        //         pushCoreBind(rshell.launcher);
+        //         pushCoreBind(rshell.dashboard);
+        //         pushCoreBind(rshell.assistant);
+        //         pushCoreBind(rshell.clipboard);
+        //         pushCoreBind(rshell.emoji);
+        //         pushCoreBind(rshell.notes);
+        //         pushCoreBind(rshell.tmux);
+        //         pushCoreBind(rshell.wallpapers);
 
-                if (rshell.system) {
-                    pushCoreBind(rshell.system.overview);
-                    pushCoreBind(rshell.system.powermenu);
-                    pushCoreBind(rshell.system.config);
-                    pushCoreBind(rshell.system.lockscreen);
-                    pushCoreBind(rshell.system.tools);
-                    pushCoreBind(rshell.system.screenshot);
-                    pushCoreBind(rshell.system.screenrecord);
-                    pushCoreBind(rshell.system.lens);
-                    if (rshell.system.reload)
-                        pushCoreBind(rshell.system.reload);
-                    if (rshell.system.quit)
-                        pushCoreBind(rshell.system.quit);
-                }
-            }
+        //         if (rshell.system) {
+        //             pushCoreBind(rshell.system.overview);
+        //             pushCoreBind(rshell.system.powermenu);
+        //             pushCoreBind(rshell.system.config);
+        //             pushCoreBind(rshell.system.lockscreen);
+        //             pushCoreBind(rshell.system.tools);
+        //             pushCoreBind(rshell.system.screenshot);
+        //             pushCoreBind(rshell.system.screenrecord);
+        //             pushCoreBind(rshell.system.lens);
+        //             if (rshell.system.reload)
+        //                 pushCoreBind(rshell.system.reload);
+        //             if (rshell.system.quit)
+        //                 pushCoreBind(rshell.system.quit);
+        //         }
+        //     }
 
-            if (adapter.custom && adapter.custom.length > 0) {
-                for (let i = 0; i < adapter.custom.length; i++) {
-                    const bind = adapter.custom[i];
-                    if (bind && bind.enabled === false)
-                        continue;
+        //     if (adapter.custom && adapter.custom.length > 0) {
+        //         for (let i = 0; i < adapter.custom.length; i++) {
+        //             const bind = adapter.custom[i];
+        //             if (bind && bind.enabled === false)
+        //                 continue;
 
-                    if (bind && bind.keys && bind.actions) {
-                        for (let k = 0; k < bind.keys.length; k++) {
-                            const keyObj = bind.keys[k];
-                            if (!keyObj || !keyObj.key)
-                                continue;
-                            for (let a = 0; a < bind.actions.length; a++) {
-                                const action = bind.actions[a];
-                                if (!actionCompatibleWithLayout(action))
-                                    continue;
-                                const resolved = resolveBindAction(action, action);
-                                if (!resolved)
-                                    continue;
-                                pushKeybindEntry(keyObj.modifiers || [], keyObj.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
-                            }
-                        }
-                    } else if (bind) {
-                        // Legacy single-key format
-                        const resolved = resolveBindAction(bind.action, bind);
-                        if (!resolved)
-                            continue;
-                        pushKeybindEntry(bind.modifiers || [], bind.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
-                    }
-                }
-            }
-        }
+        //             if (bind && bind.keys && bind.actions) {
+        //                 for (let k = 0; k < bind.keys.length; k++) {
+        //                     const keyObj = bind.keys[k];
+        //                     if (!keyObj || !keyObj.key)
+        //                         continue;
+        //                     for (let a = 0; a < bind.actions.length; a++) {
+        //                         const action = bind.actions[a];
+        //                         if (!actionCompatibleWithLayout(action))
+        //                             continue;
+        //                         const resolved = resolveBindAction(action, action);
+        //                         if (!resolved)
+        //                             continue;
+        //                         pushKeybindEntry(keyObj.modifiers || [], keyObj.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
+        //                     }
+        //                 }
+        //             } else if (bind) {
+        //                 // Legacy single-key format
+        //                 const resolved = resolveBindAction(bind.action, bind);
+        //                 if (!resolved)
+        //                     continue;
+        //                 pushKeybindEntry(bind.modifiers || [], bind.key || "", resolved.dispatcher, resolved.argument, resolved.flags);
+        //             }
+        //         }
+        //     }
+        // }
 
         // Layer rules for quickshell
         toml += "\n[[layer_rules]]\n";

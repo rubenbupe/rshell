@@ -130,7 +130,7 @@ QtObject {
     property IpcHandler ipcHandler: IpcHandler {
         target: "rshell"
 
-        function run(command: string) {
+        function run(command: string) { 
             root.run(command);
         }
     }

@@ -17,11 +17,11 @@ import "../dashboard/notes"
 Rectangle {
     id: root
     color: "transparent"
-    
+
     readonly property bool isCompact: currentTab === 0 || currentTab === 2
     implicitWidth: isCompact ? 464 : 900
     implicitHeight: isCompact ? 296 : 392
-    
+
     focus: true
 
     property int leftPanelWidth: isCompact ? 464 : 300
@@ -52,7 +52,7 @@ Rectangle {
                 running = false;
                 return;
             }
-            
+
             let focused = false;
             if (currentTab === 0) {
                 appLauncher.focusSearchInput();
@@ -64,7 +64,7 @@ Rectangle {
                     focused = true;
                 }
             }
-            
+
             if (focused) {
                 running = false;
             }
@@ -190,7 +190,7 @@ Rectangle {
         function updateAppsModel() {
             // Stop any existing loading
             incrementalLoader.stop();
-            
+
             let newApps = filteredApps;
             appLauncher.pendingApps = newApps;
 
@@ -201,7 +201,7 @@ Rectangle {
             }
 
             appsModel.clear();
-            
+
             // Load first batch immediately for instant feedback
             let initialBatch = Math.min(appLauncher.batchSize, newApps.length);
             for (let i = 0; i < initialBatch; i++) {
@@ -216,9 +216,9 @@ Rectangle {
                     appRunInTerminal: app.runInTerminal
                 });
             }
-            
+
             appLauncher.loadedCount = initialBatch;
-            
+
             // Schedule rest if needed
             if (appLauncher.loadedCount < newApps.length) {
                 incrementalLoader.start();
@@ -241,12 +241,12 @@ Rectangle {
         Component.onCompleted: {
             // Defer initial load to allow animation to start smoothly
             initialLoadTimer.start();
-            
+
             // Re-update when UsageTracker finishes loading
-            UsageTracker.usageDataReady.connect(function() {
+            UsageTracker.usageDataReady.connect(function () {
                 AppSearch.invalidateCache();
                 if (appLauncher.visible) {
-                     appLauncher.updateFilteredApps();
+                    appLauncher.updateFilteredApps();
                 }
             });
         }
@@ -377,7 +377,7 @@ Rectangle {
                 // Item bottom is below viewport - scroll down to show it
                 resultsList.contentY = Math.min(itemBottom - resultsList.height, maxContentY);
             }
-        // Otherwise, item is already fully visible - no scroll needed
+            // Otherwise, item is already fully visible - no scroll needed
         }
 
         Behavior on height {
@@ -735,12 +735,12 @@ Rectangle {
                             Layout.preferredHeight: 32
 
                             Image {
-                                mipmap: true
                                 id: appIconImage
+                                mipmap: true
                                 anchors.fill: parent
                                 source: "image://icon/" + appIcon
                                 fillMode: Image.PreserveAspectFit
-                                
+
                                 onStatusChanged: {
                                     if (status === Image.Error) {
                                         source = "image://icon/image-missing";
@@ -1086,128 +1086,128 @@ Rectangle {
         visible: currentTab !== 0
         currentIndex: currentTab - 1
 
-        // Tab 1: Clipboard
-        Loader {
-            id: clipboardLoader
-            active: currentTab === 1 || item !== null
-            sourceComponent: Component {
-                ClipboardTab {
-                    leftPanelWidth: root.leftPanelWidth
-                    prefixIcon: Icons.clipboard
-                    onBackspaceOnEmpty: {
-                        prefixDisabled = true;
-                        currentTab = 0;
-                        GlobalStates.launcherSearchText = Config.prefix.clipboard + " ";
-                        root.focusSearchInput();
-                    }
-                    onRequestOpenItem: (itemId, items, currentContent, filePathGetter, urlChecker) => {
-                        console.log("DEBUG: Received requestOpenItem signal for:", itemId);
-                        openItemInternal(itemId, items, currentContent, filePathGetter, urlChecker);
-                    }
-                }
-            }
-            onLoaded: {
-                if (currentTab === 1 && item && item.focusSearchInput) {
-                    root.focusSearchInput();
-                }
-            }
-        }
+        // // Tab 1: Clipboard
+        // Loader {
+        //     id: clipboardLoader
+        //     active: currentTab === 1 || item !== null
+        //     sourceComponent: Component {
+        //         ClipboardTab {
+        //             leftPanelWidth: root.leftPanelWidth
+        //             prefixIcon: Icons.clipboard
+        //             onBackspaceOnEmpty: {
+        //                 prefixDisabled = true;
+        //                 currentTab = 0;
+        //                 GlobalStates.launcherSearchText = Config.prefix.clipboard + " ";
+        //                 root.focusSearchInput();
+        //             }
+        //             onRequestOpenItem: (itemId, items, currentContent, filePathGetter, urlChecker) => {
+        //                 console.log("DEBUG: Received requestOpenItem signal for:", itemId);
+        //                 openItemInternal(itemId, items, currentContent, filePathGetter, urlChecker);
+        //             }
+        //         }
+        //     }
+        //     onLoaded: {
+        //         if (currentTab === 1 && item && item.focusSearchInput) {
+        //             root.focusSearchInput();
+        //         }
+        //     }
+        // }
 
-        // Tab 2: Emoji
-        Loader {
-            id: emojiLoader
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            active: currentTab === 2 || item !== null
-            sourceComponent: Component {
-                EmojiTab {
-                    anchors.fill: parent
-                    leftPanelWidth: root.width
-                    prefixIcon: Icons.emoji
-                    onBackspaceOnEmpty: {
-                        prefixDisabled = true;
-                        currentTab = 0;
-                        GlobalStates.launcherSearchText = Config.prefix.emoji + " ";
-                        root.focusSearchInput();
-                    }
-                }
-            }
-            onLoaded: {
-                if (currentTab === 2 && item && item.focusSearchInput) {
-                    root.focusSearchInput();
-                }
-            }
-        }
+        // // Tab 2: Emoji
+        // Loader {
+        //     id: emojiLoader
+        //     Layout.fillWidth: true
+        //     Layout.fillHeight: true
+        //     active: currentTab === 2 || item !== null
+        //     sourceComponent: Component {
+        //         EmojiTab {
+        //             anchors.fill: parent
+        //             leftPanelWidth: root.width
+        //             prefixIcon: Icons.emoji
+        //             onBackspaceOnEmpty: {
+        //                 prefixDisabled = true;
+        //                 currentTab = 0;
+        //                 GlobalStates.launcherSearchText = Config.prefix.emoji + " ";
+        //                 root.focusSearchInput();
+        //             }
+        //         }
+        //     }
+        //     onLoaded: {
+        //         if (currentTab === 2 && item && item.focusSearchInput) {
+        //             root.focusSearchInput();
+        //         }
+        //     }
+        // }
 
-        // Tab 3: Tmux
-        Loader {
-            id: tmuxLoader
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            active: currentTab === 3 || item !== null
-            sourceComponent: Component {
-                TmuxTab {
-                    leftPanelWidth: root.leftPanelWidth
-                    prefixIcon: Icons.terminal
-                    onBackspaceOnEmpty: {
-                        prefixDisabled = true;
-                        currentTab = 0;
-                        GlobalStates.launcherSearchText = Config.prefix.tmux + " ";
-                        root.focusSearchInput();
-                    }
-                }
-            }
-            onLoaded: {
-                if (currentTab === 3 && item && item.focusSearchInput) {
-                    root.focusSearchInput();
-                }
-            }
-        }
+        // // Tab 3: Tmux
+        // Loader {
+        //     id: tmuxLoader
+        //     Layout.fillWidth: true
+        //     Layout.fillHeight: true
+        //     active: currentTab === 3 || item !== null
+        //     sourceComponent: Component {
+        //         TmuxTab {
+        //             leftPanelWidth: root.leftPanelWidth
+        //             prefixIcon: Icons.terminal
+        //             onBackspaceOnEmpty: {
+        //                 prefixDisabled = true;
+        //                 currentTab = 0;
+        //                 GlobalStates.launcherSearchText = Config.prefix.tmux + " ";
+        //                 root.focusSearchInput();
+        //             }
+        //         }
+        //     }
+        //     onLoaded: {
+        //         if (currentTab === 3 && item && item.focusSearchInput) {
+        //             root.focusSearchInput();
+        //         }
+        //     }
+        // }
 
-        // Tab 4: Notes
-        Loader {
-            id: notesLoader
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            active: currentTab === 4 || item !== null
-            sourceComponent: Component {
-                NotesTab {
-                    anchors.fill: parent
-                    leftPanelWidth: root.leftPanelWidth
-                    prefixIcon: Icons.note
-                    onBackspaceOnEmpty: {
-                        prefixDisabled = true;
-                        currentTab = 0;
-                        GlobalStates.launcherSearchText = Config.prefix.notes + " ";
-                        root.focusSearchInput();
-                    }
-                }
-            }
-            onLoaded: {
-                if (currentTab === 4 && item && item.focusSearchInput) {
-                    root.focusSearchInput();
-                }
-            }
-        }
+        // // Tab 4: Notes
+        // Loader {
+        //     id: notesLoader
+        //     Layout.fillWidth: true
+        //     Layout.fillHeight: true
+        //     active: currentTab === 4 || item !== null
+        //     sourceComponent: Component {
+        //         NotesTab {
+        //             anchors.fill: parent
+        //             leftPanelWidth: root.leftPanelWidth
+        //             prefixIcon: Icons.note
+        //             onBackspaceOnEmpty: {
+        //                 prefixDisabled = true;
+        //                 currentTab = 0;
+        //                 GlobalStates.launcherSearchText = Config.prefix.notes + " ";
+        //                 root.focusSearchInput();
+        //             }
+        //         }
+        //     }
+        //     onLoaded: {
+        //         if (currentTab === 4 && item && item.focusSearchInput) {
+        //             root.focusSearchInput();
+        //         }
+        //     }
+        // }
     }
 
     // Process for opening items from clipboard
-    Process {
-        id: globalOpenProcess
-        running: false
+    // Process {
+    //     id: globalOpenProcess
+    //     running: false
 
-        onStarted: function () {
-            console.log("DEBUG: globalOpenProcess started with command:", globalOpenProcess.command);
-        }
+    //     onStarted: function () {
+    //         console.log("DEBUG: globalOpenProcess started with command:", globalOpenProcess.command);
+    //     }
 
-        onExited: function (code, status) {
-            if (code === 0) {
-                console.log("DEBUG: globalOpenProcess completed successfully");
-            } else {
-                console.warn("DEBUG: globalOpenProcess failed with exit code:", code, "status:", status);
-            }
-        }
-    }
+    //     onExited: function (code, status) {
+    //         if (code === 0) {
+    //             console.log("DEBUG: globalOpenProcess completed successfully");
+    //         } else {
+    //             console.warn("DEBUG: globalOpenProcess failed with exit code:", code, "status:", status);
+    //         }
+    //     }
+    // }
 
     // Internal function to open items - called by signal handlers
     function openItemInternal(itemId, items, currentContent, getFilePathFromUri, isUrl) {

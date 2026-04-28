@@ -79,7 +79,7 @@ Item {
 
         StyledRect {
             id: notificationPane
-            variant: "pane"
+            variant: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
             radius: Styling.radius(4)
@@ -97,7 +97,7 @@ Item {
 
                     StyledRect {
                         id: titleRect
-                        variant: "internalbg"
+                        variant: "pane"
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         radius: Styling.radius(0)
@@ -115,7 +115,7 @@ Item {
 
                     StyledRect {
                         id: dndToggle
-                        variant: Notifications.silent ? "primary" : (dndHover.containsMouse ? "focus" : "internalbg")
+                        variant: Notifications.silent ? "primary" : (dndHover.containsMouse ? "focus" : "pane")
                         Layout.preferredWidth: 32
                         Layout.fillHeight: true
                         radius: Notifications.silent ? Styling.radius(-4) : Styling.radius(0)
@@ -142,7 +142,7 @@ Item {
 
                     StyledRect {
                         id: clearButton
-                        variant: broomHover.pressed ? "error" : (broomHover.containsMouse ? "focus" : "internalbg")
+                        variant: broomHover.pressed ? "error" : (broomHover.containsMouse ? "focus" : "pane")
                         Layout.preferredWidth: 32
                         Layout.fillHeight: true
                         radius: Styling.radius(0)

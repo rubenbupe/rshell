@@ -19,80 +19,88 @@ NotchAnimationBehavior {
     property int leftPanelWidth
 
     property var state: QtObject {
-        property int currentTab: GlobalStates.dashboardCurrentTab
+        property int currentTab: 0
     }
 
-    readonly property var tabModel: [Icons.widgets, Icons.wallpapers, Icons.heartbeat]
-    readonly property int tabCount: tabModel.length
-    readonly property int tabSpacing: 8
-
-    readonly property int tabWidth: 48
-    readonly property real nonAnimWidth: (state.currentTab === 0 ? 600 : 400) + tabWidth + 16 // unified launcher tab is wider
+    // Tabs desactivados temporalmente: solo se muestra WidgetsTab.
+    // readonly property var tabModel: [Icons.widgets, Icons.wallpapers, Icons.heartbeat]
+    // readonly property int tabCount: tabModel.length
+    // readonly property int tabSpacing: 8
+    // readonly property int tabWidth: 48
+    // readonly property real nonAnimWidth: (state.currentTab === 0 ? 600 : 400) + tabWidth + 16 // unified launcher tab is wider
+    readonly property real nonAnimWidth: widgetsOnlyLoader.item ? widgetsOnlyLoader.item.implicitWidth : 500
 
     implicitWidth: nonAnimWidth
     implicitHeight: 430
 
-    // Track which tabs have been loaded (for lazy loading)
-    property var loadedTabs: ({0: true}) // Tab 0 (widgets) loaded by default
+    // Tabs desactivados temporalmente: solo se muestra WidgetsTab.
+    // // Track which tabs have been loaded (for lazy loading)
+    // property var loadedTabs: ({
+    //         0: true
+    //     }) // Tab 0 (widgets) loaded by default
 
-    // LRU Tab Management
-    property var lruAccessOrder: [0]  // Tracks access order: [0] means tab 0 is most recent
-    property var lruTabsLoaded: ({0: true})  // Reflects which tabs are actually loaded
+    // // LRU Tab Management
+    // property var lruAccessOrder: [0]  // Tracks access order: [0] means tab 0 is most recent
+    // property var lruTabsLoaded: ({
+    //         0: true
+    //     })  // Reflects which tabs are actually loaded
 
-    // Update LRU on tab access
-    function updateLRUAccess(tabIndex) {
-        // Remove if already in list
-        const idx = lruAccessOrder.indexOf(tabIndex);
-        if (idx !== -1) {
-            lruAccessOrder.splice(idx, 1);
-        }
-        // Add to end (most recent)
-        lruAccessOrder.push(tabIndex);
-        updateLoadedTabs();
-    }
+    // // Update LRU on tab access
+    // function updateLRUAccess(tabIndex) {
+    //     // Remove if already in list
+    //     const idx = lruAccessOrder.indexOf(tabIndex);
+    //     if (idx !== -1) {
+    //         lruAccessOrder.splice(idx, 1);
+    //     }
+    //     // Add to end (most recent)
+    //     lruAccessOrder.push(tabIndex);
+    //     updateLoadedTabs();
+    // }
 
-    // Determine which tabs should be loaded based on LRU and config
-    function updateLoadedTabs() {
-        let newLoadedTabs = {};
-        
-        // Always load tab 0 (WidgetsTab) to avoid "jumpy" opening
-        newLoadedTabs[0] = true;
-        
-        // Always load current tab
-        newLoadedTabs[root.state.currentTab] = true;
+    // // Determine which tabs should be loaded based on LRU and config
+    // function updateLoadedTabs() {
+    //     let newLoadedTabs = {};
 
-        if (Config.performance.dashboardPersistTabs) {
-            // Load up to maxPersistentTabs most recent tabs
-            const maxTabs = Math.max(1, Config.performance.dashboardMaxPersistentTabs);
-            const startIdx = Math.max(0, lruAccessOrder.length - maxTabs);
-            for (let i = startIdx; i < lruAccessOrder.length; i++) {
-                newLoadedTabs[lruAccessOrder[i]] = true;
-            }
-        }
+    //     // Always load tab 0 (WidgetsTab) to avoid "jumpy" opening
+    //     newLoadedTabs[0] = true;
 
-        lruTabsLoaded = newLoadedTabs;
-    }
+    //     // Always load current tab
+    //     newLoadedTabs[root.state.currentTab] = true;
 
-    // Check if a tab should be loaded
-    function shouldTabBeLoaded(tabIndex) {
-        if (tabIndex === 0) return true; // Always load WidgetsTab (Tab 0)
+    //     if (Config.performance.dashboardPersistTabs) {
+    //         // Load up to maxPersistentTabs most recent tabs
+    //         const maxTabs = Math.max(1, Config.performance.dashboardMaxPersistentTabs);
+    //         const startIdx = Math.max(0, lruAccessOrder.length - maxTabs);
+    //         for (let i = startIdx; i < lruAccessOrder.length; i++) {
+    //             newLoadedTabs[lruAccessOrder[i]] = true;
+    //         }
+    //     }
 
-        if (Config.performance.dashboardPersistTabs) {
-            return lruTabsLoaded[tabIndex] === true;
-        } else {
-            // Without persistence, only load current tab
-            return root.state.currentTab === tabIndex;
-        }
-    }
+    //     lruTabsLoaded = newLoadedTabs;
+    // }
+
+    // // Check if a tab should be loaded
+    // function shouldTabBeLoaded(tabIndex) {
+    //     if (tabIndex === 0)
+    //         return true; // Always load WidgetsTab (Tab 0)
+
+    //     if (Config.performance.dashboardPersistTabs) {
+    //         return lruTabsLoaded[tabIndex] === true;
+    //     } else {
+    //         // Without persistence, only load current tab
+    //         return root.state.currentTab === tabIndex;
+    //     }
+    // }
 
     focus: true
 
     // Usar el comportamiento estándar de animaciones del notch
     isVisible: GlobalStates.dashboardOpen
 
-    // Navegar a la pestaña seleccionada cuando se abre el dashboard
+    // Tabs desactivados: al abrir, forzar WidgetsTab (tab 0)
     Component.onCompleted: {
-        root.state.currentTab = GlobalStates.dashboardCurrentTab;
+        root.state.currentTab = 0;
+        GlobalStates.dashboardCurrentTab = 0;
     }
 
     // Focus search input when dashboard opens to different tabs
@@ -127,9 +135,11 @@ NotchAnimationBehavior {
     Connections {
         target: GlobalStates
         function onDashboardCurrentTabChanged() {
-            if (GlobalStates.dashboardCurrentTab !== root.state.currentTab) {
-                stack.navigateToTab(GlobalStates.dashboardCurrentTab);
+            // Tabs desactivados: siempre mantener tab 0.
+            if (GlobalStates.dashboardCurrentTab !== 0) {
+                GlobalStates.dashboardCurrentTab = 0;
             }
+            root.state.currentTab = 0;
         }
 
         // Focus cuando cambia el texto del launcher (por shortcuts con prefix)
@@ -145,6 +155,7 @@ NotchAnimationBehavior {
         anchors.fill: parent
         spacing: 8
 
+        /*
         // Tab buttons
         Item {
             id: tabsContainer
@@ -340,14 +351,15 @@ NotchAnimationBehavior {
             height: parent.height
             vert: true
         }
+        */
 
-            // Content area
+        // Content area
         Rectangle {
             id: viewWrapper
 
             color: "transparent"
 
-            width: parent.width - root.tabWidth - 2 - 16 // Ancho total menos tabs, separador y spacings
+            width: parent.width
             height: parent.height
 
             clip: true
@@ -357,181 +369,175 @@ NotchAnimationBehavior {
                 id: stack
                 anchors.fill: parent
 
-                property int currentIndex: GlobalStates.dashboardCurrentTab
+                property int currentIndex: 0
 
                 // Update internal index when global changes
                 Connections {
                     target: GlobalStates
                     function onDashboardCurrentTabChanged() {
-                        stack.navigateToTab(GlobalStates.dashboardCurrentTab);
+                        root.state.currentTab = 0;
+                        if (GlobalStates.dashboardCurrentTab !== 0) {
+                            GlobalStates.dashboardCurrentTab = 0;
+                        }
                     }
                 }
 
-                // Function to navigate to a specific tab
+                // Tabs desactivados: no-op para mantener compatibilidad con llamadas existentes.
                 function navigateToTab(index) {
-                    if (index >= 0 && index < root.tabCount && index !== root.state.currentTab) {
-                        // Reset launcher state when leaving unified launcher tab (tab 0)
-                        if (root.state.currentTab === 0 && index !== 0) {
-                            GlobalStates.clearLauncherState();
-                        }
-
-                        root.state.currentTab = index;
-                        GlobalStates.dashboardCurrentTab = index;
-                        
-                        // Update LRU when tab is accessed
-                        root.updateLRUAccess(index);
-
-                        if (index === 0) {
-                            Notifications.hideAllPopups();
-                            focusUnifiedLauncherTimer.restart();
-                        }
+                    root.state.currentTab = 0;
+                    if (GlobalStates.dashboardCurrentTab !== 0) {
+                        GlobalStates.dashboardCurrentTab = 0;
                     }
+                    Notifications.hideAllPopups();
+                    focusUnifiedLauncherTimer.restart();
                 }
 
-                // Generic Tab Loader Component
-                component TabLoader : Loader {
-                    anchors.fill: parent
-                    // Load based on LRU strategy or if currently active
-                    active: root.shouldTabBeLoaded(index) || root.state.currentTab === index
-                    
-                    // Visibility handles the "switching"
-                    visible: root.state.currentTab === index
-                    
-                    // Transitions
-                    opacity: visible ? 1 : 0
-                    transform: Translate {
-                        y: visible ? 0 : (root.state.currentTab > index ? -20 : 20)
-                        Behavior on y {
-                             enabled: Config.animDuration > 0
-                             NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } 
-                        }
-                    }
-
-                    Behavior on opacity {
-                        enabled: Config.animDuration > 0
-                        NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
-                    }
-
-                    // Forward focus
-                    onLoaded: {
-                        if (visible && item && item.focusSearchInput) {
-                            focusUnifiedLauncherTimer.restart();
-                        }
-                    }
-                    
-                    // Ensure focus when becoming visible
-                    onVisibleChanged: {
-                        if (visible && item && item.focusSearchInput) {
-                            focusUnifiedLauncherTimer.restart();
-                        }
-                    }
-                }
-
-                // Tab 0: Unified Launcher
-                TabLoader {
-                    property int index: 0
+                // Vista única: WidgetsTab
+                Loader {
+                    id: widgetsOnlyLoader
                     sourceComponent: unifiedLauncherComponent
-                    z: visible ? 1 : 0
+                    anchors.fill: parent
+                    active: true
                 }
 
-                // Tab 1: Wallpapers
-                TabLoader {
-                    property int index: 1
-                    sourceComponent: wallpapersComponent
-                    z: visible ? 1 : 0
-                }
+                // Tabs desactivados temporalmente.
+                // TabLoader {
+                //     property int index: 1
+                //     sourceComponent: wallpapersComponent
+                //     z: visible ? 1 : 0
+                // }
 
-                // Tab 2: Metrics
-                TabLoader {
-                    property int index: 2
-                    sourceComponent: metricsComponent
-                    z: visible ? 1 : 0
-                }
-                
+                // TabLoader {
+                //     property int index: 2
+                //     sourceComponent: metricsComponent
+                //     z: visible ? 1 : 0
+                // }
+
                 // Helper to access current item for focus
                 property var currentItem: {
-                    switch(root.state.currentTab) {
-                        case 0: return children[0].item;
-                        case 1: return children[1].item;
-                        case 2: return children[2].item;
-                        default: return null;
-                    }
+                    return widgetsOnlyLoader.item;
                 }
 
-                // Gesture handling para swipe vertical
-                MouseArea {
-                    anchors.fill: parent
-                    property real startY: 0
-                    property real startX: 0
-                    property bool swiping: false
-                    property real swipeThreshold: 50
-                    
-                    // Allow clicking through to tabs
-                    propagateComposedEvents: true
-                    preventStealing: false
+                // Tabs desactivados temporalmente.
+                // MouseArea {
+                //     anchors.fill: parent
+                //     property real startY: 0
+                //     property real startX: 0
+                //     property bool swiping: false
+                //     property real swipeThreshold: 50
 
-                    onPressed: mouse => {
-                        startY = mouse.y;
-                        startX = mouse.x;
-                        swiping = false;
-                        mouse.accepted = false; // Let children handle clicks
-                    }
+                //     // Allow clicking through to tabs
+                //     propagateComposedEvents: true
+                //     preventStealing: false
 
-                    onPositionChanged: mouse => {
-                        let deltaY = mouse.y - startY;
-                        let deltaX = Math.abs(mouse.x - startX);
+                //     onPressed: mouse => {
+                //         startY = mouse.y;
+                //         startX = mouse.x;
+                //         swiping = false;
+                //         mouse.accepted = false; // Let children handle clicks
+                //     }
 
-                        // Solo considerar swipe vertical si el movimiento horizontal es mínimo
-                        if (Math.abs(deltaY) > 20 && deltaX < 30) {
-                            swiping = true;
-                        }
-                    }
+                //     onPositionChanged: mouse => {
+                //         let deltaY = mouse.y - startY;
+                //         let deltaX = Math.abs(mouse.x - startX);
 
-                    onReleased: mouse => {
-                        if (swiping) {
-                            let deltaY = mouse.y - startY;
+                //         // Solo considerar swipe vertical si el movimiento horizontal es mínimo
+                //         if (Math.abs(deltaY) > 20 && deltaX < 30) {
+                //             swiping = true;
+                //         }
+                //     }
 
-                            if (deltaY < -swipeThreshold && root.state.currentTab < root.tabCount - 1) {
-                                // Swipe hacia arriba - siguiente tab
-                                stack.navigateToTab(root.state.currentTab + 1);
-                            } else if (deltaY > swipeThreshold && root.state.currentTab > 0) {
-                                // Swipe hacia abajo - tab anterior
-                                stack.navigateToTab(root.state.currentTab - 1);
-                            }
-                        }
-                        swiping = false;
-                        mouse.accepted = false;
-                    }
-                }
+                //     onReleased: mouse => {
+                //         if (swiping) {
+                //             let deltaY = mouse.y - startY;
+
+                //             if (deltaY < -swipeThreshold && root.state.currentTab < root.tabCount - 1) {
+                //                 // Swipe hacia arriba - siguiente tab
+                //                 stack.navigateToTab(root.state.currentTab + 1);
+                //             } else if (deltaY > swipeThreshold && root.state.currentTab > 0) {
+                //                 // Swipe hacia abajo - tab anterior
+                //                 stack.navigateToTab(root.state.currentTab - 1);
+                //             }
+                //         }
+                //         swiping = false;
+                //         mouse.accepted = false;
+                //     }
+                // }
             }
         }
     }
+
+    // Tabs desactivados temporalmente.
+    // // Generic Tab Loader Component
+    // component TabLoader: Loader {
+    //     anchors.fill: parent
+    //     // Load based on LRU strategy or if currently active
+    //     active: root.shouldTabBeLoaded(index) || root.state.currentTab === index
+
+    //     // Visibility handles the "switching"
+    //     visible: root.state.currentTab === index
+
+    //     // Transitions
+    //     opacity: visible ? 1 : 0
+    //     transform: Translate {
+    //         y: visible ? 0 : (root.state.currentTab > index ? -20 : 20)
+    //         Behavior on y {
+    //             enabled: Config.animDuration > 0
+    //             NumberAnimation {
+    //                 duration: Config.animDuration
+    //                 easing.type: Easing.OutQuart
+    //             }
+    //         }
+    //     }
+
+    //     Behavior on opacity {
+    //         enabled: Config.animDuration > 0
+    //         NumberAnimation {
+    //             duration: Config.animDuration
+    //             easing.type: Easing.OutQuart
+    //         }
+    //     }
+
+    //     // Forward focus
+    //     onLoaded: {
+    //         if (visible && item && item.focusSearchInput) {
+    //             focusUnifiedLauncherTimer.restart();
+    //         }
+    //     }
+
+    //     // Ensure focus when becoming visible
+    //     onVisibleChanged: {
+    //         if (visible && item && item.focusSearchInput) {
+    //             focusUnifiedLauncherTimer.restart();
+    //         }
+    //     }
+    // }
 
     // Atajos de teclado para navegación
-    Shortcut {
-        id: nextTabShortcut
-        sequence: "Ctrl+Tab"
-        enabled: GlobalStates.dashboardOpen
+    // Shortcut {
+    //     id: nextTabShortcut
+    //     sequence: "Ctrl+Tab"
+    //     enabled: GlobalStates.dashboardOpen
 
-        onActivated: {
-            let nextIndex = (root.state.currentTab + 1) % root.tabCount;
-            stack.navigateToTab(nextIndex);
-        }
-    }
+    //     onActivated: {
+    //         let nextIndex = (root.state.currentTab + 1) % root.tabCount;
+    //         stack.navigateToTab(nextIndex);
+    //     }
+    // }
 
-    Shortcut {
-        id: prevTabShortcut
-        sequence: "Ctrl+Shift+Tab"
-        enabled: GlobalStates.dashboardOpen
+    // Shortcut {
+    //     id: prevTabShortcut
+    //     sequence: "Ctrl+Shift+Tab"
+    //     enabled: GlobalStates.dashboardOpen
 
-        onActivated: {
-            let prevIndex = root.state.currentTab - 1;
-            if (prevIndex < 0) {
-                prevIndex = root.tabCount - 1;
-            }
-            stack.navigateToTab(prevIndex);
-        }
-    }
+    //     onActivated: {
+    //         let prevIndex = root.state.currentTab - 1;
+    //         if (prevIndex < 0) {
+    //             prevIndex = root.tabCount - 1;
+    //         }
+    //         stack.navigateToTab(prevIndex);
+    //     }
+    // }
 
     // Animated size properties for smooth transitions
     property real animatedWidth: implicitWidth
@@ -570,13 +576,13 @@ NotchAnimationBehavior {
         }
     }
 
-    Component {
-        id: metricsComponent
-        MetricsTab {}
-    }
+    // Component {
+    //     id: metricsComponent
+    //     MetricsTab {}
+    // }
 
-    Component {
-        id: wallpapersComponent
-        WallpapersTab {}
-    }
+    // Component {
+    //     id: wallpapersComponent
+    //     WallpapersTab {}
+    // }
 }

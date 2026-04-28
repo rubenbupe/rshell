@@ -140,7 +140,7 @@ Item {
 
     StyledRect {
         id: background
-        variant: "internalbg"
+        variant: "panel"
         anchors.left: parent.left
         width: parent.width
         radius: Styling.radius(0)
@@ -203,8 +203,8 @@ Item {
 
                         // Small app icon similar to NotificationAppIcon's overlay
                         Image {
-                            mipmap: true
                             id: groupSmallAppIcon
+                            mipmap: true
                             Layout.preferredWidth: 16
                             Layout.preferredHeight: 16
                             source: (notificationGroup && notificationGroup.appIcon !== "") ? "image://icon/" + notificationGroup.appIcon : ""

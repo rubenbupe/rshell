@@ -18,11 +18,11 @@ StyledRect {
 
     variant: {
         if (isActive && isHovered)
-            return "primaryfocus";
+            return "primary";
         if (isActive)
             return "primary";
         if (isHovered)
-            return "focus";
+            return "primary";
         return "pane";
     }
 
@@ -53,7 +53,7 @@ StyledRect {
         hoverEnabled: true
         pressAndHoldInterval: 1000
         cursorShape: Qt.PointingHandCursor
-        onClicked: (mouse) => {
+        onClicked: mouse => {
             if (mouse.button === Qt.RightButton) {
                 root.rightClicked();
             } else {

@@ -36,18 +36,18 @@ ShellRoot {
         Component.onCompleted: Visibilities.setContextMenu(contextMenu)
     }
 
-    Variants {
-        model: Quickshell.screens
+    // Variants {
+    //     model: Quickshell.screens
 
-        Loader {
-            id: wallpaperLoader
-            active: true
-            required property ShellScreen modelData
-            sourceComponent: Wallpaper {
-                screen: wallpaperLoader.modelData
-            }
-        }
-    }
+    //     Loader {
+    //         id: wallpaperLoader
+    //         active: true
+    //         required property ShellScreen modelData
+    //         sourceComponent: Wallpaper {
+    //             screen: wallpaperLoader.modelData
+    //         }
+    //     }
+    // }
 
     Variants {
         model: Quickshell.screens
@@ -164,14 +164,14 @@ ShellRoot {
         }
     }
 
-    // Secure WlSessionLock lockscreen
-    WlSessionLock {
-        id: sessionLock
-        locked: GlobalStates.lockscreenVisible
+    // // Secure WlSessionLock lockscreen
+    // WlSessionLock {
+    //     id: sessionLock
+    //     locked: GlobalStates.lockscreenVisible
 
-        // Surface auto-created per screen
-        LockScreen {}
-    }
+    //     // Surface auto-created per screen
+    //     LockScreen {}
+    // }
 
     CompositorConfig {
         id: compositorConfig
@@ -248,12 +248,12 @@ ShellRoot {
         source: "modules/tools/MirrorWindow.qml"
     }
 
-    // Settings
-    Loader {
-        id: settingsWindowLoader
-        active: SuspendManager.wakeReady && GlobalStates.settingsWindowVisible
-        source: "modules/widgets/config/SettingsWindow.qml"
-    }
+    // // Settings
+    // Loader {
+    //     id: settingsWindowLoader
+    //     active: SuspendManager.wakeReady && GlobalStates.settingsWindowVisible
+    //     source: "modules/widgets/config/SettingsWindow.qml"
+    // }
 
     // On-screen display
     Variants {
@@ -269,13 +269,13 @@ ShellRoot {
         }
     }
 
-    // Init clipboard service
-    Connections {
-        target: ClipboardService
-        function onListCompleted() {
-            // Service initialized and ready
-        }
-    }
+    // // Init clipboard service
+    // Connections {
+    //     target: ClipboardService
+    //     function onListCompleted() {
+    //         // Service initialized and ready
+    //     }
+    // }
 
     // Force service init at startup but defer it slightly so it doesn't block the UI
     QtObject {

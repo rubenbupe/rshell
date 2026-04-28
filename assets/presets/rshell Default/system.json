@@ -3,29 +3,11 @@
     "updateServiceEnabled": true,
     "idle": {
         "general": {
-            "lock_cmd": "rshell lock",
+						"lock_cmd": "omarchy-lock-screen",
             "before_sleep_cmd": "loginctl lock-session",
-            "after_sleep_cmd": "rshell screen on"
+            "after_sleep_cmd": "hyprctl dispatch dpms on"
         },
         "listeners": [
-            {
-                "timeout": 150,
-                "onTimeout": "rshell brightness 10 -s",
-                "onResume": "rshell brightness -r"
-            },
-            {
-                "timeout": 300,
-                "onTimeout": "loginctl lock-session"
-            },
-            {
-                "timeout": 330,
-                "onTimeout": "rshell screen off",
-                "onResume": "rshell screen on"
-            },
-            {
-                "timeout": 1800,
-                "onTimeout": "rshell suspend"
-            }
         ]
     },
     "ocr": {

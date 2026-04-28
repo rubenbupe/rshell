@@ -13,9 +13,9 @@ StyledRect {
     implicitWidth: internalBgRect.implicitWidth + 8
     implicitHeight: columnLayout.implicitHeight + 8
     radius: Styling.radius(4)
-    
-    property int expandedPanel: -1 // -1: none, 0: wifi, 1: bluetooth
-    
+
+    property int expandedPanel: -1 // -1: none, 0: wifi, 1: bluetooth, 2: brightness
+
     onVisibleChanged: {
         if (!visible) {
             root.expandedPanel = -1;
@@ -23,7 +23,7 @@ StyledRect {
             BluetoothService.initialize();
         }
     }
-    
+
     Behavior on implicitHeight {
         enabled: Config.animDuration > 0
         NumberAnimation {
@@ -37,7 +37,7 @@ StyledRect {
         anchors.fill: parent
         anchors.margins: 4
         spacing: 0
-        
+
         StyledRect {
             id: internalBgRect
             variant: "internalbg"
@@ -101,49 +101,66 @@ StyledRect {
                 ControlButton {
                     Layout.preferredWidth: 48
                     Layout.preferredHeight: 48
+                    iconName: Icons.sun
+                    isActive: Brightness.syncBrightness || root.expandedPanel === 2
+                    tooltipText: Brightness.syncBrightness ? "Brightness Sync: On" : "Brightness Sync: Off"
+                    onClicked: Brightness.syncBrightness = !Brightness.syncBrightness
+                    onRightClicked: root.togglePanel(2)
+                    onLongPressed: root.togglePanel(2)
+                }
+
+                ControlButton {
+                    Layout.preferredWidth: 48
+                    Layout.preferredHeight: 48
                     iconName: Icons.nightLight
                     isActive: NightLightService.active
                     tooltipText: NightLightService.active ? "Night Light: On" : "Night Light: Off"
                     onClicked: NightLightService.toggle()
                 }
 
-                ControlButton {
-                    Layout.preferredWidth: 48
-                    Layout.preferredHeight: 48
-                    iconName: Icons.caffeine
-                    isActive: CaffeineService.inhibit
-                    tooltipText: CaffeineService.inhibit ? "Caffeine: On" : "Caffeine: Off"
-                    onClicked: CaffeineService.toggleInhibit()
-                }
+                // ControlButton {
+                //     Layout.preferredWidth: 48
+                //     Layout.preferredHeight: 48
+                //     iconName: Icons.caffeine
+                //     isActive: CaffeineService.inhibit
+                //     tooltipText: CaffeineService.inhibit ? "Caffeine: On" : "Caffeine: Off"
+                //     onClicked: CaffeineService.toggleInhibit()
+                // }
 
                 ControlButton {
                     Layout.preferredWidth: 48
                     Layout.preferredHeight: 48
-                    iconName: Icons.gameMode
+                    iconName: Icons.lightning
                     isActive: GameModeService.toggled
-                    tooltipText: GameModeService.toggled ? "Game Mode: On" : "Game Mode: Off"
+                    tooltipText: GameModeService.toggled ? "Heavy effects: Off" : "Heavy effects: On"
                     onClicked: GameModeService.toggle()
                 }
             }
         }
-        
+
         Item {
             id: panelArea
             Layout.fillWidth: true
-            Layout.preferredHeight: root.expandedPanel !== -1 ? root.width - 8 : 0 
+            Layout.preferredHeight: root.expandedPanel !== -1 ? root.expandedPanel == 2 ? root.width - 200 : root.width - 8 : 0
             clip: true
             opacity: root.expandedPanel !== -1 ? 1 : 0
-            
+
             Behavior on Layout.preferredHeight {
                 enabled: Config.animDuration > 0
-                NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: Easing.OutQuart
+                }
             }
-            
+
             Behavior on opacity {
                 enabled: Config.animDuration > 0
-                NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: Easing.OutQuart
+                }
             }
-            
+
             StyledRect {
                 variant: "internalbg"
                 anchors.fill: parent
@@ -155,25 +172,43 @@ StyledRect {
                     id: panelStack
                     anchors.fill: parent
                     anchors.margins: 8 // Extra margin for content
-                    
+
                     Loader {
                         id: wifiLoader
                         anchors.fill: parent
                         active: root.expandedPanel === 0
                         source: "../controls/WifiPanel.qml"
                         asynchronous: true
-                        
+
                         opacity: root.expandedPanel === 0 ? 1 : 0
-                        x: root.expandedPanel === 0 ? 0 : (root.expandedPanel === 1 ? -width : width)
-                        
+                        x: {
+                            if (root.expandedPanel === 0)
+                                return 0;
+                            if (root.expandedPanel === 1 || root.expandedPanel === 2)
+                                return -width;
+                            return width;
+                        }
+
                         onLoaded: {
                             if (item) {
                                 item.maxContentWidth = width;
                             }
                         }
 
-                        Behavior on opacity { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
-                        Behavior on x { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
+                        Behavior on opacity {
+                            enabled: Config.animDuration > 0
+                            NumberAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
+                        Behavior on x {
+                            enabled: Config.animDuration > 0
+                            NumberAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
                     }
 
                     Loader {
@@ -182,24 +217,76 @@ StyledRect {
                         active: root.expandedPanel === 1
                         source: "../controls/BluetoothPanel.qml"
                         asynchronous: true
-                        
+
                         opacity: root.expandedPanel === 1 ? 1 : 0
-                        x: root.expandedPanel === 1 ? 0 : (root.expandedPanel === 0 ? width : -width)
-                        
+                        x: {
+                            if (root.expandedPanel === 1)
+                                return 0;
+                            if (root.expandedPanel === 0)
+                                return width;
+                            if (root.expandedPanel === 2)
+                                return -width;
+                            return width;
+                        }
+
                         onLoaded: {
                             if (item) {
                                 item.maxContentWidth = width;
                             }
                         }
 
-                        Behavior on opacity { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
-                        Behavior on x { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
+                        Behavior on opacity {
+                            enabled: Config.animDuration > 0
+                            NumberAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
+                        Behavior on x {
+                            enabled: Config.animDuration > 0
+                            NumberAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
+                    }
+
+                    Loader {
+                        id: brightnessLoader
+                        anchors.fill: parent
+                        active: root.expandedPanel === 2
+                        source: "../controls/BrightnessPanel.qml"
+                        asynchronous: true
+
+                        opacity: root.expandedPanel === 2 ? 1 : 0
+                        x: {
+                            if (root.expandedPanel === 2)
+                                return 0;
+                            if (root.expandedPanel === 0 || root.expandedPanel === 1)
+                                return width;
+                            return -width;
+                        }
+
+                        Behavior on opacity {
+                            enabled: Config.animDuration > 0
+                            NumberAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
+                        Behavior on x {
+                            enabled: Config.animDuration > 0
+                            NumberAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
                     }
                 }
             }
         }
     }
-    
+
     function togglePanel(index) {
         if (root.expandedPanel === index) {
             root.expandedPanel = -1;
