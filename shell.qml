@@ -36,18 +36,18 @@ ShellRoot {
         Component.onCompleted: Visibilities.setContextMenu(contextMenu)
     }
 
-    // Variants {
-    //     model: Quickshell.screens
+    Variants {
+        model: Quickshell.screens
 
-    //     Loader {
-    //         id: wallpaperLoader
-    //         active: true
-    //         required property ShellScreen modelData
-    //         sourceComponent: Wallpaper {
-    //             screen: wallpaperLoader.modelData
-    //         }
-    //     }
-    // }
+        Loader {
+            id: wallpaperLoader
+            active: true
+            required property ShellScreen modelData
+            sourceComponent: Wallpaper {
+                screen: wallpaperLoader.modelData
+            }
+        }
+    }
 
     Variants {
         model: Quickshell.screens
