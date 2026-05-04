@@ -27,7 +27,7 @@ ActionGrid {
         {
             icon: Icons.lock,
             tooltip: "Lock Session",
-            command: "loginctl lock-session"
+            command: "ros-lock-screen"
         },
         {
             icon: Icons.suspend,
@@ -42,17 +42,17 @@ ActionGrid {
         {
             icon: Icons.logout,
             tooltip: "Exit RctlService",
-            command: "rctl system exit"
+            command: "ros-system-logout"
         },
         {
             icon: Icons.reboot,
             tooltip: "Reboot",
-            command: "systemctl reboot"
+            command: "ros-system-reboot"
         },
         {
             icon: Icons.shutdown,
             tooltip: "Power Off",
-            command: "systemctl poweroff"
+            command: "ros-system-shutdown"
         }
     ]
 

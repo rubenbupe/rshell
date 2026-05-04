@@ -15,7 +15,8 @@ QtObject {
     property bool _initialized: false
 
     function initialize() {
-        if (_initialized) return;
+        if (_initialized)
+            return;
         _initialized = true;
         checkCapabilitiesProcess.running = true;
         xdgVideosProcess.running = true;
@@ -197,7 +198,17 @@ QtObject {
 
     property Process notifySavedProcess: Process {
         id: notifySavedProcess
-        command: ["notify-send", "Screen Recorder", "Recording saved to " + root.videosDir]
+        command: ["notify-send", "--wait", "-a", "Screen Recorder", "--action=open-folder=Open folder", "Screen Recorder", "Recording saved to " + root.videosDir]
+
+        stdout: StdioCollector {
+            id: notifySavedStdout
+        }
+
+        onExited: exitCode => {
+            if (exitCode === 0 && notifySavedStdout.text.trim() === "open-folder") {
+                root.openRecordingsFolder();
+            }
+        }
     }
 
     property Process openVideosProcess: Process {

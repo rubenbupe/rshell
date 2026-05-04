@@ -43,6 +43,7 @@ var ACTION_CATALOG = [
     { id: "rshell.tools", label: "Open Tools", category: "rshell", dispatcher: "exec", argument: "rshell run tools" },
     { id: "rshell.screenshot", label: "Take Screenshot", category: "rshell", dispatcher: "exec", argument: "rshell run screenshot" },
     { id: "rshell.screenrecord", label: "Screen Record", category: "rshell", dispatcher: "exec", argument: "rshell run screenrecord" },
+    { id: "rshell.nightlight", label: "Toggle Night Light", category: "rshell", dispatcher: "exec", argument: "rshell run nightlight" },
     { id: "rshell.lens", label: "Open Lens", category: "rshell", dispatcher: "exec", argument: "rshell run lens" },
     { id: "rshell.reload", label: "Reload rshell", category: "rshell", dispatcher: "exec", argument: "rshell reload" },
     { id: "rshell.quit", label: "Quit rshell", category: "rshell", dispatcher: "exec", argument: "rshell quit" },

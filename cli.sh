@@ -53,6 +53,8 @@ Commands:
     brightness -s [monitor]           Save current brightness
     brightness -r [monitor]           Restore saved brightness
     brightness -l                     List monitors and their brightness
+	nightlight                        Toggle Night Light
+	colorpicker                       Open Color Picker
     help                              Show this help message
     version, -v, --version            Show rshell version
     goodbye                           Uninstall rshell :(
@@ -253,6 +255,21 @@ lock)
 		echo "Error: Could not activate lockscreen"
 		exit 1
 	}
+	;;
+nightlight)
+	PID=$(find_rshell_pid_cached)
+	if [ -z "$PID" ]; then
+		echo "Error: rshell is not running"
+		exit 1
+	fi
+
+	qs ipc --pid "$PID" call rshell run nightlight 2>/dev/null || {
+		echo "Error: Could not toggle Night Light"
+		exit 1
+	}
+	;;
+colorpicker)
+	nohup python3 "$SCRIPT_DIR/scripts/colorpicker.py" >/dev/null 2>&1 &
 	;;
 reload)
 	restart_rshell

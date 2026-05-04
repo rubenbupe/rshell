@@ -99,15 +99,15 @@ QtObject {
 
         writer.text = conf;
 
-        // QUICKSHELL-GIT: const ghosttyConfPath = Quickshell.cachePath("ghostty.conf");
-        const ghosttyConfPath = Quickshell.env("HOME") + "/.cache/rshell/ghostty.conf";
+        // // QUICKSHELL-GIT: const ghosttyConfPath = Quickshell.cachePath("ghostty.conf");
+        // const ghosttyConfPath = Quickshell.env("HOME") + "/.cache/rshell/ghostty.conf";
 
-        // Ensure directory exists and write file
-        const cmd = `
-            mkdir -p "$(dirname "${ghosttyConfPath}")" && \\
-            echo "${conf}" > "${ghosttyConfPath}" && \\
-            pkill -SIGUSR1 ghostty
-        `;
+        // // Ensure directory exists and write file
+        // const cmd = `
+        //     mkdir -p "$(dirname "${ghosttyConfPath}")" && \\
+        //     echo "${conf}" > "${ghosttyConfPath}" && \\
+        //     pkill -SIGUSR1 ghostty
+        // `;
 
         writerProcess.command = ["sh", "-c", cmd];
         writerProcess.running = true;

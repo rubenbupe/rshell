@@ -514,6 +514,11 @@ Item {
                             visible: !(root.orientation === "horizontal" && integratedDockEnabled)
                         }
 
+                        Bar.RecordingIndicator {
+                            bar: root
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+
                         Loader {
                             active: (Config.bar && Config.bar.showPresetsButton !== undefined ? Config.bar.showPresetsButton : true)
                             visible: active
@@ -764,6 +769,11 @@ Item {
                                 startRadius: root.innerRadius
                                 endRadius: root.outerRadius
                             }
+                        }
+
+                        Bar.RecordingIndicator {
+                            bar: root
+                            Layout.alignment: Qt.AlignHCenter
                         }
 
                         ControlsButton {

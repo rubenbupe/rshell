@@ -4,6 +4,7 @@ import colorsys
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -11,7 +12,7 @@ def cmd(*args, input=None):
     return subprocess.check_output(args, input=input)
 
 
-for dep in ("grim", "slurp", "magick", "wl-copy", "notify-send"):
+for dep in ("hyprpicker", "magick", "wl-copy", "notify-send"):
     if subprocess.call(["which", dep], stdout=subprocess.DEVNULL) != 0:
         subprocess.call(
             [
@@ -24,24 +25,14 @@ for dep in ("grim", "slurp", "magick", "wl-copy", "notify-send"):
         )
         sys.exit(1)
 
-coords = cmd("slurp", "-p").decode().strip()
-if not coords:
+time.sleep(0.4)
+
+hex_color = cmd("hyprpicker", "-f", "hex").decode().strip()
+if not hex_color:
     sys.exit(0)
 
-raw = subprocess.Popen(["grim", "-g", coords, "-t", "ppm", "-"], stdout=subprocess.PIPE)
-
-rgb_str = cmd(
-    "magick",
-    "-",
-    "-format",
-    "%[fx:int(255*r)] %[fx:int(255*g)] %[fx:int(255*b)]",
-    "info:-",
-    input=raw.stdout.read(),
-).decode()
-
-r, g, b = map(int, rgb_str.split())
-
-hex_color = f"#{r:02X}{g:02X}{b:02X}"
+r, g, b = tuple(int(hex_color.lstrip("#")[index : index + 2], 16) for index in (0, 2, 4))
+hex_color = f"#{hex_color.lstrip('#').upper()[:6]}"
 rgb_color = f"rgb({r}, {g}, {b})"
 
 rn, gn, bn = r / 255, g / 255, b / 255

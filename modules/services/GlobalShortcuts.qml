@@ -96,6 +96,9 @@ QtObject {
             ScreenRecorder.initialize();
             GlobalStates.screenRecordToolVisible = true;
             break;
+        case "nightlight":
+            NightLightService.toggle();
+            break;
         case "lens":
             Screenshot.initialize();
             Screenshot.captureMode = "lens";

@@ -15,7 +15,7 @@ if [ -z "$REGION" ]; then
 fi
 
 # Capture and OCR
-# Languages based on installed tesseract packages:
+# Languages based on installed tesseract packages:``
 # eng (English), spa (Spanish), lat (Latin), jpn (Japanese), 
 # chi_sim (Simplified Chinese), chi_tra (Traditional Chinese), kor (Korean)
 if [ -n "$1" ]; then

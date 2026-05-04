@@ -1313,7 +1313,7 @@ Singleton {
             }
 
             // Check system binds
-            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens", "reload", "quit"];
+            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "nightlight", "lens", "reload", "quit"];
             for (const key of systemKeys) {
                 if (!current.rshell.system[key] && adapter.rshell.system && adapter.rshell.system[key]) {
                     console.log("Adding missing system bind:", key);
@@ -1517,6 +1517,14 @@ Singleton {
                         property string key: "R"
                         property var action: ({
                                 "id": "rshell.screenrecord",
+                                "args": {}
+                            })
+                    }
+                    property JsonObject nightlight: JsonObject {
+                        property list<string> modifiers: ["SUPER", "ALT"]
+                        property string key: "N"
+                        property var action: ({
+                                "id": "rshell.nightlight",
                                 "args": {}
                             })
                     }
