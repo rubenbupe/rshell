@@ -26,7 +26,7 @@ Singleton {
                 const path = text.trim();
                 if (path) {
                     console.log("Selected icon:", path);
-                    copyIconProcess.command = ["cp", path, Quickshell.env("HOME") + "/.face.icon"];
+                    copyIconProcess.command = ["cp", path, (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/rshell/.face.icon"];
                     copyIconProcess.running = true;
                 }
             }

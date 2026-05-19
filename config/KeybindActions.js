@@ -44,6 +44,7 @@ var ACTION_CATALOG = [
     { id: "rshell.screenshot", label: "Take Screenshot", category: "rshell", dispatcher: "exec", argument: "rshell run screenshot" },
     { id: "rshell.screenrecord", label: "Screen Record", category: "rshell", dispatcher: "exec", argument: "rshell run screenrecord" },
     { id: "rshell.nightlight", label: "Toggle Night Light", category: "rshell", dispatcher: "exec", argument: "rshell run nightlight" },
+    { id: "rshell.silence", label: "Toggle Notification Silence", category: "rshell", dispatcher: "exec", argument: "rshell run silence" },
     { id: "rshell.lens", label: "Open Lens", category: "rshell", dispatcher: "exec", argument: "rshell run lens" },
     { id: "rshell.reload", label: "Reload rshell", category: "rshell", dispatcher: "exec", argument: "rshell reload" },
     { id: "rshell.quit", label: "Quit rshell", category: "rshell", dispatcher: "exec", argument: "rshell quit" },
@@ -281,6 +282,7 @@ function actionFromLegacy(dispatcher, argument, flags) {
         if (arg.indexOf("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") === 0) return { id: "audio.mute-toggle", args: {} };
         if (arg.indexOf("rshell brightness +5") === 0) return { id: "brightness.up", args: {} };
         if (arg.indexOf("rshell brightness -5") === 0) return { id: "brightness.down", args: {} };
+        if (arg === "rshell run silence") return { id: "rshell.silence", args: {} };
         if (arg === "notify-send \"Soon\"") return { id: "system.calculator", args: {} };
         if (arg === "loginctl lock-session" && flags === "l") return { id: "system.lock-locked", args: {} };
         if (arg === "loginctl lock-session") return { id: "system.lock", args: {} };

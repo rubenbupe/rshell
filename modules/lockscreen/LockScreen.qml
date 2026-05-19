@@ -238,7 +238,7 @@ WlSessionLockSurface {
                 color: hoursText.color
                 antialiasing: true
                 anchors.top: hoursText.top
-                anchors.topMargin: hoursText.height * 0.35 
+                anchors.topMargin: hoursText.height * 0.35
                 visible: Config.bar.use12hFormat
                 opacity: startAnim ? 1 : 0
 
@@ -404,10 +404,10 @@ WlSessionLockSurface {
                     anchors.verticalCenter: parent.verticalCenter
 
                     Image {
-                        mipmap: true
                         id: userAvatar
+                        mipmap: true
                         anchors.fill: parent
-                        source: `file://${Quickshell.env("HOME")}/.face.icon`
+                        source: `file://${(Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config"))}/rshell/.face.icon`
                         fillMode: Image.PreserveAspectCrop
                         smooth: true
                         asynchronous: true

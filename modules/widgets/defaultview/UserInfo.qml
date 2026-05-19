@@ -62,7 +62,7 @@ Item {
 
                     Image {
                         anchors.fill: parent
-                        source: `file://${Quickshell.env("HOME")}/.face.icon`
+                        source: `file://${(Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config"))}/rshell/.face.icon`
                         fillMode: Image.PreserveAspectCrop
                     }
                 }

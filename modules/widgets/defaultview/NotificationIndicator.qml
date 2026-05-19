@@ -71,7 +71,7 @@ Item {
             }
 
             TapHandler {
-                onTapped: Notifications.silent = !Notifications.silent
+                onTapped: Notifications.toggleSilent()
             }
         }
     }

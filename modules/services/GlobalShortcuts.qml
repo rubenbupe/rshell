@@ -105,7 +105,10 @@ QtObject {
             GlobalStates.screenshotToolVisible = true;
             break;
         case "lockscreen":
-            GlobalStates.lockscreenVisible = true;
+            root.ipcHandler.run("ros-lock-screen");
+            break;
+        case "silent":
+            Notifications.toggleSilent();
             break;
 
         // Media

@@ -190,7 +190,7 @@ Rectangle {
                             id: userAvatar
                             anchors.fill: parent
                             anchors.margins: 2
-                            source: `file://${Quickshell.env("HOME")}/.face.icon?${GlobalStates.avatarCacheBuster}`
+                            source: `file://${(Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config"))}/rshell/.face.icon?${GlobalStates.avatarCacheBuster}`
                             fillMode: Image.PreserveAspectCrop
                             smooth: true
                             asynchronous: true

@@ -136,7 +136,7 @@ Item {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             hoverEnabled: true
-                            onClicked: Notifications.silent = !Notifications.silent
+                            onClicked: Notifications.toggleSilent()
                         }
                     }
 

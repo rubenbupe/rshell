@@ -380,6 +380,10 @@ Singleton {
         root.discardAll();
     }
 
+    function toggleSilent() {
+        root.silent = !root.silent;
+    }
+
     signal timeoutWithAnimation(id: var)
 
     Timer {

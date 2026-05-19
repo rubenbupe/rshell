@@ -341,8 +341,7 @@ Item {
                                 p = p.substring(7);
                             try {
                                 p = decodeURIComponent(p);
-                            } catch (e) {
-                            }
+                            } catch (e) {}
                             return p;
                         }
 
@@ -592,7 +591,7 @@ Item {
                         Process {
                             id: clipboardImageProcess
                             property string mimeType: ""
-                            command: ["bash", "-c", "wl-paste --type \"" + mimeType + "\" 2>/dev/null | /usr/bin/base64 -w 0" ]
+                            command: ["bash", "-c", "wl-paste --type \"" + mimeType + "\" 2>/dev/null | /usr/bin/base64 -w 0"]
                             stdout: StdioCollector {
                                 onStreamFinished: {
                                     let data = text.trim();
@@ -749,7 +748,7 @@ Item {
                                                 Image {
                                                     mipmap: true
                                                     anchors.fill: parent
-                                                    source: "file://" + Quickshell.env("HOME") + "/.face.icon"
+                                                    source: "file://" + (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/rshell/.face.icon"
                                                     fillMode: Image.PreserveAspectCrop
 
                                                     onStatusChanged: {
@@ -1308,233 +1307,233 @@ Item {
                                         }
                                     }
 
-                                Popup {
-                                    id: suggestionsPopup
-                                    parent: inputContainer
-                                    y: -height - 8
-                                    x: 0
-                                    width: parent.width
-                                    height: Math.min(suggestionsList.contentHeight, mainChatArea.isWelcome ? 120 : 200)
-                                    padding: 0
-                                    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-                                    visible: inputField.text.startsWith("/") && suggestionsModel.count > 0
+                                    Popup {
+                                        id: suggestionsPopup
+                                        parent: inputContainer
+                                        y: -height - 8
+                                        x: 0
+                                        width: parent.width
+                                        height: Math.min(suggestionsList.contentHeight, mainChatArea.isWelcome ? 120 : 200)
+                                        padding: 0
+                                        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+                                        visible: inputField.text.startsWith("/") && suggestionsModel.count > 0
 
-                                    background: StyledRect {
-                                        variant: "popup"
-                                        radius: Styling.radius(8)
-                                        enableShadow: true
-                                    }
+                                        background: StyledRect {
+                                            variant: "popup"
+                                            radius: Styling.radius(8)
+                                            enableShadow: true
+                                        }
 
-                                    function selectNext() {
-                                        suggestionsList.currentIndex = (suggestionsList.currentIndex + 1) % suggestionsModel.count;
-                                    }
+                                        function selectNext() {
+                                            suggestionsList.currentIndex = (suggestionsList.currentIndex + 1) % suggestionsModel.count;
+                                        }
 
-                                    function selectPrevious() {
-                                        suggestionsList.currentIndex = (suggestionsList.currentIndex - 1 + suggestionsModel.count) % suggestionsModel.count;
-                                    }
+                                        function selectPrevious() {
+                                            suggestionsList.currentIndex = (suggestionsList.currentIndex - 1 + suggestionsModel.count) % suggestionsModel.count;
+                                        }
 
-                                    function executeSelection() {
-                                        if (suggestionsList.currentIndex >= 0 && suggestionsList.currentIndex < suggestionsModel.count) {
-                                            let item = suggestionsModel.get(suggestionsList.currentIndex);
-                                            inputField.text = "/" + item.name + " ";
-                                            inputField.cursorPosition = inputField.text.length;
-                                            inputField.forceActiveFocus();
+                                        function executeSelection() {
+                                            if (suggestionsList.currentIndex >= 0 && suggestionsList.currentIndex < suggestionsModel.count) {
+                                                let item = suggestionsModel.get(suggestionsList.currentIndex);
+                                                inputField.text = "/" + item.name + " ";
+                                                inputField.cursorPosition = inputField.text.length;
+                                                inputField.forceActiveFocus();
+                                            }
+                                        }
+
+                                        ListView {
+                                            id: suggestionsList
+                                            anchors.fill: parent
+                                            clip: true
+
+                                            model: ListModel {
+                                                id: suggestionsModel
+                                            }
+
+                                            highlight: Rectangle {
+                                                color: Colors.surface
+                                                opacity: 0.5
+                                            }
+                                            highlightMoveDuration: 0
+
+                                            delegate: Button {
+                                                width: suggestionsList.width
+                                                height: 40
+                                                flat: true
+                                                highlighted: ListView.isCurrentItem
+
+                                                contentItem: RowLayout {
+                                                    anchors.fill: parent
+                                                    anchors.leftMargin: 12
+                                                    anchors.rightMargin: 12
+                                                    spacing: 8
+
+                                                    Text {
+                                                        text: "/" + model.name
+                                                        font.family: Config.theme.font
+                                                        font.weight: Font.Bold
+                                                        color: highlighted ? Styling.srItem("overprimary") : Colors.overSurface
+                                                    }
+
+                                                    Text {
+                                                        text: model.description
+                                                        font.family: Config.theme.font
+                                                        color: highlighted ? Colors.overSurface : Colors.surfaceDim
+                                                        Layout.fillWidth: true
+                                                        elide: Text.ElideRight
+                                                    }
+                                                }
+
+                                                background: Rectangle {
+                                                    color: (parent.highlighted || parent.hovered) ? Colors.surfaceBright : "transparent"
+                                                }
+
+                                                onClicked: {
+                                                    suggestionsList.currentIndex = index;
+                                                    suggestionsPopup.executeSelection();
+                                                }
+                                            }
                                         }
                                     }
 
-                                    ListView {
-                                        id: suggestionsList
-                                        anchors.fill: parent
-                                        clip: true
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: true
+                                        Layout.leftMargin: 16
+                                        Layout.rightMargin: 16
+                                        Layout.topMargin: attachmentPreview.visible ? 0 : 8
+                                        Layout.bottomMargin: 8
 
-                                        model: ListModel {
-                                            id: suggestionsModel
+                                        ScrollView {
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+
+                                            TextArea {
+                                                id: inputField
+                                                focus: true
+                                                activeFocusOnTab: true
+                                                placeholderText: mainChatArea.isWelcome ? "Ask AI or type /help..." : "Message AI..."
+                                                placeholderTextColor: Colors.outline
+                                                font.pixelSize: 14
+                                                color: Colors.overBackground
+                                                wrapMode: TextEdit.Wrap
+
+                                                onTextChanged: {
+                                                    if (text.startsWith("/")) {
+                                                        const query = text.substring(1).toLowerCase();
+                                                        suggestionsModel.clear();
+                                                        root.slashCommands.forEach(cmd => {
+                                                            if (cmd.name.startsWith(query)) {
+                                                                suggestionsModel.append(cmd);
+                                                            }
+                                                        });
+                                                    } else {
+                                                        suggestionsModel.clear();
+                                                    }
+                                                }
+
+                                                background: null
+
+                                                Keys.onPressed: event => {
+                                                    if (suggestionsPopup.visible) {
+                                                        if (event.key === Qt.Key_Up) {
+                                                            suggestionsPopup.selectPrevious();
+                                                            event.accepted = true;
+                                                            return;
+                                                        } else if (event.key === Qt.Key_Down) {
+                                                            suggestionsPopup.selectNext();
+                                                            event.accepted = true;
+                                                            return;
+                                                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Tab) {
+                                                            suggestionsPopup.executeSelection();
+                                                            event.accepted = true;
+                                                            return;
+                                                        }
+                                                    }
+                                                    if (event.key === Qt.Key_V && (event.modifiers & Qt.ControlModifier)) {
+                                                        clipboardTypesProcess.running = true;
+                                                        return;
+                                                    }
+                                                    if (event.key === Qt.Key_Escape) {
+                                                        if (root.menuExpanded) {
+                                                            root.menuExpanded = false;
+                                                        } else {
+                                                            root.wantsFocus = false;
+                                                        }
+                                                        event.accepted = true;
+                                                        return;
+                                                    }
+                                                    if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && !(event.modifiers & Qt.ShiftModifier)) {
+                                                        if (text.trim().length > 0 || mainChatArea.pendingAttachments.length > 0) {
+                                                            Ai.sendMessage(text.trim(), mainChatArea.pendingAttachments.length > 0 ? mainChatArea.pendingAttachments : undefined);
+                                                            text = "";
+                                                            mainChatArea.clearAttachments();
+                                                        }
+                                                        event.accepted = true;
+                                                    }
+                                                }
+                                                Component.onCompleted: {
+                                                    if (root.active)
+                                                        forceActiveFocus();
+                                                }
+                                            }
                                         }
 
-                                        highlight: Rectangle {
-                                            color: Colors.surface
-                                            opacity: 0.5
-                                        }
-                                        highlightMoveDuration: 0
-
-                                        delegate: Button {
-                                            width: suggestionsList.width
-                                            height: 40
+                                        Button {
+                                            Layout.preferredWidth: 32
+                                            Layout.preferredHeight: 32
                                             flat: true
-                                            highlighted: ListView.isCurrentItem
 
-                                            contentItem: RowLayout {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: 12
-                                                anchors.rightMargin: 12
-                                                spacing: 8
-
-                                                Text {
-                                                    text: "/" + model.name
-                                                    font.family: Config.theme.font
-                                                    font.weight: Font.Bold
-                                                    color: highlighted ? Styling.srItem("overprimary") : Colors.overSurface
-                                                }
-
-                                                Text {
-                                                    text: model.description
-                                                    font.family: Config.theme.font
-                                                    color: highlighted ? Colors.overSurface : Colors.surfaceDim
-                                                    Layout.fillWidth: true
-                                                    elide: Text.ElideRight
-                                                }
+                                            contentItem: Text {
+                                                text: Icons.plus
+                                                font.family: Icons.font
+                                                font.pixelSize: 20
+                                                color: Colors.outline
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
                                             }
 
                                             background: Rectangle {
-                                                color: (parent.highlighted || parent.hovered) ? Colors.surfaceBright : "transparent"
+                                                color: parent.hovered ? Colors.surfaceBright : "transparent"
+                                                radius: 16
+                                            }
+
+                                            onClicked: zenityProcess.running = true
+                                        }
+                                        Button {
+                                            Layout.preferredWidth: 32
+                                            Layout.preferredHeight: 32
+                                            flat: true
+                                            visible: inputField.text.length > 0 || mainChatArea.pendingAttachments.length > 0
+
+                                            contentItem: Text {
+                                                text: Icons.paperPlane
+                                                font.family: Icons.font
+                                                font.pixelSize: 20
+                                                color: Styling.srItem("overprimary")
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                            }
+
+                                            background: Rectangle {
+                                                color: parent.hovered ? Colors.surfaceBright : "transparent"
+                                                radius: 16
                                             }
 
                                             onClicked: {
-                                                suggestionsList.currentIndex = index;
-                                                suggestionsPopup.executeSelection();
-                                            }
-                                        }
-                                    }
-                                }
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    Layout.leftMargin: 16
-                                    Layout.rightMargin: 16
-                                    Layout.topMargin: attachmentPreview.visible ? 0 : 8
-                                    Layout.bottomMargin: 8
-
-                                    ScrollView {
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: true
-
-                                        TextArea {
-                                            id: inputField
-                                            focus: true
-                                            activeFocusOnTab: true
-                                            placeholderText: mainChatArea.isWelcome ? "Ask AI or type /help..." : "Message AI..."
-                                            placeholderTextColor: Colors.outline
-                                            font.pixelSize: 14
-                                            color: Colors.overBackground
-                                            wrapMode: TextEdit.Wrap
-
-                                            onTextChanged: {
-                                                if (text.startsWith("/")) {
-                                                    const query = text.substring(1).toLowerCase();
-                                                    suggestionsModel.clear();
-                                                    root.slashCommands.forEach(cmd => {
-                                                        if (cmd.name.startsWith(query)) {
-                                                            suggestionsModel.append(cmd);
-                                                        }
-                                                    });
-                                                } else {
-                                                    suggestionsModel.clear();
+                                                if (inputField.text.trim().length > 0 || mainChatArea.pendingAttachments.length > 0) {
+                                                    Ai.sendMessage(inputField.text.trim(), mainChatArea.pendingAttachments.length > 0 ? mainChatArea.pendingAttachments : undefined);
+                                                    inputField.text = "";
+                                                    mainChatArea.clearAttachments();
                                                 }
-                                            }
-
-                                            background: null
-
-                                            Keys.onPressed: event => {
-                                                if (suggestionsPopup.visible) {
-                                                    if (event.key === Qt.Key_Up) {
-                                                        suggestionsPopup.selectPrevious();
-                                                        event.accepted = true;
-                                                        return;
-                                                    } else if (event.key === Qt.Key_Down) {
-                                                        suggestionsPopup.selectNext();
-                                                        event.accepted = true;
-                                                        return;
-                                                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Tab) {
-                                                        suggestionsPopup.executeSelection();
-                                                        event.accepted = true;
-                                                        return;
-                                                    }
-                                                }
-                                                if (event.key === Qt.Key_V && (event.modifiers & Qt.ControlModifier)) {
-                                                    clipboardTypesProcess.running = true;
-                                                    return;
-                                                }
-                                                if (event.key === Qt.Key_Escape) {
-                                                    if (root.menuExpanded) {
-                                                        root.menuExpanded = false;
-                                                    } else {
-                                                        root.wantsFocus = false;
-                                                    }
-                                                    event.accepted = true;
-                                                    return;
-                                                }
-                                                if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && !(event.modifiers & Qt.ShiftModifier)) {
-                                                    if (text.trim().length > 0 || mainChatArea.pendingAttachments.length > 0) {
-                                                        Ai.sendMessage(text.trim(), mainChatArea.pendingAttachments.length > 0 ? mainChatArea.pendingAttachments : undefined);
-                                                        text = "";
-                                                        mainChatArea.clearAttachments();
-                                                    }
-                                                    event.accepted = true;
-                                                }
-                                            }
-                                            Component.onCompleted: {
-                                                if (root.active)
-                                                    forceActiveFocus();
-                                            }
-                                        }
-                                    }
-
-                                    Button {
-                                        Layout.preferredWidth: 32
-                                        Layout.preferredHeight: 32
-                                        flat: true
-
-                                        contentItem: Text {
-                                            text: Icons.plus
-                                            font.family: Icons.font
-                                            font.pixelSize: 20
-                                            color: Colors.outline
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
-
-                                        background: Rectangle {
-                                            color: parent.hovered ? Colors.surfaceBright : "transparent"
-                                            radius: 16
-                                        }
-
-                                        onClicked: zenityProcess.running = true
-                                    }
-                                    Button {
-                                        Layout.preferredWidth: 32
-                                        Layout.preferredHeight: 32
-                                        flat: true
-                                        visible: inputField.text.length > 0 || mainChatArea.pendingAttachments.length > 0
-
-                                        contentItem: Text {
-                                            text: Icons.paperPlane
-                                            font.family: Icons.font
-                                            font.pixelSize: 20
-                                            color: Styling.srItem("overprimary")
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
-
-                                        background: Rectangle {
-                                            color: parent.hovered ? Colors.surfaceBright : "transparent"
-                                            radius: 16
-                                        }
-
-                                        onClicked: {
-                                            if (inputField.text.trim().length > 0 || mainChatArea.pendingAttachments.length > 0) {
-                                                Ai.sendMessage(inputField.text.trim(), mainChatArea.pendingAttachments.length > 0 ? mainChatArea.pendingAttachments : undefined);
-                                                inputField.text = "";
-                                                mainChatArea.clearAttachments();
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    Text {
+                        Text {
                             anchors.top: inputContainer.bottom
                             anchors.topMargin: 8
                             anchors.horizontalCenter: inputContainer.horizontalCenter
