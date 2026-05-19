@@ -460,6 +460,11 @@ install_python_tools
 configure_services
 setup_launcher
 
+if [[ "$DISTRO" != "nixos" ]]; then
+  log_info "Preparing rshell Hyprland config..."
+  rshell install hyprland
+fi
+
 echo ""
-log_success "Installation complete!"
+log_success "rshell installed successfully"
 [[ "$DISTRO" != "nixos" ]] && echo -e "Run ${GREEN}rshell${NC} to start."

@@ -34,6 +34,28 @@ ensure_config_files() {
 	done
 }
 
+ensure_share_files() {
+	local data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/rshell"
+	local rctl_config="${data_dir}/rctl.toml"
+	local compositor_config="${data_dir}/hyprland.conf"
+
+	mkdir -p "$data_dir"
+
+	python3 "${SCRIPT_DIR}/scripts/generate_rctl_config.py" \
+		--repo "$SCRIPT_DIR" \
+		--output "$rctl_config" >/dev/null
+
+	if ! command -v rctl >/dev/null 2>&1; then
+		echo "Error: rctl is required to generate ${compositor_config}"
+		exit 1
+	fi
+
+	rctl -c "$rctl_config" generate-config hyprland "$compositor_config" >/dev/null || {
+		echo "Error: failed to generate ${compositor_config}. Please update rctl."
+		exit 1
+	}
+}
+
 # Call it before launching
 ensure_config_files
 
@@ -58,7 +80,7 @@ Commands:
     help                              Show this help message
     version, -v, --version            Show rshell version
     goodbye                           Uninstall rshell :(
-    install <target>                    Install compositor config (hyprland)
+    install <target>                  Install compositor config (hyprland)
     remove <target>                    Remove compositor config (hyprland)
 
 Examples:
@@ -547,6 +569,7 @@ install)
 		# Create directory if needed
 		mkdir -p "$HOME/.config/hypr"
 
+		ensure_share_files
 		append_rshell_hyprland_block "$HYPR_CONF"
 	else
 		echo "Error: Unknown target '$TARGET'. Supported: hyprland"
