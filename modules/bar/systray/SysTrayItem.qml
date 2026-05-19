@@ -4,7 +4,11 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Services.SystemTray
+import Quickshell.Widgets
+import qs.modules.theme
+import qs.modules.services
 import qs.modules.components
+import qs.config
 
 MouseArea {
     id: root
@@ -13,7 +17,6 @@ MouseArea {
     required property SystemTrayItem item
     property int trayItemSize: 20
     property bool isHovered: false
-    readonly property string trayIconSource: getTrayIconSource()
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     Layout.fillHeight: bar.orientation === "horizontal"
@@ -33,30 +36,6 @@ MouseArea {
             break;
         }
         event.accepted = true;
-    }
-
-    function getTrayIconSource() {
-        const icon = root.item?.icon ? root.item.icon.toString() : "";
-        if (icon === "") {
-            return "image://icon/image-missing";
-        }
-
-        if (icon.includes("spotify")) {
-            return Quickshell.iconPath("spotify-client", "spotify");
-        }
-
-        if (icon.startsWith("/") || icon.startsWith("file:") || icon.startsWith("image:") || icon.startsWith("qrc:") || icon.startsWith("data:")) {
-            return icon;
-        }
-
-        if (icon.endsWith("-symbolic")) {
-            const fullColorIcon = icon.slice(0, -"-symbolic".length);
-            if (Quickshell.iconPath(fullColorIcon, true) !== "") {
-                return "image://icon/" + fullColorIcon;
-            }
-        }
-
-        return "image://icon/" + icon;
     }
 
     BarPopup {
@@ -183,21 +162,28 @@ MouseArea {
         }
     }
 
-    Image {
+    IconImage {
         id: trayIcon
-        source: root.trayIconSource
+        source: {
+            const iconPath = root.item.icon.toString();
+            if (iconPath.includes("spotify")) {
+                return Quickshell.iconPath("spotify-client");
+            }
+            return root.item.icon;
+        }
         anchors.centerIn: parent
         width: parent.width
         height: parent.height
-        fillMode: Image.PreserveAspectFit
-        mipmap: true
         smooth: true
+    }
 
-        onStatusChanged: {
-            if (status === Image.Error) {
-                console.warn("Failed to load systray icon:", root.item?.id, root.item?.title, root.item?.icon, "resolved as", source);
-            }
-        }
+    Tinted {
+        property var iconPath: root.item.icon.toString()
+        property var isSpotify: iconPath.includes("spotify")
+        sourceItem: trayIcon
+        anchors.fill: trayIcon
+        fullTint: !isSpotify
+        active: !isSpotify || active
     }
 
     StyledToolTip {
