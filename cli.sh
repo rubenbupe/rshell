@@ -38,6 +38,7 @@ ensure_share_files() {
 	local data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/rshell"
 	local rctl_config="${data_dir}/rctl.toml"
 	local compositor_config="${data_dir}/hyprland.conf"
+	local compositor_config_tmp="${compositor_config}.tmp"
 
 	mkdir -p "$data_dir"
 
@@ -50,10 +51,18 @@ ensure_share_files() {
 		exit 1
 	fi
 
-	rctl -c "$rctl_config" generate-config hyprland "$compositor_config" >/dev/null || {
+	rm -f "$compositor_config_tmp"
+	rctl -c "$rctl_config" generate-config hyprland "$compositor_config_tmp" >/dev/null || {
 		echo "Error: failed to generate ${compositor_config}. Please update rctl."
 		exit 1
 	}
+
+	if [[ ! -s "$compositor_config_tmp" ]]; then
+		echo "Error: failed to generate ${compositor_config}. Please update rctl."
+		exit 1
+	fi
+
+	mv "$compositor_config_tmp" "$compositor_config"
 }
 
 # Call it before launching

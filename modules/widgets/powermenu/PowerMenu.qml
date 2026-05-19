@@ -32,12 +32,12 @@ ActionGrid {
         {
             icon: Icons.suspend,
             tooltip: "Suspend",
-            command: "systemctl suspend"
+            command: "ros-system-suspend"
         },
         {
             icon: Icons.hibernate,
             tooltip: "Hibernate",
-            command: "systemctl hibernate"
+            command: "ros-system-hibernate"
         },
         {
             icon: Icons.logout,
